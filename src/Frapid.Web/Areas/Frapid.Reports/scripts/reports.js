@@ -92,7 +92,11 @@ $("#ShowButton").off("click").on("click", function () {
     $.each(otherEls, function () {
         const el = $(this);
         const parameter = el.attr("data-paramter");
-        const value = el.val();
+        var value = el.val();
+
+        if (el.is("input[type='checkbox']")) {
+            value = el.is(":checked");
+        };
 
         const id = el.attr("id");
 
@@ -413,3 +417,5 @@ if (top.parent) {
         top.parent.removeToolbar();
     };
 };
+
+$("input[type='checkbox'][data-checked='true']").prop("checked", true);
