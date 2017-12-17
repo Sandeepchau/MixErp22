@@ -75,7 +75,7 @@
                                     case "BOOL":
                                     case "BOOLEAN":
                                         <div class="ui slider checkbox">
-                                            <input data-paramter="@name" id="@(name)CheckBox" data-checked="@parameter.DefaultValue.ToString().ToLower()" type="checkbox">
+                                            <input data-paramter="@name" id="@(name)CheckBox" data-checked="@(parameter.DefaultValue ?? "").ToString().ToLower()" type="checkbox">
                                             <label>Yes</label>
                                         </div>
                                         break;
