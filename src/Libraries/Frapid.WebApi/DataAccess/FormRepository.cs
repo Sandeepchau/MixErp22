@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -82,7 +83,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             string sql = $"SELECT COUNT(*) FROM {this.FullyQualifiedObjectName} WHERE DELETED = @0;";
-            return await Factory.ScalarAsync<long>(this.Database, sql, false).ConfigureAwait(false);
+
+            try
+            {
+                return await Factory.ScalarAsync<long>(this.Database, sql, false).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetAllAsync()
@@ -111,7 +121,15 @@ namespace Frapid.WebApi.DataAccess
                 sql += $" ORDER BY {this.PrimaryKey};";
             }
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql, false).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql, false).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<dynamic> GetAsync(object primaryKey)
@@ -141,7 +159,15 @@ namespace Frapid.WebApi.DataAccess
 
 
             string sql = $"SELECT * FROM {this.FullyQualifiedObjectName} WHERE deleted=@0 AND {this.PrimaryKey}=@1;";
-            return (await Factory.GetAsync<dynamic>(this.Database, sql, false, primaryKey).ConfigureAwait(false)).FirstOrDefault();
+            try
+            {
+                return (await Factory.GetAsync<dynamic>(this.Database, sql, false, primaryKey).ConfigureAwait(false)).FirstOrDefault();
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<dynamic> GetFirstAsync()
@@ -169,7 +195,15 @@ namespace Frapid.WebApi.DataAccess
             sql.Append(FrapidDbServer.AddOffset(this.Database, "@0"), 0);
             sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), 1);
 
-            return (await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false)).FirstOrDefault();
+            try
+            {
+                return (await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false)).FirstOrDefault();
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<dynamic> GetPreviousAsync(object primaryKey)
@@ -199,7 +233,15 @@ namespace Frapid.WebApi.DataAccess
             sql.Append(FrapidDbServer.AddOffset(this.Database, "@0"), 0);
             sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), 1);
 
-            return (await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false)).FirstOrDefault();
+            try
+            {
+                return (await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false)).FirstOrDefault();
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<dynamic> GetNextAsync(object primaryKey)
@@ -231,7 +273,15 @@ namespace Frapid.WebApi.DataAccess
             sql.Append(FrapidDbServer.AddOffset(this.Database, "@0"), 0);
             sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), 1);
 
-            return (await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false)).FirstOrDefault();
+            try
+            {
+                return (await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false)).FirstOrDefault();
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<dynamic> GetLastAsync()
@@ -262,7 +312,15 @@ namespace Frapid.WebApi.DataAccess
             sql.Append(FrapidDbServer.AddOffset(this.Database, "@0"), 0);
             sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), 1);
 
-            return (await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false)).FirstOrDefault();
+            try
+            {
+                return (await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false)).FirstOrDefault();
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetAsync(object[] primaryKeys)
@@ -291,7 +349,15 @@ namespace Frapid.WebApi.DataAccess
             sql.In("\"{this.PrimaryKey}\" IN (@0)", primaryKeys);
 
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<CustomField>> GetCustomFieldsAsync(string resourceId)
@@ -332,7 +398,15 @@ namespace Frapid.WebApi.DataAccess
                         "@1"
                     });
 
-            return await Factory.GetAsync<CustomField>(this.Database, sql, this.FullyQualifiedObjectName, resourceId).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<CustomField>(this.Database, sql, this.FullyQualifiedObjectName, resourceId).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<DisplayField>> GetDisplayFieldsAsync()
@@ -357,7 +431,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             string sql = $"SELECT {this.PrimaryKey} AS \"key\", {this.NameColumn} as \"value\" FROM {this.FullyQualifiedObjectName} WHERE deleted=@0 ORDER BY 1;";
-            return await Factory.GetAsync<DisplayField>(this.Database, sql, false).ConfigureAwait(false);
+
+            try
+            {
+                return await Factory.GetAsync<DisplayField>(this.Database, sql, false).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<DisplayField>> GetLookupFieldsAsync()
@@ -381,7 +464,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             string sql = $"SELECT {this.LookupField} AS \"key\", {this.NameColumn} as \"value\" FROM {this.FullyQualifiedObjectName} WHERE deleted=@0 ORDER BY 1;";
-            return await Factory.GetAsync<DisplayField>(this.Database, sql, false).ConfigureAwait(false);
+
+            try
+            {
+                return await Factory.GetAsync<DisplayField>(this.Database, sql, false).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<object> AddOrEditAsync(Dictionary<string, object> item, List<CustomField> customFields)
@@ -538,11 +630,18 @@ namespace Frapid.WebApi.DataAccess
 
                 sql.Where(this.PrimaryKey + "=@0", primaryKeyValue);
 
-                await db.NonQueryAsync(sql).ConfigureAwait(false);
-                await this.AddCustomFieldsAsync(primaryKeyValue, customFields).ConfigureAwait(false);
+                try
+                {
+                    await db.NonQueryAsync(sql).ConfigureAwait(false);
+                    await this.AddCustomFieldsAsync(primaryKeyValue, customFields).ConfigureAwait(false);
+                }
+                catch (DbException ex)
+                {
+                    Log.Error(ex.Message);
+                    throw new DataAccessException(this.Database, ex.Message, ex);
+                }
             }
         }
-
 
         public async Task DeleteAsync(object primaryKey)
         {
@@ -565,7 +664,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             string sql = $"UPDATE {this.FullyQualifiedObjectName} SET deleted = @0, audit_user_id=@1, audit_ts=@2 WHERE {this.PrimaryKey}=@3;";
-            await Factory.NonQueryAsync(this.Database, sql, true, this.UserId, DateTimeOffset.UtcNow, primaryKey).ConfigureAwait(false);
+
+            try
+            {
+                await Factory.NonQueryAsync(this.Database, sql, true, this.UserId, DateTimeOffset.UtcNow, primaryKey).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetPaginatedResultAsync()
@@ -594,7 +702,15 @@ namespace Frapid.WebApi.DataAccess
             sql.Append(FrapidDbServer.AddOffset(this.Database, "@0"), 0);
             sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), Config.GetPageSize(this.Database));
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetPaginatedResultAsync(long pageNumber)
@@ -623,7 +739,15 @@ namespace Frapid.WebApi.DataAccess
             sql += FrapidDbServer.AddOffset(this.Database, "@1");
             sql += FrapidDbServer.AddLimit(this.Database, Config.GetPageSize(this.Database).ToString());
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql, false, offset).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql, false, offset).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<Filter>> GetFiltersAsync(string tenant, string filterName)
@@ -634,7 +758,15 @@ namespace Frapid.WebApi.DataAccess
                 sql.Where("object_name = @0", this.FullyQualifiedObjectName);
                 sql.And("LOWER(filter_name)=@0", filterName.ToLower());
 
-                return await db.SelectAsync<Filter>(sql).ConfigureAwait(false);
+                try
+                {
+                    return await db.SelectAsync<Filter>(sql).ConfigureAwait(false);
+                }
+                catch (DbException ex)
+                {
+                    Log.Error(ex.Message);
+                    throw new DataAccessException(this.Database, ex.Message, ex);
+                }
             }
         }
 
@@ -661,7 +793,15 @@ namespace Frapid.WebApi.DataAccess
             var sql = new Sql($"SELECT COUNT(*) FROM {this.FullyQualifiedObjectName} WHERE deleted = @0", false);
             FilterManager.AddFilters(ref sql, filters);
 
-            return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetWhereAsync(long pageNumber, List<Filter> filters)
@@ -700,8 +840,16 @@ namespace Frapid.WebApi.DataAccess
                 sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), Config.GetPageSize(this.Database));
             }
 
-            var result = await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
-            return result;
+            try
+            {
+                var result = await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+                return result;
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<long> CountFilteredAsync(string filterName)
@@ -728,7 +876,15 @@ namespace Frapid.WebApi.DataAccess
             var sql = new Sql($"SELECT COUNT(*) FROM {this.FullyQualifiedObjectName} WHERE deleted = @0", false);
             FilterManager.AddFilters(ref sql, filters.ToList());
 
-            return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetFilteredAsync(long pageNumber, string filterName)
@@ -770,7 +926,15 @@ namespace Frapid.WebApi.DataAccess
                 sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), Config.GetPageSize(this.Database));
             }
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<object> AddAsync(Dictionary<string, object> item, List<CustomField> customFields, bool skipPrimaryKey)
@@ -819,9 +983,17 @@ namespace Frapid.WebApi.DataAccess
 
                 sql.Append(FrapidDbServer.AddReturnInsertedKey(this.Database, this.PrimaryKey));
 
-                var primaryKeyValue = await db.ScalarAsync<object>(sql).ConfigureAwait(false);
-                await this.AddCustomFieldsAsync(primaryKeyValue, customFields).ConfigureAwait(false);
-                return primaryKeyValue;
+                try
+                {
+                    var primaryKeyValue = await db.ScalarAsync<object>(sql).ConfigureAwait(false);
+                    await this.AddCustomFieldsAsync(primaryKeyValue, customFields).ConfigureAwait(false);
+                    return primaryKeyValue;
+                }
+                catch (DbException ex)
+                {
+                    Log.Error(ex.Message);
+                    throw new DataAccessException(this.Database, ex.Message, ex);
+                }
             }
         }
 
@@ -833,7 +1005,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             this.IdentityColumn = meta.Columns.FirstOrDefault(x => x.IsSerial)?.ColumnName;
-            await this.UpdateAsync(item, primaryKeyValue, customFields).ConfigureAwait(false);
+
+            try
+            {
+                await this.UpdateAsync(item, primaryKeyValue, customFields).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<object> AddAsync(Dictionary<string, object> item, List<CustomField> customFields, bool skipPrimaryKey, EntityView meta)
@@ -844,7 +1025,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             this.IdentityColumn = meta.Columns.FirstOrDefault(x => x.IsSerial)?.ColumnName;
-            return await this.AddAsync(item, customFields, skipPrimaryKey).ConfigureAwait(false);
+
+            try
+            {
+                return await this.AddAsync(item, customFields, skipPrimaryKey).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<DisplayField>> GetDisplayFieldsAsync(List<Filter> filters)
@@ -872,7 +1062,15 @@ namespace Frapid.WebApi.DataAccess
             FilterManager.AddFilters(ref sql, filters);
             sql.OrderBy("1");
 
-            return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<DisplayField>> GetLookupFieldsAsync(List<Filter> filters)
@@ -900,32 +1098,46 @@ namespace Frapid.WebApi.DataAccess
             FilterManager.AddFilters(ref sql, filters);
             sql.OrderBy("1");
 
-            return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
-
 
         public async Task AddCustomFieldsAsync(object primaryKeyValue, List<CustomField> customFields)
         {
-            string sql = $"DELETE FROM config.custom_fields WHERE custom_field_setup_id IN(" +
-                         "SELECT custom_field_setup_id " + "FROM config.custom_field_setup " +
-                         "WHERE form_name=config.get_custom_field_form_name('{this.FullyQualifiedObjectName}')" + ");";
-
-            await Factory.NonQueryAsync(this.Database, sql).ConfigureAwait(false);
-
-            if (customFields == null)
+            try
             {
-                return;
+                string sql = $"DELETE FROM config.custom_fields WHERE custom_field_setup_id IN(" +
+                             "SELECT custom_field_setup_id " + "FROM config.custom_field_setup " +
+                             "WHERE form_name=config.get_custom_field_form_name('{this.FullyQualifiedObjectName}')" + ");";
+
+                await Factory.NonQueryAsync(this.Database, sql).ConfigureAwait(false);
+
+                if (customFields == null)
+                {
+                    return;
+                }
+
+                foreach (var field in customFields)
+                {
+                    sql = $"INSERT INTO config.custom_fields(custom_field_setup_id, resource_id, value) " +
+                          "SELECT config.get_custom_field_setup_id_by_table_name('{this.FullyQualifiedObjectName}', @0), " +
+                          "@1, @2;";
+
+                    await Factory.NonQueryAsync(this.Database, sql, field.FieldName, primaryKeyValue, field.Value)
+                            .ConfigureAwait(false);
+                }
             }
-
-            foreach (var field in customFields)
+            catch (DbException ex)
             {
-                sql = $"INSERT INTO config.custom_fields(custom_field_setup_id, resource_id, value) " +
-                      "SELECT config.get_custom_field_setup_id_by_table_name('{this.FullyQualifiedObjectName}', @0), " +
-                      "@1, @2;";
-
-                await
-                    Factory.NonQueryAsync(this.Database, sql, field.FieldName, primaryKeyValue, field.Value)
-                        .ConfigureAwait(false);
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
             }
         }
 
@@ -993,7 +1205,15 @@ namespace Frapid.WebApi.DataAccess
                 }
             }
 
-            return await EntityView.GetAsync(this.Database, this.PrimaryKey, this._ObjectNamespace, this.GetTableName()).ConfigureAwait(false);
+            try
+            {
+                return await EntityView.GetAsync(this.Database, this.PrimaryKey, this._ObjectNamespace, this.GetTableName()).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task VerifyAsync(Verification model)
@@ -1022,7 +1242,15 @@ namespace Frapid.WebApi.DataAccess
                 sql.Append("verification_reason=@0 ", model.Reason);
                 sql.Where($"{this.PrimaryKey}=@0", model.PrimaryKeyValue);
 
-                await Factory.NonQueryAsync(this.Database, sql).ConfigureAwait(false);
+                try
+                {
+                    await Factory.NonQueryAsync(this.Database, sql).ConfigureAwait(false);
+                }
+                catch (DbException ex)
+                {
+                    Log.Error(ex.Message);
+                    throw new DataAccessException(this.Database, ex.Message, ex);
+                }
             }
         }
     }

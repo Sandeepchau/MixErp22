@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Frapid.ApplicationState.Cache;
@@ -73,7 +74,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             string sql = $"SELECT COUNT(*) FROM {this.FullyQualifiedObjectName};";
-            return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+
+            try
+            {
+                return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetAsync()
@@ -97,7 +107,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             string sql = $"SELECT * FROM {this.FullyQualifiedObjectName} ORDER BY {this.PrimaryKey}";
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<DisplayField>> GetDisplayFieldsAsync()
@@ -121,7 +140,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             string sql = $"SELECT {this.PrimaryKey} AS \"key\", {this.NameColumn} as \"value\" FROM {this.FullyQualifiedObjectName} ORDER BY 1;";
-            return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+
+            try
+            {
+                return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<DisplayField>> GetLookupFieldsAsync()
@@ -145,7 +173,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             string sql = $"SELECT {this.LookupField} AS \"key\", {this.NameColumn} as \"value\" FROM {this.FullyQualifiedObjectName} ORDER BY 1;";
-            return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+
+            try
+            {
+                return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetPaginatedResultAsync()
@@ -176,7 +213,15 @@ namespace Frapid.WebApi.DataAccess
             sql.Append(FrapidDbServer.AddOffset(this.Database, "@0"), 0);
             sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), Config.GetPageSize(this.Database));
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetPaginatedResultAsync(long pageNumber)
@@ -209,13 +254,30 @@ namespace Frapid.WebApi.DataAccess
             sql.Append(FrapidDbServer.AddOffset(this.Database, "@0"), offset);
             sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), Config.GetPageSize(this.Database));
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<Filter>> GetFiltersAsync(string database, string filterName)
         {
             string sql = $"SELECT * FROM config.filters WHERE object_name='{this.FullyQualifiedObjectName}' AND lower(filter_name)=lower(@0);";
-            return await Factory.GetAsync<Filter>(database, sql, filterName).ConfigureAwait(false);
+
+            try
+            {
+                return await Factory.GetAsync<Filter>(database, sql, filterName).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<long> CountWhereAsync(List<Filter> filters)
@@ -241,7 +303,15 @@ namespace Frapid.WebApi.DataAccess
             var sql = new Sql($"SELECT COUNT(*) FROM {this.FullyQualifiedObjectName} WHERE 1 = 1");
             FilterManager.AddFilters(ref sql, filters);
 
-            return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetWhereAsync(long pageNumber, List<Filter> filters)
@@ -277,7 +347,15 @@ namespace Frapid.WebApi.DataAccess
                 sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), Config.GetPageSize(this.Database));
             }
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<long> CountFilteredAsync(string filterName)
@@ -304,7 +382,15 @@ namespace Frapid.WebApi.DataAccess
             var sql = new Sql($"SELECT COUNT(*) FROM {this.FullyQualifiedObjectName} WHERE 1 = 1");
             FilterManager.AddFilters(ref sql, filters.ToList());
 
-            return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.ScalarAsync<long>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<dynamic>> GetFilteredAsync(long pageNumber, string filterName)
@@ -343,7 +429,15 @@ namespace Frapid.WebApi.DataAccess
                 sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), Config.GetPageSize(this.Database));
             }
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<DisplayField>> GetDisplayFieldsAsync(List<Filter> filters)
@@ -371,7 +465,15 @@ namespace Frapid.WebApi.DataAccess
             FilterManager.AddFilters(ref sql, filters);
             sql.OrderBy("1");
 
-            return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task<IEnumerable<DisplayField>> GetLookupFieldsAsync(List<Filter> filters)
@@ -399,7 +501,15 @@ namespace Frapid.WebApi.DataAccess
             FilterManager.AddFilters(ref sql, filters);
             sql.OrderBy("1");
 
-            return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<DisplayField>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         #region View to Table Convention

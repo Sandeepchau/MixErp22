@@ -19,6 +19,10 @@ namespace Frapid.DataAccess
         {
         }
 
+        public DataAccessException(string database, [Localizable(true)] string message, Exception exception) : base(DbErrorParser.GetException(database, message, exception), exception)
+        {
+        }
+
         protected DataAccessException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }

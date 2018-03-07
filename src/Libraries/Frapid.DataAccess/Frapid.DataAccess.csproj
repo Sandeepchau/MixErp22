@@ -56,8 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DAL\EntityViews.cs" />
+    <Compile Include="DbErrorParser.cs" />
+    <Compile Include="Errors\SqlServer\UniqueKeyViolation.cs" />
     <Compile Include="Extensions\NpgsqlExtensions.cs" />
     <Compile Include="Extensions\SqlClientExtensions.cs" />
+    <Compile Include="IDbErrorMessage.cs" />
     <Compile Include="Models\AccessTypeEnum.cs" />
     <Compile Include="Models\CustomField.cs" />
     <Compile Include="DataAccessException.cs" />
@@ -78,6 +81,7 @@
     <Compile Include="Subtext\SeparatorLineReader.cs" />
     <Compile Include="Subtext\SqlParseException.cs" />
     <Compile Include="UnauthorizedException.cs" />
+    <Compile Include="Errors\PostgreSQL\UniqueKeyViolation.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -101,6 +105,7 @@
       <Name>Frapid.Mapper</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Frapid.DataAccess;
@@ -66,7 +67,15 @@ namespace Frapid.WebApi.DataAccess
             sql.Append("AND");
             sql.In("resource_id IN(@0)", resourceIds);
 
-            return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<dynamic>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
     }
 }

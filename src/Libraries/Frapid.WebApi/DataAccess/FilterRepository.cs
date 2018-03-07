@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 using Frapid.Configuration;
@@ -68,7 +69,16 @@ namespace Frapid.WebApi.DataAccess
                 sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), 50);
             }
 
-            return await Factory.GetAsync<Filter>(this.Database, sql).ConfigureAwait(false);
+            try
+            {
+                return await Factory.GetAsync<Filter>(this.Database, sql).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task MakeDefaultAsync(string objectName, string filterName)
@@ -88,7 +98,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             const string sql = "UPDATE config.filters SET is_default=true WHERE object_name=@0 AND filter_name=@1;";
-            await Factory.NonQueryAsync(this.Database, sql, objectName, filterName).ConfigureAwait(false);
+
+            try
+            {
+                await Factory.NonQueryAsync(this.Database, sql, objectName, filterName).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         /// <summary>
@@ -120,7 +139,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             const string sql = "DELETE FROM config.filters WHERE filter_name=@0;";
-            await Factory.NonQueryAsync(this.Database, sql, filterName).ConfigureAwait(false);
+
+            try
+            {
+                await Factory.NonQueryAsync(this.Database, sql, filterName).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
 
         public async Task RecreateFiltersAsync(string objectName, string filterName, List<Filter> filters)
@@ -181,10 +209,11 @@ namespace Frapid.WebApi.DataAccess
 
                     db.CommitTransaction();
                 }
-                catch
+                catch(Exception ex)
                 {
                     db.RollbackTransaction();
-                    throw;
+                    Log.Error(ex.Message);
+                    throw new DataAccessException(this.Database, ex.Message, ex);
                 }
             }
         }
@@ -206,7 +235,16 @@ namespace Frapid.WebApi.DataAccess
             }
 
             const string sql = "UPDATE config.filters SET is_default=false WHERE object_name=@0;";
-            await Factory.NonQueryAsync(this.Database, sql, objectName).ConfigureAwait(false);
+
+            try
+            {
+                await Factory.NonQueryAsync(this.Database, sql, objectName).ConfigureAwait(false);
+            }
+            catch (DbException ex)
+            {
+                Log.Error(ex.Message);
+                throw new DataAccessException(this.Database, ex.Message, ex);
+            }
         }
     }
 }
