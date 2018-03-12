@@ -16,11 +16,12 @@ namespace Frapid.DataAccess.Errors.PostgreSQL
 
         public string Parse(DbException ex)
         {
-            if (!(ex is PostgresException inner))
+            var inner = ex as PostgresException;
+
+            if (inner == null)
             {
                 return ex.Message;
             }
-
 
             return this.ErrorMessage + Environment.NewLine + inner.Detail;
         }

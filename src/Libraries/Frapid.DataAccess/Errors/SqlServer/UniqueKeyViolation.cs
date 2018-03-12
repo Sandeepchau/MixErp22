@@ -16,11 +16,12 @@ namespace Frapid.DataAccess.Errors.SqlServer
 
         public string Parse(DbException ex)
         {
-            if (!(ex is SqlException inner))
+            var inner = ex as SqlException;
+
+            if (inner == null)
             {
                 return ex.Message;
             }
-
 
             return this.ErrorMessage + Environment.NewLine + inner.Message;
         }

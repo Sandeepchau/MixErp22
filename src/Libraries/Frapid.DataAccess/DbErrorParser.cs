@@ -14,7 +14,9 @@ namespace Frapid.DataAccess
     {
         public static string GetException(string database, string message, Exception exception)
         {
-            if (!(exception is DbException ex))
+            var ex = exception as DbException;
+
+            if (ex == null)
             {
                 return message;
             }          
@@ -55,7 +57,9 @@ namespace Frapid.DataAccess
 
         private static string GetPostgreSQLErrorCode(DbException ex)
         {
-            if (!(ex is PostgresException inner))
+            var inner = ex as PostgresException;
+
+            if (inner == null)
             {
                 return string.Empty;
             }
@@ -66,7 +70,9 @@ namespace Frapid.DataAccess
 
         private static string GetSqlServerErrorCode(DbException ex)
         {
-            if (!(ex is SqlException inner))
+            var inner = ex as SqlException;
+
+            if (inner == null)
             {
                 return string.Empty;
             }
