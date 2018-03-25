@@ -16,10 +16,10 @@ namespace Frapid.DataAccess
         {
             var ex = exception as DbException;
 
-            if (ex == null)
+            if(ex == null)
             {
                 return message;
-            }          
+            }
 
             string identifier = string.Empty;
             DatabaseType dbType;
@@ -59,9 +59,9 @@ namespace Frapid.DataAccess
         {
             var inner = ex as PostgresException;
 
-            if (inner == null)
+            if (ex == null)
             {
-                return string.Empty;
+                return ex.Message;
             }
 
             string identifier = inner.SqlState;
@@ -72,9 +72,9 @@ namespace Frapid.DataAccess
         {
             var inner = ex as SqlException;
 
-            if (inner == null)
+            if (ex == null)
             {
-                return string.Empty;
+                return ex.Message;
             }
 
             //SELECT * FROM sys.sysmessages

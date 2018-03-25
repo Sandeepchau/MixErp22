@@ -153,5 +153,11 @@
         });
     </script>
     <script src="/Areas/Frapid.Reports/scripts/reports.js"></script>
+    <script src="/Areas/Frapid.Reports/scripts/jquery.rowspanizer.min.js"></script>
+	<script>
+		setTimeout(function(){
+		  $("table[id^=GridView]").rowspanizer({vertical_align: 'middle'});
+		}, 5000);
+	</script>
 </body>
 </html>

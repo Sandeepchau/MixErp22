@@ -18,10 +18,11 @@ namespace Frapid.DataAccess.Errors.SqlServer
         {
             var inner = ex as SqlException;
 
-            if (inner == null)
+            if (ex == null)
             {
                 return ex.Message;
             }
+
 
             return this.ErrorMessage + Environment.NewLine + inner.Message;
         }
