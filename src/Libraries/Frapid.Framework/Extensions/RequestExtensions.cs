@@ -130,6 +130,14 @@ namespace Frapid.Framework.Extensions
         //ASP.net MVC
         public static string GetClientToken(this HttpRequestBase request)
         {
+            var authHead = request.Headers["Authorization"];
+            var token = authHead?.ToString().Replace("Bearer ", "") ?? string.Empty;
+
+            if (!string.IsNullOrWhiteSpace(token))
+            {
+                return token;
+            }
+
             if (!request.Cookies.AllKeys.Contains("access_token"))
             {
                 return string.Empty;

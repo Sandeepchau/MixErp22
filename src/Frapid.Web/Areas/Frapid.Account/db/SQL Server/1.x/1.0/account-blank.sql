@@ -381,7 +381,8 @@ BEGIN
         WHERE user_id = @user_id;
 
         UPDATE account.reset_requests
-        SET confirmed = 1, confirmed_on = getutcdate();
+        SET confirmed = 1, confirmed_on = getutcdate()
+        WHERE user_id = @user_id;
 
         IF(@tran_count = 0)
         BEGIN

@@ -366,7 +366,8 @@ BEGIN
     WHERE user_id = _user_id;
 
     UPDATE account.reset_requests
-    SET confirmed = true, confirmed_on = NOW();
+    SET confirmed = true, confirmed_on = NOW()
+    WHERE user_id = _user_id;
 END
 $$
 LANGUAGE plpgsql;

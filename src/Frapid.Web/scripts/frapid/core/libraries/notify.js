@@ -63,7 +63,7 @@ function displayNotification(message, type, alwaysDisplay){
 		spacing: 20, //number px
 		theme: "default", //default | dark-theme
 		autoHide: !alwaysDisplay, //true | false
-		delay: 3000, //number ms
+		delay: 10000, //number ms
 		onShow: null, //function
 		onClick: null, //function
 		onHide: null, //function

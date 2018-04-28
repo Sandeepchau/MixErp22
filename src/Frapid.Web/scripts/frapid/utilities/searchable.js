@@ -89,25 +89,35 @@
 		template.modal('setting', 'transition', 'scale').modal("show");
 	};
 
+
+
 	$("select").keyup(function (e) {
+		function bindEvents(el){
+			var id = el.attr("id");
+
+			if (!id) {
+				id = "Select" + (3000 + Math.floor(Math.random() * 600000));
+				el.attr("id", id);
+			};
+
+			const label = el.parent().find("label").text();
+
+			displaySearchableModal(el, id, label);
+		};
+
 		e = e || window.event;
 		const keyCode = e.keyCode || e.which;
 		const arrow = { left: 37, up: 38, right: 39, down: 40 };
+		const el = $(this);
 
 		if (e.ctrlKey) {
 			if (keyCode === arrow.up || keyCode === arrow.right) {
-				const el = $(this);
-				var id = el.attr("id");
-
-				if (!id) {
-					id = "Select" + (3000 + Math.floor(Math.random() * 600000));
-					el.attr("id", id);
-				};
-
-				const label = el.parent().find("label").text();
-
-				displaySearchableModal(el, id, label);
+				bindEvents(el);
 			};
 		};
+
+		if(e.which === 68 && e.ctrlKey && e.shiftKey ){
+			bindEvents(el);
+	    };
 	});
 };
