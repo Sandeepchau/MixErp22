@@ -289,7 +289,7 @@
         $(definition.style).appendTo("head");
 
         var popunder = $('.ui.bikram.sambat.date.popunder');
-        popunder.find("input.year, input.day, select.month").off("change").on("change", function () {
+        popunder.find("input.year, input.day, select.month").on("change", function () {
             bsDateEventTrigger(this);
         });
 
@@ -449,7 +449,7 @@
 
         const input = container.find("input.date.hasDatepicker");
 
-        input.off("keyup blur").on("keyup blur", function () {
+        input.on("keyup blur", function () {
             displayBsDate(container);
         });
 
