@@ -38,7 +38,7 @@ namespace Frapid.Installer.Tenant
 
             if(Directory.Exists(pathToTenant))
             {
-                Directory.Delete(pathToTenant, true);
+                FileHelper.DeleteDirectoryRecursively(pathToTenant);
             }
         }
 

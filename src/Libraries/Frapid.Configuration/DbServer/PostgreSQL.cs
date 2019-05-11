@@ -72,6 +72,7 @@ namespace Frapid.Configuration.DbServer
             int port = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Port").To<int>();
             int minPoolSize = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MinPoolSize").To<int>();
             int maxPoolSize = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MaxPoolSize").To<int>();
+            int timeout = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Timeout").To<int>(60*5);//5 minutes default timeout
 
             var builder = new NpgsqlConnectionStringBuilder
             {
@@ -81,7 +82,9 @@ namespace Frapid.Configuration.DbServer
                 Pooling = enablePooling,
                 MinPoolSize = minPoolSize,
                 MaxPoolSize = maxPoolSize,
-                ApplicationName = "Frapid"
+                ApplicationName = "Frapid",
+                CommandTimeout = timeout,
+                InternalCommandTimeout = timeout
             };
 
             if (trusted)

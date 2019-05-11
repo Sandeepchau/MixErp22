@@ -1,7 +1,9 @@
 using System;
 using System.Runtime.Caching;
-using Mapster;
+//using Mapster;
 using System.Linq;
+using Serilog;
+using Newtonsoft.Json;
 
 namespace Frapid.ApplicationState.CacheFactory
 {
@@ -71,9 +73,24 @@ namespace Frapid.ApplicationState.CacheFactory
                 return null;
             }
 
-            var item = this.Cache.Get(key);
+            try
+            {
+                var item = this.Cache.Get(key);
 
-            return item?.Adapt<T>();
+                if (item == null)
+                {
+                    return null;
+                }
+
+                return JsonConvert.DeserializeObject<T>(JsonConvert.SerializeObject(item));
+                //return item.Adapt<T>();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.Message);
+            }
+
+            return null;
         }
     }
 }

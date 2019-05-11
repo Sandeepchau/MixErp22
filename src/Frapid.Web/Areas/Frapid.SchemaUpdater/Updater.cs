@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Frapid.Configuration;
 using Frapid.Configuration.Models;
 using Frapid.SchemaUpdater.Tasks;
+using System;
 
 namespace Frapid.SchemaUpdater
 {
@@ -10,6 +11,16 @@ namespace Frapid.SchemaUpdater
         private static UpdateBase GetUpdater(string tenant, Installable app)
         {
             var site = TenantConvention.GetSite(tenant);
+            
+            if(site == null)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Not an approved domain.");
+                Console.ForegroundColor = ConsoleColor.White;
+
+                return null;
+            }
+
             string providerName = site.DbProvider;
 
             switch (providerName)
@@ -26,7 +37,12 @@ namespace Frapid.SchemaUpdater
         public static async Task<string> UpdateAsync(string tenant, Installable app)
         {
             var updater = GetUpdater(tenant, app);
-            return await updater.UpdateAsync().ConfigureAwait(false);
+            if(updater != null)
+            {
+                return await updater.UpdateAsync().ConfigureAwait(false);
+            }
+            
+            return $"Could not install updates for {app.ApplicationName} due to errors.";
         }
     }
 }

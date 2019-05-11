@@ -1,9 +1,35 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Frapid.Framework
 {
     public static class FileHelper
     {
+        /// <summary>
+        /// Depth-first recursive delete, with handling for descendant 
+        /// directories open in Windows Explorer.
+        /// </summary>
+        public static void DeleteDirectoryRecursively(string path)
+        {
+            foreach (string directory in Directory.GetDirectories(path))
+            {
+                DeleteDirectoryRecursively(directory);
+            }
+
+            try
+            {
+                Directory.Delete(path, true);
+            }
+            catch (IOException)
+            {
+                Directory.Delete(path, true);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                Directory.Delete(path, true);
+            }
+        }
+
         public static void CopyFilesRecursively(string source, string target, bool createTarget)
         {
             if (!Directory.Exists(source)) return;

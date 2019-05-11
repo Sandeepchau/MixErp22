@@ -11,6 +11,11 @@ namespace Frapid.DbPolicy
 {
     public class PolicyValidator : IPolicy
     {
+        class PolicyAcces
+        {
+            public bool HasAccess { get; set; }
+        }
+
         public AccessTypeEnum AccessType { get; set; }
         public string ObjectNamespace { get; set; }
         public string ObjectName { get; set; }
@@ -23,7 +28,7 @@ namespace Frapid.DbPolicy
             string key = $"access_policy_{this.Tenant}_{this.ObjectNamespace}_{this.ObjectName}_{this.LoginId}";
 
             var factory = new DefaultCacheFactory();
-            var policy = factory.Get<dynamic>(key);
+            var policy = factory.Get<PolicyAcces>(key);
 
             if (policy != null)
             {

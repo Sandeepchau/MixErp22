@@ -69,9 +69,6 @@ namespace Frapid.Installer.DAL
 
             string sql = File.ReadAllText(fromFile, Encoding.UTF8);
 
-
-            InstallerLog.Verbose($"Running file {fromFile}");
-
             string connectionString = FrapidDbServer.GetSuperUserConnectionString(tenant, database);
 
             using(var connection = new SqlConnection(connectionString))
@@ -119,14 +116,23 @@ namespace Frapid.Installer.DAL
             {
                 using(var command = new SqlCommand(sql, connection))
                 {
-                    connection.Open();
 
-                    var message = await command.ExecuteScalarAsync().ConfigureAwait(false);
-
-                    if (message != null)
+                    try
                     {
-                        InstallerLog.Information($"Could not completely clean database \"{tenant}\" due to dependency issues. Trying again.");
-                        await CleanupDbAsync(tenant, database).ConfigureAwait(false);
+                        connection.Open();
+                        var message = await command.ExecuteScalarAsync().ConfigureAwait(false);
+
+                        if (message != null)
+                        {
+                            InstallerLog.Information($"Could not completely clean database \"{tenant}\" due to dependency issues. Trying again.");
+                            await CleanupDbAsync(tenant, database).ConfigureAwait(false);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine(ex.Message);
+                        Console.ForegroundColor = ConsoleColor.White;
                     }
                 }
             }
@@ -134,7 +140,7 @@ namespace Frapid.Installer.DAL
 
         private async Task RunScriptAsync(SqlConnection connection, string sql)
         {
-            if(connection.State == ConnectionState.Closed)
+            if (connection.State == ConnectionState.Closed)
             {
                 await connection.OpenAsync().ConfigureAwait(false);
             }
@@ -147,6 +153,7 @@ namespace Frapid.Installer.DAL
                     {
                         try
                         {
+                            command.CommandTimeout = connection.ConnectionTimeout;
                             await command.ExecuteNonQueryAsync().ConfigureAwait(false);
                         }
                         catch(Exception ex)

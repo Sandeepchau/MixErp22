@@ -73,6 +73,7 @@ namespace Frapid.Configuration.DbServer
             int minPoolSize = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MinPoolSize").To<int>();
             int maxPoolSize = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MaxPoolSize").To<int>();
             string networkLibrary = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "NetworkLibrary");
+            int timeout = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Timeout").To<int>(60*5);//5 minutes
 
             string dataSource = host;
 
@@ -89,7 +90,8 @@ namespace Frapid.Configuration.DbServer
                 MinPoolSize = minPoolSize,
                 MaxPoolSize = maxPoolSize,
                 ApplicationName = "Frapid",
-                NetworkLibrary = networkLibrary
+                NetworkLibrary = networkLibrary,
+                ConnectTimeout = timeout
             };
 
             if (trusted)
