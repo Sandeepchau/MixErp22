@@ -61,6 +61,7 @@ namespace Frapid.Configuration.TenantServices
 
         private string ConvertToTenantName(string domain)
         {
+            domain = domain.Split(':').FirstOrDefault() ?? domain;
             return domain.Replace(".", "_");
         }
     }

@@ -32,6 +32,7 @@ namespace Frapid.Configuration.TenantServices
             }
 
             url = url.Split('/').FirstOrDefault() ?? url;
+            url = url.Split(':').FirstOrDefault() ?? url;
 
             return url;
         }
