@@ -11,19 +11,29 @@ namespace Frapid.Web.Application
     {
         private static string GetLogDirectory()
         {
+            string fallbackPath = PathMapper.MapPath("~/Resource/Temp");
             string path = ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "ApplicationLogDirectory");
 
             if (string.IsNullOrWhiteSpace(path))
             {
-                return PathMapper.MapPath("~/Resource/Temp");
+                return fallbackPath;
             }
 
-            if (!Directory.Exists(path))
+            try
             {
-                Directory.CreateDirectory(path);
-            }
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
 
-            return path;
+                return path;
+            }
+            catch
+            {
+                //It is counterproductive to log errors
+                //when you know that you don't have access to the log directory
+                return fallbackPath;
+            }
         }
 
         private static string GetLogFileName()

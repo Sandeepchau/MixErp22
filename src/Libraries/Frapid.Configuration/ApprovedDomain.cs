@@ -6,6 +6,8 @@ namespace Frapid.Configuration
     {
         public string DbProvider { get; set; }
         public string DomainName { get; set; }
+
+        public string DatabaseName { get; set; }
         public string BackupDirectory { get; set; }
         public bool BackupDirectoryIsFixedPath { get; set; }
         public bool EnforceSsl { get; set; }

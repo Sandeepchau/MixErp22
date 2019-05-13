@@ -33,6 +33,12 @@ namespace Frapid.Configuration.TenantServices
 
             if (tenant != null)
             {
+                if (!string.IsNullOrWhiteSpace(tenant.DatabaseName))
+                {
+                    Log.Verbose($"Database name override ${tenant.DatabaseName} found for domain \"{domain}\". Tenant domain: \"{tenant.DomainName}\".");
+                    return tenant.DatabaseName;
+                }
+
                 Log.Verbose($"Tenant found for domain \"{domain}\". Tenant domain: \"{tenant.DomainName}\".");
                 return this.ConvertToTenantName(tenant.DomainName);
             }
