@@ -1,4 +1,4 @@
-﻿using Frapid.Framework.Extensions;
+﻿using Frapid.Configuration.Extensions;
 
 namespace Frapid.Reports.DTO
 {
