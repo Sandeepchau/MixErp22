@@ -1,5 +1,6 @@
 ﻿using System;
 using Frapid.Configuration;
+using Frapid.Configuration.Models;
 using Frapid.Framework.Extensions;
 using Frapid.Web.Jobs;
 using Quartz;
@@ -11,11 +12,18 @@ namespace Frapid.Web.Application
     {
         public static void Register()
         {
+            var parameter = Parameter.Get();
+
+            if (string.IsNullOrWhiteSpace(parameter.EodScheduleUTC))
+            {
+                return;
+            }
+
             var factory = new StdSchedulerFactory();
             var scheduler = factory.GetScheduler();
             scheduler.Start();
 
-            string backupScheduleUtc = ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "EodScheduleUTC");
+            string backupScheduleUtc = parameter.EodScheduleUTC;
             var scheduleData = backupScheduleUtc.Split(',');
 
             int hour = 0;

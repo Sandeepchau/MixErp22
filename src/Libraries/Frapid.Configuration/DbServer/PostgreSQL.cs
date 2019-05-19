@@ -1,100 +1,64 @@
 ﻿using Frapid.Configuration.Db;
-using Frapid.Framework.Extensions;
+using Frapid.Configuration.DTO;
+using Frapid.Mapper.Extensions;
 using Npgsql;
 
 namespace Frapid.Configuration.DbServer
 {
     public class PostgreSQL : IDbServer
     {
-        public PostgreSQL()
-        {
-            this.ConfigFile = PathMapper.MapPath("/Resources/Configs/PostgreSQL.config");
-        }
-
-        public string ConfigFile { get; set; }
-
 
         public string GetConnectionString(string tenant, string database = "", string userId = "", string password = "")
         {
-            string host = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Server");
-
-            if (string.IsNullOrWhiteSpace(database))
-            {
-                database = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Database");
-            }
+            var config = PostgreSQLConfig.Get();
 
             if (string.IsNullOrWhiteSpace(userId))
             {
-                userId = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "UserId");
+                userId = config.UserId;
             }
 
             if (string.IsNullOrWhiteSpace(password))
             {
-                password = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Password");
+                password = config.Password;
             }
 
-            bool enablePooling = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "EnablePooling").ToUpperInvariant().Equals("TRUE");
-            int port = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Port").To<int>();
-            int minPoolSize = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MinPoolSize").To<int>();
-            int maxPoolSize = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MaxPoolSize").To<int>();
 
-            return this.GetConnectionString(tenant, host, database, userId, password, port, enablePooling, minPoolSize, maxPoolSize);
+            return this.GetConnectionString(tenant, config.Server, database, userId, password, config.Port ?? 5432, config.EnablePooling ?? true, config.MinPoolSize ?? 1, config.MaxPoolSize ?? 100);
         }
 
         public string GetReportUserConnectionString(string tenant, string database = "")
         {
-            if (string.IsNullOrWhiteSpace(database))
-            {
-                database = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Database");
-            }
-
-            string userId = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "ReportUserId");
-            string password = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "ReportUserPassword");
-
-            return this.GetConnectionString(tenant, database, userId, password);
+            var config = PostgreSQLConfig.Get();
+            return this.GetConnectionString(tenant, database, config.ReportUserId, config.ReportUserPassword);
         }
 
         public string ProviderName => "Npgsql";
 
         public string GetSuperUserConnectionString(string tenant, string database = "")
         {
-            if (string.IsNullOrWhiteSpace(database))
-            {
-                database = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Database");
-            }
-
-            string host = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Server");
-            string userId = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "SuperUserId");
-            string password = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "SuperUserPassword");
-
-            bool trusted = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "TrustedSuperUserConnection").ToUpperInvariant().Equals("TRUE");
-            bool enablePooling = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "EnablePooling").ToUpperInvariant().Equals("TRUE");
-            int port = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Port").To<int>();
-            int minPoolSize = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MinPoolSize").To<int>();
-            int maxPoolSize = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MaxPoolSize").To<int>();
-            int timeout = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "Timeout").To<int>(60*5);//5 minutes default timeout
+            var config = PostgreSQLConfig.Get();
 
             var builder = new NpgsqlConnectionStringBuilder
             {
-                Host = host,
-                Port = port,
+                Host = config.Server,
+                Port = config.Port ?? 5432,
                 Database = database,
-                Pooling = enablePooling,
-                MinPoolSize = minPoolSize,
-                MaxPoolSize = maxPoolSize,
+                Pooling = config.EnablePooling ?? true,
+                MinPoolSize = config.MinPoolSize ?? 1,
+                MaxPoolSize = config.MaxPoolSize ?? 100,
                 ApplicationName = "Frapid",
-                CommandTimeout = timeout,
-                InternalCommandTimeout = timeout
+                CommandTimeout = config.Timeout ?? 120,
+                InternalCommandTimeout = config.Timeout ?? 120
             };
 
-            if (trusted)
+            if (config.TrustedSuperUserConnection.To(false))
             {
                 builder.IntegratedSecurity = true;
             }
             else
             {
-                builder.Username = userId;
-                builder.Password = password;
+                builder.Username = config.SuperUserId;
+                builder.Password = config.SuperUserPassword;
             }
 
             return builder.ConnectionString;
@@ -102,8 +66,8 @@ namespace Frapid.Configuration.DbServer
 
         public string GetMetaConnectionString(string tenant)
         {
-            string database = ConfigurationManager.ReadConfigurationValue(this.ConfigFile, "MetaDatabase");
-            return this.GetConnectionString(tenant, database);
+            var config = PostgreSQLConfig.Get();
+            return this.GetConnectionString(tenant, config.MetaDatabase);
         }
 
         public string GetConnectionString(string tenant, string host, string database, string username, string password, int port, bool enablePooling = true, int minPoolSize = 0, int maxPoolSize = 100, string networkLibrary = "")

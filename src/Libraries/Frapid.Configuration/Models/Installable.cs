@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Frapid.Mapper.Database;
 using Newtonsoft.Json;
 
 namespace Frapid.Configuration.Models

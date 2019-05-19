@@ -1,10 +1,14 @@
-﻿namespace Frapid.Configuration
+﻿using Frapid.Configuration.Models;
+using Frapid.Framework.Extensions;
+
+namespace Frapid.Configuration
 {
     public static class CacheConfig
     {
         public static string GetDefaultCacheType()
         {
-            return ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "DefaultCacheType");
+            var parameter = Parameter.Get();
+            return parameter.DefaultCacheType.Or("InProc");
         }
     }
 }

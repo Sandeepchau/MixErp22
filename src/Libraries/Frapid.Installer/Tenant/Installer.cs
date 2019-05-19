@@ -10,6 +10,7 @@ namespace Frapid.Installer.Tenant
     public sealed class Installer
     {
         public static List<Installable> InstalledApps;
+        public event EventHandler<string> Notification;
 
         public Installer(string url, bool withoutSample)
         {
@@ -26,25 +27,60 @@ namespace Frapid.Installer.Tenant
 
             string tenant = TenantConvention.GetTenant(this.Url);
 
-            InstallerLog.Verbose($"Creating database {tenant}.");
+            this.Notify($"Creating database {tenant}.");
             var db = new DbInstaller(tenant);
+
+            db.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
             await db.InstallAsync().ConfigureAwait(false);
 
-            InstallerLog.Verbose("Getting installables.");
+            this.Notify("Getting installables.");
             var installables = Installables.GetInstallables(tenant);
 
             foreach (var installable in installables)
             {
                 try
                 {
-                    await new AppInstaller(tenant, tenant, this.WithoutSample, installable).InstallAsync().ConfigureAwait(false);
+                    var installer = new AppInstaller(tenant, tenant, this.WithoutSample, installable);
+
+                    installer.Notification += delegate(object sender, string message)
+                    {
+                        this.Notify(sender, message);
+                    };
+
+                    await installer.InstallAsync().ConfigureAwait(false);
                 }
                 catch (Exception ex)
                 {
-                    InstallerLog.Error(ex.Message);
-                    InstallerLog.Error($"Could not install module {installable.ApplicationName}.");
+                    this.Notify("Error: " + ex.Message);
+                    this.Notify($"Error: Could not install module {installable.ApplicationName}.");
                 }
             }
+
+            this.Notify("OK");
+        }
+
+        private void Notify(string message)
+        {
+            this.Notify(this, message);
+        }
+
+        private void Notify(object sender, string message)
+        {
+            if(message.StartsWith("Error"))
+            {
+                InstallerLog.Error(message);
+            }
+            else
+            {
+                InstallerLog.Verbose(message);
+            }
+
+            var notificationReceived = this.Notification;
+            notificationReceived?.Invoke(sender, message);
         }
     }
 }

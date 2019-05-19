@@ -48,7 +48,8 @@ namespace Frapid.Reports.HtmlConverters
 
         private void ToPdf(string source, string destination)
         {
-            string executablePath = ConfigurationManager.GetConfigurationValue("ReportConfigFileLocation", "WkhtmltopdfExecutablePath");
+            var config = DTO.Config.Get();
+            string executablePath = config.WkhtmltopdfExecutablePath;
 
             if (string.IsNullOrWhiteSpace(executablePath) || !File.Exists(executablePath))
             {

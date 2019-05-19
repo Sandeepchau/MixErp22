@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Frapid.Configuration;
+using Frapid.Configuration.Models;
 
 namespace Frapid.Dashboard.Helpers
 {
@@ -9,7 +9,8 @@ namespace Frapid.Dashboard.Helpers
     {
         public static List<Language> GetSupportedLanguages()
         {
-            var cultures = ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "Cultures").Split(',');
+            var parameter = Parameter.Get();
+            var cultures = parameter.Cultures.Split(',');
 
             var languages = (from culture in cultures
                 select culture.Trim()

@@ -7,8 +7,10 @@ using Frapid.Installer.Helpers;
 
 namespace Frapid.Installer.DAL
 {
-    public static class Store
+    public class Store
     {
+        public event EventHandler<string> Notification;
+
         private static IStore GetDbServer(string tenant)
         {
             var site = TenantConvention.GetSite(tenant);
@@ -33,29 +35,70 @@ namespace Frapid.Installer.DAL
             return new PostgreSQL();
         }
 
-        public static async Task CreateDbAsync(string tenant)
+        public async Task CreateDbAsync(string tenant)
         {
-            await GetDbServer(tenant).CreateDbAsync(tenant).ConfigureAwait(false);
+            var db = GetDbServer(tenant);
+
+            db.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            await db.CreateDbAsync(tenant).ConfigureAwait(false);
         }
 
-        public static async Task<bool> HasDbAsync(string tenant, string dbName)
+        public async Task<bool> HasDbAsync(string tenant, string dbName)
         {
-            return await GetDbServer(tenant).HasDbAsync(tenant, dbName).ConfigureAwait(false);
+            var db = GetDbServer(tenant);
+
+            db.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            return await db.HasDbAsync(tenant, dbName).ConfigureAwait(false);
         }
 
-        public static async Task<bool> HasSchemaAsync(string tenant, string database, string schema)
+        public async Task<bool> HasSchemaAsync(string tenant, string database, string schema)
         {
-            return await GetDbServer(tenant).HasSchemaAsync(tenant, database, schema).ConfigureAwait(false);
+            var db = GetDbServer(tenant);
+
+            db.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            return await db.HasSchemaAsync(tenant, database, schema).ConfigureAwait(false);
         }
 
-        public static async Task RunSqlAsync(string tenant, string database, string fromFile)
+        public async Task RunSqlAsync(string tenant, string database, string fromFile)
         {
-            await GetDbServer(tenant).RunSqlAsync(tenant, database, fromFile).ConfigureAwait(false);
+            var db = GetDbServer(tenant);
+
+            db.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            await db.RunSqlAsync(tenant, database, fromFile).ConfigureAwait(false);
         }
 
-        public static async Task CleanupDbAsync(string tenant, string database)
+        public async Task CleanupDbAsync(string tenant, string database)
         {
-            await GetDbServer(tenant).CleanupDbAsync(tenant, database).ConfigureAwait(false);
+            var db = GetDbServer(tenant);
+
+            db.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            await db.CleanupDbAsync(tenant, database).ConfigureAwait(false);
+        }
+
+        public void Notify(object sender, string message)
+        {
+            var notificationReceived = this.Notification;
+            notificationReceived?.Invoke(sender, message);
         }
     }
 }

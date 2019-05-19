@@ -4,8 +4,7 @@ using System.Web.UI;
 using Frapid.Areas;
 using Frapid.Areas.Caching;
 using Frapid.AssetBundling;
-using Frapid.Configuration;
-using Frapid.Framework.Extensions;
+using Frapid.Configuration.Models;
 using Frapid.Framework.StaticContent;
 using Serilog;
 
@@ -16,8 +15,8 @@ namespace Frapid.Web.Controllers
     {
         private bool IsDevelopment()
         {
-            string value = ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "IsDevelopment");
-            return value.Or("").ToUpperInvariant().StartsWith("T");
+            var parameter = Parameter.Get();
+            return parameter.IsDevelopment ?? false;
         }
 
 

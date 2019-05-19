@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Frapid.Configuration;
+using Frapid.Configuration.Models;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -12,7 +13,8 @@ namespace Frapid.Web.Application
         private static string GetLogDirectory()
         {
             string fallbackPath = PathMapper.MapPath("~/Resource/Temp");
-            string path = ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "ApplicationLogDirectory");
+            var parameter = Parameter.Get();
+            string path = parameter.ApplicationLogDirectory;
 
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -45,7 +47,8 @@ namespace Frapid.Web.Application
 
         private static LoggerConfiguration GetConfiguration()
         {
-            string minimumLogLevel = ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "MinimumLogLevel");
+            var parameter = Parameter.Get();
+            string minimumLogLevel = parameter.MinimumLogLevel;
 
             var levelSwitch = new LoggingLevelSwitch();
 

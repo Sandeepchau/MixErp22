@@ -1,6 +1,6 @@
 ﻿using System;
 using Frapid.Backups;
-using Frapid.Configuration;
+using Frapid.Configuration.Models;
 using Frapid.Framework.Extensions;
 using Quartz;
 using Quartz.Impl;
@@ -11,12 +11,19 @@ namespace Frapid.Web.Application
     {
         public static void Register()
         {
+            var parameter = Parameter.Get();
+
+            if (string.IsNullOrWhiteSpace(parameter.BackupScheduleUTC))
+            {
+                return;
+            }
+
             var factory = new StdSchedulerFactory();
             var scheduler = factory.GetScheduler();
             scheduler.Start();
 
             var job = JobBuilder.Create<BackupJob>().WithIdentity("Backup", "PerformBackup").Build();
-            string backupScheduleUtc = ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "BackupScheduleUTC");
+            string backupScheduleUtc = parameter.BackupScheduleUTC;
             var scheduleData = backupScheduleUtc.Split(',');
 
             int hour = 0;

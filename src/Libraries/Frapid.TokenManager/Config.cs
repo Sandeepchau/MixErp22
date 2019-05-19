@@ -16,7 +16,12 @@ namespace Frapid.TokenManager
             if (string.IsNullOrWhiteSpace(path) ||
                 !File.Exists(path))
             {
-                return new JObject();
+                return JsonConvert.DeserializeObject<JObject>(@"{
+                                        'PrivateKey': 'Frapid',
+                                        'HashAlgorithm': 'HS512',
+                                        'TokenIssuerName': 'Frapid',
+                                        'TokenValidHours': 24
+                                    }");
             }
 
             string contents = File.ReadAllText(path, Encoding.UTF8);

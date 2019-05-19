@@ -225,15 +225,13 @@ namespace Frapid.Areas.Caching
                 }
 
                 // We have a cached version on the server side
-                if (cachedItem != null)
+                if (cachedItem != null && cachedItem.Content != null)
                 {
                     // We inject the previous result into the MVC pipeline
                     // The MVC action won't execute as we injected the previous cached result.
                     filterContext.Result = new ContentResult
                     {
-                        Content =
-                            this.DonutHoleFiller.ReplaceDonutHoleContent(cachedItem.Content, filterContext,
-                                this.CacheSettings.Options),
+                        Content = this.DonutHoleFiller.ReplaceDonutHoleContent(cachedItem.Content, filterContext, this.CacheSettings.Options),
                         ContentType = cachedItem.ContentType
                     };
                 }

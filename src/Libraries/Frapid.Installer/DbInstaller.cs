@@ -1,14 +1,16 @@
-﻿using System.Threading.Tasks;
-using Frapid.Configuration;
+﻿using System;
+using System.Threading.Tasks;
 using Frapid.Configuration.Db;
+using Frapid.Configuration.Models;
 using Frapid.Framework.Extensions;
 using Frapid.Installer.DAL;
-using Frapid.Installer.Helpers;
 
 namespace Frapid.Installer
 {
     public sealed class DbInstaller
     {
+        public event EventHandler<string> Notification;
+
         public DbInstaller(string domain)
         {
             this.Tenant = domain;
@@ -18,9 +20,8 @@ namespace Frapid.Installer
 
         private static bool IsDevelopment()
         {
-            string path = PathMapper.MapPath("~/Resources/Configs/Parameters.config");
-            string value = ConfigurationManager.ReadConfigurationValue(path, "IsDevelopment");
-            return value.Or("").ToUpperInvariant().StartsWith("T");
+            var parameters = Parameter.Get();
+            return parameters.IsDevelopment.To(false);
         }
 
 
@@ -35,25 +36,24 @@ namespace Frapid.Installer
             {
                 if (IsDevelopment())
                 {
-                    InstallerLog.Verbose("Cleaning up the database.");
+                    this.Notify(this, "Cleaning up the database.");
                     await this.CleanUpDbAsync().ConfigureAwait(true);
                 }
                 else
                 {
-                    InstallerLog.Information("Warning: database already exists. Please remove the database first.");
-                    InstallerLog.Verbose($"No need to create database \"{this.Tenant}\" because it already exists.");
+                    this.Notify(this, "Warning: database already exists. Please remove the database first.");
+                    this.Notify(this, $"No need to create database \"{this.Tenant}\" because it already exists.");
                 }
             }
 
             if (!isWellKnown)
             {
-                InstallerLog.Verbose(
-                    $"Cannot create a database under the name \"{this.Tenant}\" because the name is not a well-known tenant name.");
+                this.Notify(this, $"Cannot create a database under the name \"{this.Tenant}\" because the name is not a well-known tenant name.");
             }
 
             if (!hasDb && isWellKnown)
             {
-                InstallerLog.Information($"Creating database \"{this.Tenant}\".");
+                this.Notify(this, $"Creating database \"{this.Tenant}\".");
                 await this.CreateDbAsync().ConfigureAwait(false);
                 return true;
             }
@@ -63,12 +63,30 @@ namespace Frapid.Installer
 
         private async Task CreateDbAsync()
         {
-            await Store.CreateDbAsync(this.Tenant).ConfigureAwait(false);
+            var store = new Store();
+            store.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            await store.CreateDbAsync(this.Tenant).ConfigureAwait(false);
         }
 
         private async Task CleanUpDbAsync()
         {
-            await Store.CleanupDbAsync(this.Tenant, this.Tenant).ConfigureAwait(false);
+            var store = new Store();
+            store.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            await store.CleanupDbAsync(this.Tenant, this.Tenant).ConfigureAwait(false);
+        }
+
+        private void Notify(object sender, string message)
+        {
+            var notificationReceived = this.Notification;
+            notificationReceived?.Invoke(sender, message);
         }
     }
 }

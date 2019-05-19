@@ -29,8 +29,6 @@ namespace Frapid.SchemaUpdater.Hubs
 
         private bool IsValidRequest()
         {
-            Thread.Sleep(2000);
-
             if (this.Context == null)
             {
                 this.Clients.Caller.getNotification("Access is denied.");

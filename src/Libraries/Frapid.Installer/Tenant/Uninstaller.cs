@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Frapid.Configuration;
@@ -9,6 +10,8 @@ namespace Frapid.Installer.Tenant
 {
     public class Uninstaller
     {
+        public event EventHandler<string> Notification;
+
         public Uninstaller(string url)
         {
             this.Url = url;
@@ -22,7 +25,7 @@ namespace Frapid.Installer.Tenant
         {
             var context = FrapidHttpContext.GetCurrent();
 
-            if(context != null)
+            if (context != null)
             {
                 throw new UninstallException(Resources.DeletingWebsiteIsNotAllowed);
             }
@@ -36,7 +39,7 @@ namespace Frapid.Installer.Tenant
         {
             string pathToTenant = PathMapper.MapPath($"/Tenants/{this.Tenant}");
 
-            if(Directory.Exists(pathToTenant))
+            if (Directory.Exists(pathToTenant))
             {
                 FileHelper.DeleteDirectoryRecursively(pathToTenant);
             }
@@ -44,7 +47,18 @@ namespace Frapid.Installer.Tenant
 
         private async Task CleanupDbAsync()
         {
-            await Store.CleanupDbAsync(this.Tenant, this.Tenant).ConfigureAwait(false);
+            var store = new Store();
+            store.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            await store.CleanupDbAsync(this.Tenant, this.Tenant).ConfigureAwait(false);
+        }
+        public void Notify(object sender, string message)
+        {
+            var notificationReceived = this.Notification;
+            notificationReceived?.Invoke(sender, message);
         }
     }
 }

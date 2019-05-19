@@ -40,10 +40,10 @@ namespace Frapid.Configuration.TenantServices
                 }
 
                 Log.Verbose($"Tenant found for domain \"{domain}\". Tenant domain: \"{tenant.DomainName}\".");
-                return this.ConvertToTenantName(tenant.DomainName);
+                return ConvertToTenantName(tenant.DomainName);
             }
 
-            return this.ConvertToTenantName(domain);
+            return ConvertToTenantName(domain);
         }
 
         public string GetDomainName(string tenant)
@@ -65,7 +65,7 @@ namespace Frapid.Configuration.TenantServices
             return string.Empty;
         }
 
-        private string ConvertToTenantName(string domain)
+        public static string ConvertToTenantName(string domain)
         {
             domain = domain.Split(':').FirstOrDefault() ?? domain;
             return domain.Replace(".", "_");

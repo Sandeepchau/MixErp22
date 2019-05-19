@@ -1,6 +1,5 @@
-﻿using Frapid.Configuration;
-using Frapid.Configuration.Db;
-using Frapid.Framework.Extensions;
+﻿using Frapid.Configuration.Db;
+using Frapid.Configuration.DTO;
 
 namespace Frapid.Backups
 {
@@ -9,13 +8,34 @@ namespace Frapid.Backups
         public DbServer(string tenant)
         {
             this.Tenant = tenant;
-            this.ProviderName = this.GetConfig("ProviderName");
-            this.BinDirectory = this.GetConfig("PostgreSQLBinDirectory");
-            this.DatabaseBackupDirectory = this.GetConfig("DatabaseBackupDirectory");
-            this.HostName = this.GetConfig("Server");
-            this.PortNumber = this.GetConfig("Port").To<int>();
-            this.UserId = this.GetConfig("UserId");
-            this.Password = this.GetConfig("Password");
+
+            string provider = DbProvider.GetProviderName(tenant);
+
+            if (provider.ToUpperInvariant().Equals("NPGSQL"))
+            {
+                var config = PostgreSQLConfig.Get();
+
+                this.ProviderName = provider;
+                this.BinDirectory = config.PostgreSQLBinDirectory;
+                this.DatabaseBackupDirectory = config.DatabaseBackupDirectory;
+                this.HostName = config.Server;
+                this.PortNumber = config.Port ?? 5432;
+                this.UserId = config.UserId;
+                this.Password = config.Password;
+            }
+
+            if (provider.ToUpperInvariant().Equals("SYSTEM.DATA.SQLCLIENT"))
+            {
+                var config = SqlServerConfig.Get();
+
+                this.ProviderName = provider;
+                this.DatabaseBackupDirectory = config.DatabaseBackupDirectory;
+                this.HostName = config.Server;
+                this.PortNumber = config.Port ?? 0;
+                this.UserId = config.UserId;
+                this.Password = config.Password;
+            }
+
 
             this.Validate();
         }
@@ -29,14 +49,6 @@ namespace Frapid.Backups
         public string Password { get; set; }
         public int PortNumber { get; set; }
         public string UserId { get; set; }
-
-        private string GetConfig(string key)
-        {
-            string path = DbProvider.GetDbConfigurationFilePath(this.Tenant);
-            path = PathMapper.MapPath(path);
-
-            return ConfigurationManager.ReadConfigurationValue(path, key);
-        }
 
         public void Validate()
         {

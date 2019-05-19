@@ -18,7 +18,11 @@
     };
     
     var isValid = true;
-    var requiredFieldMessage = translate("ThisFieldIsRequired");
+    var requiredFieldMessage = "This field is required";
+
+    if (typeof (window.translate) === "function") {
+        requiredFieldMessage = window.translate("ThisFieldIsRequired");
+    };
 
     this.logError = function (message) {
         console.log(message);

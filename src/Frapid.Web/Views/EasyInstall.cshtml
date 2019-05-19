@@ -1,0 +1,755 @@
+﻿@model Frapid.Web.ViewModels.InstallViewModel
+
+@{
+
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Installation</title>
+    <link href="~/scripts/semantic-ui/semantic.min.css" rel="stylesheet" />
+    <style>
+    .initially.hidden {
+        display: none;
+    }
+
+    label[for] {
+        cursor: pointer !important;
+    }
+
+    .borderless {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+    .configuration.segment {
+        margin-bottom: 2rem !important;
+    }
+
+    .easy.install.segment {
+        border: none;
+        box-shadow: none;
+        margin: 0 auto;
+    }
+
+
+    section.console {
+        position: fixed !important;
+        top: 80px !important;
+        width: 572px !important;
+        padding: 1rem;
+    }
+
+        section.console .segment {
+            height: calc(100vh - 156px);
+            overflow: auto;
+            padding: 1rem 0.5rem;
+        }
+
+            section.console .segment li {
+                color: #333 !important;
+                font-size: 0.87em;
+                padding: 0.32rem 1rem !important;
+                position: relative;
+                padding-right: 100px !important;
+                word-break: break-all;
+            }
+
+
+    ul#Console {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        color: #444;
+    }
+
+
+
+        ul#Console li:after {
+        }
+
+        ul#Console li {
+            padding-bottom: 0.32rem;
+            border-bottom: 1px solid #eee;
+        }
+
+    #Console li.negative {
+        color: #db2828 !important;
+        font-weight: bold;
+    }
+
+    #Console li.positive {
+        color: #149532 !important;
+        font-weight: bold;
+    }
+
+
+    #Console li span.time {
+        position: absolute;
+        right: 0.2rem;
+        top: 0.2rem;
+        color: #ccc;
+        font-weight: bold;
+        display: block;
+        width: 80px;
+        font-size: 0.8rem;
+    }
+
+    
+    .console .form input {
+        font-weight: bold;
+        background: transparent !important;
+        border: none !important;
+        border-bottom: 1px solid #eee !important;
+        color: #999 !important;
+        margin-bottom: 1rem;
+    }
+
+
+    [data-save] {
+        cursor: pointer !important;
+    }
+
+    </style>
+    <script src="~/scripts/jquery-2.2.4.min.js"></script>
+    <script src="~/scripts/semantic-ui/semantic.min.js"></script>
+    <script src="~/scripts/jquery.signalR.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script src="~/scripts/frapid/utilities/validator.js"></script>
+</head>
+<body>
+    <div class="ui attched easy install segment">
+        <div class="ui container">
+
+            <div class="ui attached menu">
+                <div class="image item">
+                    <img class="ui tiny image" src="~/Static/images/logo-sm.png" />
+
+                </div>
+                <div data-save class="header item">
+                    Save
+                </div>
+                <a class="item" data-test-permission data-url="/easy-install/test-permission">
+                    Permission
+                </a>
+                <div class="ui dropdown item">
+                    Configs
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a data-show class="item">Frapid Web Server Configuration</a>
+                        <a data-show class="item">SQL Server Configuration</a>
+                        <a data-show class="item">PostgreSQL Configuration</a>
+                        <a data-show class="item">Application User Configuration</a>
+                        <a data-show class="item">Show All</a>
+                        <a data-hide class="item">Hide All</a>
+                    </div>
+                </div>
+                <a class="item" data-write-config>
+                    Write Config
+                </a>
+                <a class="item" target="_blank" href="/">
+                    Check Website
+                </a>
+                <a data-create-site class="disabled item">
+                    Create Site
+                </a>
+            </div>
+
+            <div class="ui hidden divider"></div>
+
+            <div class="ui stackable grid">
+                <div class="eight wide column">
+                    <div class="ui positive message">
+                        <div class="header">Frapid Easy Installer</div>
+                        <p>Welcome to Frapid Easy install. Check out the configuration options.</p>
+                        <div class="ui celled bulleted list">
+                            <div class="item">
+                                Save -> Saves your settings but does not apply them.
+                            </div>
+                            <div class="item">Permission -> Checks the directory permission on the server, the directories where Frapid needs write access to.</div>
+                            <div class="item">Configs --> List of configuration parameters you need to setup.</div>
+                            <div class="item">Write Config --> Writes your config to the website before you can actually create a site.</div>
+                            <div class="item">Create Site --> Creates your website according to your configuration data.</div>
+                        </div>
+                        <button onclick="$(this).closest('.message').remove()" class="ui small basic green button">Understood</button>
+                        <button data-show data-delete class="ui small positive button">Show All</button>
+                    </div>
+
+                    <section class="sections">
+                        <section class="initially hidden" data-scope="Frapid Web Server Configuration">
+                            <div class="ui header">Server Information</div>
+                            <div class="ui small form attached configuration segment">
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="DomainNameInputText">Default Domain Name</label>
+                                        <input type="text" id="DomainNameInputText" value="@Model.DomainName" data-member="DomainName" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="DatabaseNameInputText">Desired Database Name</label>
+                                        <input type="text" id="DatabaseNameInputText" value="@Model.DatabaseName" data-member="DatabaseName" required />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" id="DontCreateDatabaseCheckBox" data-checked="@Model.SkipDatabaseCreation.ToString().ToLower()" data-member="SkipDatabaseCreation">
+                                        <label for="DontCreateDatabaseCheckBox">Skip Database Creation</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="DbProviderSelect">Database Server for This Domain</label>
+                                    <select class="ui dropdown" data-value="@Model.DbProvider" data-member="DbProvider">
+                                        <option value="System.Data.SqlClient">Microsoft SQL Server</option>
+                                        <option value="Npgsql">PostgreSQL Server</option>
+                                    </select>
+                                </div>
+
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="DefaultCacheTypeSelect">Default Cache Type</label>
+                                        <select class="ui dropdown" id="DefaultCacheTypeSelect" data-value="@Model.DefaultCacheType" data-member="DefaultCacheType">
+                                            <option value="InProc">In Memory Cache</option>
+                                            <option value="Redis">Redis Cahe</option>
+                                        </select>
+                                    </div>
+                                    <div class="data redis initially hidden field">
+                                        <label for="RedisConnectionStringInputText">Redis Connection String</label>
+                                        <input type="text" id="RedisConnectionStringInputText" value="@Model.RedisConnectionString" data-member="RedisConnectionString" required />
+                                    </div>
+                                </div>
+                                <button class="ui small basic green data redis initially hidden button" data-test-connection data-url="/easy-install/test-redis">Test Connection</button>
+                                <button data-save class="ui small save green button">Save</button>
+
+                                <div class="ui redis positive initially hidden message">
+                                    Could not connect to redis.
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="initially hidden" data-scope="Application User Configuration">
+                            <div class="ui header">Application User</div>
+
+                            <div class="ui small form attached configuration segment">
+                                <div class="field">
+                                    <label for="ApplicationUserInputText">Application User Email</label>
+                                    <input type="text" id="ApplicationUserInputText" value="@Model.ApplicationUser" data-member="ApplicationUser" required />
+                                </div>
+                                <div class="ui negative message">
+                                    This password will be saved in a temporary configuration file.
+                                    Do not enter your regular password here.
+                                </div>
+                                <div class="field">
+                                    <label for="ApplicationUserPasswordInputPassword">Application User Password</label>
+                                    <input type="password" id="ApplicationUserPasswordInputPassword" value="@Model.ApplicationUserPassword" data-member="ApplicationUserPassword" required />
+                                </div>
+                                <div class="field">
+                                    <label for="ConfirmApplicationUserPasswordInputPassword">Confirm Password</label>
+                                    <input type="password" id="ConfirmApplicationUserPasswordInputPassword" value="@Model.ConfirmApplicationUserPassword" data-member="ConfirmApplicationUserPassword" required data-match-target="ApplicationUserPasswordInputPassword" />
+                                </div>
+                                <div class="ui positive message">
+                                    A new user with the above credentials will be created
+                                    during tenant creation.
+                                </div>
+                                <button data-save class="ui small save green button">Save</button>
+                            </div>
+
+                        </section>
+
+                        <section class="initially hidden" data-scope="SQL Server Configuration">
+                            <div class="ui header">SQL Server Configuration</div>
+
+                            <div class="ui small form attached configuration segment">
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="SqlServerHostNameInputText">Server Host Name\Instance</label>
+                                        <input type="text" id="SqlServerHostNameInputText" value="@Model.SqlServer.Server" data-member="SqlServer.Server" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="SqlServerMetaDbInputText">Meta Database</label>
+                                        <input type="text" id="SqlServerMetaDbInputText" value="@Model.SqlServer.MetaDatabase" data-member="SqlServer.MetaDatabase" required />
+                                    </div>
+                                </div>
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="SqlServerSuperUserIdInputText">Super User Id</label>
+                                        <input type="text" id="SqlServerSuperUserIdInputText" value="@Model.SqlServer.SuperUserId" data-member="SqlServer.SuperUserId" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="SqlServerSuperUserPasswordInputText">Super User Password</label>
+                                        <input type="text" id="SqlServerSuperUserPasswordInputText" value="@Model.SqlServer.SuperUserPassword" data-member="SqlServer.SuperUserPassword" />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" id="TrustedSuperUserConnectionInputCheckBox" data-checked="@Model.SqlServer.TrustedSuperUserConnection.ToString().ToLower()" data-member="SqlServer.TrustedSuperUserConnection">
+                                        <label for="TrustedSuperUserConnectionInputCheckBox">Trusted Super User Connection</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label for="NetworkLibrarySelect">Network Library</label>
+                                    <select class="ui dropdown" id="NetworkLibrarySelect" data-value="@Model.SqlServer.NetworkLibrary" data-member="SqlServer.NetworkLibrary">
+                                        <option value="dbnmpntw">dbnmpntw - Named Pipes</option>
+                                        <option value="dbmslpcn">dbmslpcn - Shared Memory (local machine connections only)</option>
+                                        <option value="dbmssocn">dbmssocn - Winsock TCP/IP</option>
+                                        <option value="dbmsspxn">dbmsspxn - SPX/IPX</option>
+                                        <option value="dbmsvinn">dbmsvinn - Banyan Vines</option>
+                                        <option value="dbmsrpcn">dbmsrpcn - Multi-Protocol (Windows RPC)</option>
+                                        <option value="dbmsadsn">dbmsadsn - Apple Talk</option>
+                                        <option value="dbmsgnet">dbmsgnet - VIA</option>
+                                    </select>
+                                </div>
+
+                                <div class="field">
+                                    <button class="ui small basic green button" data-test-connection data-url="/easy-install/test-sql-server">Test Connection</button>
+                                </div>
+                                <div class="ui sql server positive initially hidden message">
+                                    Could not connect.
+                                </div>
+
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" id="SqlServerEnablePoolingCheckBox" data-checked="@Model.SqlServer.EnablePooling.ToString().ToLower()" data-member="SqlServer.EnablePooling">
+                                        <label for="SqlServerEnablePoolingCheckBox">Enable Connection Pooling</label>
+                                    </div>
+                                </div>
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="SqlServerMinPoolSizeInputText">Minimum Pool Size</label>
+                                        <input type="number" id="SqlServerMinPoolSizeInputText" value="@Model.SqlServer.MinPoolSize" min="1" data-member="SqlServer.MinPoolSize" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="SqlServerMaxPoolSizeInputText">Maximum Pool Size</label>
+                                        <input type="number" id="SqlServerMaxPoolSizeInputText" value="@Model.SqlServer.MaxPoolSize" max="200" data-member="SqlServer.MaxPoolSize" required />
+                                    </div>
+                                </div>
+                                <div class="ui negative message">
+                                    Database users will be created for you.
+                                    Enter your desired user name and password.
+                                    If you specified existing database user(s),
+                                    the password for those user will be changed which may break
+                                    your other existing applications.
+                                </div>
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="SqlServerFrapidDbUserInputText">Frapid DB User</label>
+                                        <input type="text" id="SqlServerFrapidDbUserInputText" value="@Model.SqlServer.UserId" data-member="SqlServer.UserId" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="SqlServerFrapidDbUserPasswordInputText">Frapid DB User Password</label>
+                                        <input type="text" id="SqlServerFrapidDbUserPasswordInputText" value="@Model.SqlServer.Password" data-member="SqlServer.Password" required />
+                                    </div>
+                                </div>
+
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="SqlServerReportDbUserInputText">Report DB User</label>
+                                        <input type="text" id="SqlServerReportDbUserInputText" value="@Model.SqlServer.ReportUserId" data-member="SqlServer.ReportUserId" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="SqlServerReportDbUserPasswordInputText">Report DB User Password</label>
+                                        <input type="text" id="SqlServerReportDbUserPasswordInputText" value="@Model.SqlServer.ReportUserPassword" data-member="SqlServer.ReportUserPassword" required />
+                                    </div>
+                                </div>
+                                <button data-save class="ui small save green button">Save</button>
+                            </div>
+                        </section>
+
+
+
+                        <section class="initially hidden" data-scope="PostgreSQL Configuration">
+                            <div class="ui header">PostgreSQL Configuration</div>
+                            <div class="ui small form attached configuration segment">
+                                <div class="fields">
+                                    <div class="twelve wide field">
+                                        <label for="PostgreSQLHostNameInputText">Server Host Name</label>
+                                        <input type="text" id="PostgreSQLHostNameInputText" value="@Model.PostgreSQL.Server" data-member="PostgreSQL.Server" required />
+                                    </div>
+                                    <div class="four wide field">
+                                        <label for="PostgreSQLPortInputText">Port Number</label>
+                                        <input type="number" id="PostgreSQLPortInputText" value="@Model.PostgreSQL.Port" data-member="PostgreSQL.Port" required />
+                                    </div>
+                                </div>
+                                <div class="three fields">
+                                    <div class="field">
+                                        <label for="PostgreSQLMetaDbInputText">Meta Database</label>
+                                        <input type="text" id="PostgreSQLMetaDbInputText" value="@Model.PostgreSQL.MetaDatabase" data-member="PostgreSQL.MetaDatabase" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="PostgreSQLSuperUserIdInputText">Super User Id</label>
+                                        <input type="text" id="PostgreSQLSuperUserIdInputText" value="@Model.PostgreSQL.SuperUserId" data-member="PostgreSQL.SuperUserId" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="PostgreSQLSuperUserPasswordInputText">Super User Password</label>
+                                        <input type="text" id="PostgreSQLSuperUserPasswordInputText" value="@Model.PostgreSQL.SuperUserPassword" data-member="PostgreSQL.SuperUserPassword" required />
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <button class="ui small basic green button" data-test-connection data-url="/easy-install/test-postgresql">Test Connection</button>
+                                </div>
+                                <div class="ui postgresql positive initially hidden message">
+                                    Could not connect to redis.
+                                </div>
+
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" id="PostgreSQLEnablePoolingCheckBox" checked="@Model.PostgreSQL.EnablePooling.ToString().ToLower()" data-member="PostgreSQL.EnablePooling" required>
+                                        <label for="PostgreSQLEnablePoolingCheckBox">Enable Connection Pooling</label>
+                                    </div>
+                                </div>
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="PostgreSQLMinPoolSizeInputText">Minimum Pool Size</label>
+                                        <input type="number" id="PostgreSQLMinPoolSizeInputText" value="@Model.PostgreSQL.MinPoolSize" min="1" data-member="PostgreSQL.MinPoolSize" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="PostgreSQLMaxPoolSizeInputText">Maximum Pool Size</label>
+                                        <input type="number" id="PostgreSQLMaxPoolSizeInputText" value="@Model.PostgreSQL.MaxPoolSize" max="200" data-member="PostgreSQL.MaxPoolSize" required />
+                                    </div>
+                                </div>
+                                <div class="ui negative message">
+                                    Database users will be created for you.
+                                    Enter your desired user name and password.
+                                    If you specified existing database user(s),
+                                    the password for those user will be changed which may break
+                                    your other existing applications.
+                                </div>
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="FrapidDbUserInputText">Frapid DB User</label>
+                                        <input type="text" id="FrapidDbUserInputText" value="@Model.PostgreSQL.UserId" data-member="PostgreSQL.UserId" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="FrapidDbUserPasswordInputText">Frapid DB User Password</label>
+                                        <input type="text" id="FrapidDbUserPasswordInputText" value="@Model.PostgreSQL.Password" data-member="PostgreSQL.Password" required />
+                                    </div>
+                                </div>
+
+                                <div class="two fields">
+                                    <div class="field">
+                                        <label for="ReportDbUserInputText">Report DB User</label>
+                                        <input type="text" id="ReportDbUserInputText" value="@Model.PostgreSQL.ReportUserId" data-member="PostgreSQL.ReportUserId" required />
+                                    </div>
+                                    <div class="field">
+                                        <label for="ReportDbUserPasswordInputText">Report DB User Password</label>
+                                        <input type="text" id="ReportDbUserPasswordInputText" value="@Model.PostgreSQL.ReportUserPassword" data-member="PostgreSQL.ReportUserPassword" required />
+                                    </div>
+                                </div>
+                                <button data-save class="ui small save green button">Save</button>
+                            </div>
+                        </section>
+                    </section>
+                </div>
+                <div class="eight wide column">
+                    <section class="console section">
+                        <div class="ui header">Console</div>
+                        <div class="ui hidden divider"></div>
+                        <div class="ui attached segment">
+                            <div class="ui form">
+                                <div class="field">
+                                    <input type="text" />
+                                </div>
+                            </div>
+                            <ul id="Console"></ul>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+    </div>
+    <script>
+        $(".ui.dropdown.item").dropdown();
+
+        function getAjaxRequest(url, type, data) {
+            if (!type) {
+                type = "GET";
+            };
+
+            writeToConsole("Requesting " + url + " --> " + type);
+
+            var ajax = $.ajax({
+                type: type,
+                url: url,
+                data: data,
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            });
+
+            return ajax;
+        };
+
+        $(".console input").off("keydown").on("keydown", function (e) {
+            if (e.which === 13) {
+                const val = $(this).val();
+                if (val === "clear") {
+                    $(this).val("");
+                    $("#Console").html("");
+                } else {
+                    writeToConsole(`Could not understand the term "${val}"`, "negative");
+                };
+            };
+        });
+
+        function writeToConsole(message, className) {
+            const item = $("<li />").appendTo($("#Console"));
+
+            if (className) {
+                item.addClass(className);
+            };
+
+            item.text(message);
+            item.append(`&nbsp;<span class='time'>${new Date().toLocaleTimeString()}</span>`);
+            $(".console input").val("clear");
+            $('section.console .segment').scrollTop(1E10);
+        }
+
+        $("[data-test-connection]").off("click").on("click", function () {
+            function request(url) {
+                return window.getAjaxRequest(url, "PUT");
+            };
+
+            const el = $(this);
+            const url = el.attr("data-url")
+
+            if (!window.confirm("Have you saved the configuration before testing this connection?")) {
+                return;
+            };
+
+            $(".easy.install.segment").addClass("loading");
+
+            const ajax = request(url);
+
+            ajax.success(function (response) {
+                writeToConsole(response, "positive");
+                $(".easy.install.segment").removeClass("loading");
+            });
+
+            ajax.fail(function (xhr) {
+                writeToConsole(xhr.responseText, "negative");
+                $(".easy.install.segment").removeClass("loading");
+            });
+        });
+
+        $("[data-write-config]").off("click").on("click", function () {
+            function request(url) {
+                return window.getAjaxRequest(url, "POST");
+            };
+
+            const url = "/easy-install/write-config";
+
+            writeToConsole("Writing configuration file.");
+            $(".easy.install.segment").addClass("loading");
+
+            const ajax = request(url);
+
+            ajax.success(function (response) {
+                writeToConsole(response, response.indexOf("Error") > -1 ? "negative" : "positive");
+
+                $(".easy.install.segment").removeClass("loading");
+            });
+
+            ajax.fail(function (xhr) {
+                writeToConsole(xhr.responseText, "negative");
+                $(".easy.install.segment").removeClass("loading");
+            });
+        });
+
+        $("[data-test-permission]").off("click").on("click", function () {
+            function request(url) {
+                return window.getAjaxRequest(url, "PUT");
+            };
+
+            const el = $(this);
+            const url = el.attr("data-url");
+
+            writeToConsole("Testing Directory Permission");
+            $(".easy.install.segment").addClass("loading");
+
+            const ajax = request(url);
+
+            ajax.success(function (response) {
+                const items = JSON.parse(response);
+                for (let i = 0; i < items.length; i++) {
+                    const item = items[i];
+
+                    writeToConsole(item, item.indexOf("OK") > -1 ? "positive" : "negative");
+                };
+
+                $(".easy.install.segment").removeClass("loading");
+            });
+
+            ajax.fail(function (xhr) {
+                writeToConsole(xhr.responseText, "negative");
+                $(".easy.install.segment").removeClass("loading");
+            });
+        });
+
+        $("[data-save]").off("click").on("click", function () {
+            function request(model) {
+                const url = "/easy-install";
+                const data = JSON.stringify(model);
+                return window.getAjaxRequest(url, "PUT", data);
+            };
+
+            function getModel() {
+                const candidates = $("[data-member]");
+                const model = {};
+
+                candidates.each(function () {
+                    const el = $(this);
+                    const data = el.attr("data-member");
+
+                    var value = el.val();
+
+                    if (el.is("[type='checkbox']")) {
+                        value = el.is(":checked");
+                    };
+
+                    if (data.indexOf(".") > -1) {
+                        const scope = data.split(".")[0];
+                        const prop = data.split(".")[1];
+
+                        if (!model.hasOwnProperty(scope)) {
+                            model[scope] = {};
+                        }
+
+                        model[scope][prop] = value;
+                    } else {
+                        model[data] = value;
+                    };
+
+                });
+
+                return model;
+            };
+
+            function validate() {
+                const isValid = window.validator.validate($(".easy.install.segment"));
+
+                if (!isValid) {
+                    const errorFields = $(".error.field:visible").map(function () {
+                        return $(this).find("label").text();
+                    }).get().join(", ");
+
+                    return "These fields should not be empty: \n" + errorFields;
+                };
+            };
+
+            if (!window.confirm("Are You Sure?")) {
+                return;
+            };
+
+            const model = getModel();
+            const errorMessage = validate();
+
+            if (errorMessage) {
+                writeToConsole(errorMessage, "negative");
+                return;
+            };
+
+            $(".easy.install.segment").addClass("loading");
+            const ajax = request(model);
+
+            ajax.success(function (response) {
+                $(".easy.install.segment").removeClass("loading");
+                writeToConsole(response, "positive");
+            });
+
+            ajax.fail(function (xhr) {
+                $(".easy.install.segment").removeClass("loading");
+                writeToConsole(xhr.responseText, "negative");
+            });
+        });
+
+        $("#DefaultCacheTypeSelect").on("change", function () {
+            const el = $(this);
+            const type = el.val();
+            const target = $(".data.redis");
+
+            if (type === "Redis") {
+                target.removeClass("initially hidden")
+            } else {
+                target.addClass("initially hidden")
+            }
+        });
+
+        $("select[data-value]").each(function () {
+            const el = $(this);
+            const value = el.attr("data-value");
+
+            if (value) {
+                el.find("option[value='" + value + "']").attr("selected", "selected");
+                el.val(value).trigger("change");
+            };
+        });
+
+        $("input[type='checkbox'][data-checked]").each(function () {
+            const el = $(this);
+            const checked = el.attr("data-checked") === "true";
+
+            if (checked) {
+                el.prop("checked", true);
+            };
+        });
+
+
+        $("[data-show]").off("click").on("click", function () {
+            const el = $(this);
+            const text = el.text().trim();
+            const remove = el.is("[data-delete]");
+            const target = text === "Show All" ? "section[data-scope]" : "section[data-scope='" + text + "']";
+
+            $("section[data-scope]").addClass("initially hidden");
+            $(target).removeClass("initially hidden");
+            $("section.console").removeClass("initially hidden");
+
+            localStorage.setItem("showAll", "true");
+
+            if (remove) {
+                el.closest(".message").remove();
+            }
+        });
+
+        $("[data-hide]").off("click").on("click", function () {
+            $("section[data-scope]").addClass("initially hidden");
+            $("section.console").addClass("initially hidden");
+        });
+
+        window.validator.initialize($(".easy.install.segment"));
+
+        if (localStorage.getItem("showAll") === "true") {
+            $("[data-show]").trigger("click");
+        };
+    </script>
+    <script>
+        $(function () {
+            var easyInstaller = $.connection.easyInstallerHub;
+
+            easyInstaller.client.getEasyInstallerNotification = function (message) {
+                if (message.toLowerCase().substring(0, 6) === "error:") {
+                    writeToConsole(message, "negative");
+                } else {
+                    writeToConsole(message);
+                };
+            };
+
+            easyInstaller.client.getEasyInstallerError = function (message) {
+                writeToConsole(message, "negative");
+            };
+
+            $.connection.hub.start().done(function () {
+                $("[data-create-site]").removeClass("disabled");
+
+                $("[data-create-site]").click(function () {
+                    $(this).addClass("disabled");
+                    easyInstaller.server.install();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

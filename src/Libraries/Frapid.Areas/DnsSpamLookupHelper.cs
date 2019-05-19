@@ -13,12 +13,12 @@ namespace Frapid.Areas
         private static string[] GetRblServers(string tenant)
         {
             //Check RBL server list in tenant directory.
-            string path = PathMapper.MapPath($"/Tenants/{tenant}/Configs/RblServers.config");
+            string path = PathMapper.MapPath($"/Tenants/{tenant}/Configs/RblServers.ini");
 
             if (!File.Exists(path))
             {
                 //Fallback to shared RBL server list.
-                path = PathMapper.MapPath($"/Resources/Configs/RblServers.config");
+                path = PathMapper.MapPath($"/Resources/Configs/RblServers.ini");
             }
 
             if (path == null ||

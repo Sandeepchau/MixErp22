@@ -54,6 +54,9 @@
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BCrypt.Net, Version=0.1.5073.29922, Culture=neutral, PublicKeyToken=6bcd409ee6bc9292, processorArchitecture=MSIL">
+      <HintPath>..\packages\BCrypt-Official.0.1.109\lib\BCrypt.Net.dll</HintPath>
+    </Reference>
     <Reference Include="Common.Logging, Version=3.3.1.0, Culture=neutral, PublicKeyToken=af08829b84f0328e, processorArchitecture=MSIL">
       <HintPath>..\packages\Common.Logging.3.3.1\lib\net40\Common.Logging.dll</HintPath>
       <Private>True</Private>
@@ -143,6 +146,7 @@
       <HintPath>..\packages\Microsoft.Owin.Security.Twitter.3.0.1\lib\net45\Microsoft.Owin.Security.Twitter.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
@@ -150,6 +154,9 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="Npgsql, Version=3.1.9.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.1.9\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
@@ -267,10 +274,12 @@
     <Compile Include="Application\ClassicAssemblyResolver.cs" />
     <Compile Include="Application\DefaultAssemblyResolver.cs" />
     <Compile Include="Controllers\BundleController.cs" />
+    <Compile Include="Controllers\EasyInstallController.cs" />
     <Compile Include="Controllers\SiteMapController.cs" />
     <Compile Include="Application\DefaultExceptionLogger.cs" />
     <Compile Include="Application\ExceptionLogger.cs" />
     <Compile Include="FrapidApplication.cs" />
+    <Compile Include="Hubs\EasyInstallerHub.cs" />
     <Compile Include="Jobs\EndOfDayJob.cs" />
     <Compile Include="Application\EodTaskRegistration.cs" />
     <Compile Include="Application\FilterConfig.cs" />
@@ -280,8 +289,19 @@
     <Compile Include="Application\WebApiConfig.cs" />
     <Compile Include="Controllers\InstallController.cs" />
     <Compile Include="Controllers\ResourceController.cs" />
+    <Compile Include="Models\Helpers\ConfigWriter.cs" />
+    <Compile Include="Models\Helpers\EasyInstallConfigFile.cs" />
+    <Compile Include="Models\EasyInstallModel.cs" />
+    <Compile Include="Models\Helpers\FilePermissionHelper.cs" />
+    <Compile Include="Models\Helpers\PasswordManager.cs" />
+    <Compile Include="Models\Helpers\PostgreSQLConnectionTester.cs" />
+    <Compile Include="Models\Helpers\RedisConnectionTester.cs" />
+    <Compile Include="Models\Helpers\SqlServerConnectionTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\InstallViewModel.cs" />
+    <Compile Include="ViewModels\PostgreSQLConfig.cs" />
+    <Compile Include="ViewModels\SqlServerConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -289,6 +309,7 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="LICENSE.txt" />
     <Content Include="scripts\bootstrap.js" />
     <Content Include="scripts\bootstrap.min.js" />
     <Content Include="packages.config" />
@@ -448,6 +469,8 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="scripts\jquery-2.2.4.min.map" />
+    <Content Include="Views\EasyInstall.cshtml" />
+    <Content Include="Views\web.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

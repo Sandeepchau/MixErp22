@@ -1,7 +1,13 @@
-EXEC sp_addrolemember  @rolename = 'db_owner', @membername  = 'frapid_db_user'
+IF(IS_ROLEMEMBER ('db_owner') = 1)
+BEGIN
+	EXEC sp_addrolemember  @rolename = 'db_owner', @membername  = 'frapid_db_user';
+END
 GO
 
-EXEC sp_addrolemember  @rolename = 'db_datareader', @membername  = 'report_user'
+IF(IS_ROLEMEMBER ('db_owner') = 1)
+BEGIN
+	EXEC sp_addrolemember  @rolename = 'db_datareader', @membername  = 'report_user'
+END
 GO
 
 DECLARE @proc sysname

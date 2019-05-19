@@ -1,28 +1,13 @@
 ﻿using System.Data.Common;
 using System.Data.SqlClient;
-using System.IO;
+using Frapid.Configuration.DTO;
 using Frapid.Mapper.Database;
 using Frapid.Mapper.Types;
 using MySql.Data.MySqlClient;
 using Npgsql;
-using Serilog;
 
 namespace Frapid.Configuration.Db
 {
-    public sealed class DatabaseFactory
-    {
-        public DatabaseFactory(MapperDb db)
-        {
-            this.Db = db;
-        }
-
-        private MapperDb Db { get; }
-
-        public MapperDb GetDatabase()
-        {
-            return this.Db;
-        }
-    }
 
     public static class DbProvider
     {
@@ -37,19 +22,6 @@ namespace Frapid.Configuration.Db
             return site.DbProvider;
         }
 
-        public static string GetDbConfigurationFilePath(string tenant)
-        {
-            string provider = GetProviderName(tenant);
-            string path = "/Resources/Configs/PostgreSQL.config";
-
-            if (!provider.ToUpperInvariant().Equals("NPGSQL"))
-            {
-                path = "/Resources/Configs/SQLServer.config";
-            }
-
-            return path;
-        }
-
         public static string GetMetaDatabase(string tenant)
         {
             if (string.IsNullOrWhiteSpace(tenant))
@@ -58,23 +30,28 @@ namespace Frapid.Configuration.Db
             }
 
             string provider = GetProviderName(tenant);
-            string path = GetDbConfigurationFilePath(tenant);
-            string meta = "postgres";
+            string meta = string.Empty;
 
-            if (!provider.ToUpperInvariant().Equals("NPGSQL"))
+            if (provider.ToUpperInvariant().Equals("NPGSQL"))
             {
-                meta = "master";
+                var config = PostgreSQLConfig.Get();
+                meta = config.MetaDatabase;
+
+                if (string.IsNullOrWhiteSpace(meta))
+                {
+                    meta = "postgres";
+                }
             }
 
-            path = PathMapper.MapPath(path);
+            if (provider.ToUpperInvariant().Equals("SYSTEM.DATA.SQLCLIENT"))
+            {
+                var config = SqlServerConfig.Get();
+                meta = config.MetaDatabase;
 
-            if (File.Exists(path))
-            {
-                meta = ConfigurationManager.ReadConfigurationValue(path, "MetaDatabase");
-            }
-            else
-            {
-                Log.Warning($"The meta database for provider '{provider}' could not be determined because the configuration file '{path}' does not exist. Returned value '{meta}' by convention.");
+                if (string.IsNullOrWhiteSpace(meta))
+                {
+                    meta = "master";
+                }
             }
 
             return meta;

@@ -8,6 +8,7 @@ using Frapid.Account.DAL;
 using Frapid.Account.InputModels;
 using Frapid.Areas.CSRF;
 using Frapid.Configuration;
+using Frapid.Configuration.Models;
 using Frapid.Framework.Extensions;
 using Mapster;
 using Serilog;
@@ -81,7 +82,8 @@ namespace Frapid.Account.Controllers
         [AllowAnonymous]
         public ActionResult GetLanguages()
         {
-            var cultures = ConfigurationManager.GetConfigurationValue("ParameterConfigFileLocation", "Cultures").Split(',');
+            var parameter = Parameter.Get();
+            var cultures = parameter.Cultures.Split(',');
 
             var languages = (from culture in cultures
                 select culture.Trim()

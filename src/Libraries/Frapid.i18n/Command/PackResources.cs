@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using frapid;
 using frapid.Commands;
 using Frapid.Configuration;
+using Frapid.Configuration.Models;
 using Frapid.Framework.Extensions;
 using YamlDotNet.Serialization;
 
@@ -73,9 +74,8 @@ namespace Frapid.i18n.Command
             }
             else
             {
-                string pathToConfig = Path.Combine(PathMapper.PathToRootDirectory, "Resources", "Configs", "Parameters.config");
-                string cultures = ConfigurationManager.ReadConfigurationValue(pathToConfig, "Cultures");
-                languages = cultures.Split(',').Select(x => x.Trim()).ToList();
+                var parameter = Parameter.Get();
+                languages = parameter.Cultures.Split(',').Select(x => x.Trim()).ToList();
             }
 
             foreach (string language in languages)

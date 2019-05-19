@@ -8,13 +8,14 @@ using Frapid.Configuration.Models;
 using Frapid.DataAccess;
 using Frapid.Framework;
 using Frapid.Installer.DAL;
-using Frapid.Installer.Helpers;
 using Frapid.Installer.Tenant;
 
 namespace Frapid.Installer
 {
     public class AppInstaller
     {
+        public event EventHandler<string> Notification;
+
         public AppInstaller(string tenant, string database, bool withoutSample, Installable installable)
         {
             this.Tenant = tenant;
@@ -30,7 +31,14 @@ namespace Frapid.Installer
 
         public async Task<bool> HasSchemaAsync(string database)
         {
-            return await Store.HasSchemaAsync(this.Tenant, database, this.Installable.DbSchema).ConfigureAwait(false);
+            var store = new Store();
+
+            store.Notification += delegate (object sender, string message)
+            {
+                this.Notify(sender, message);
+            };
+
+            return await store.HasSchemaAsync(this.Tenant, database, this.Installable.DbSchema).ConfigureAwait(false);
         }
 
         public async Task InstallAsync()
@@ -45,7 +53,7 @@ namespace Frapid.Installer
                 await new AppInstaller(this.Tenant, this.Database, this.WithoutSample, dependency).InstallAsync().ConfigureAwait(false);
             }
 
-            InstallerLog.Verbose($"Installing module {this.Installable.ApplicationName}.");
+            this.Notify($"Installing module {this.Installable.ApplicationName}.");
 
             await this.CreateSchemaAsync().ConfigureAwait(false);
             await this.CreateMyAsync().ConfigureAwait(false);
@@ -83,7 +91,7 @@ namespace Frapid.Installer
 
             if (this.Installable.IsMeta)
             {
-                InstallerLog.Verbose($"Creating database of {this.Installable.ApplicationName} under meta database {Factory.GetMetaDatabase(this.Database)}.");
+                this.Notify($"Creating database of {this.Installable.ApplicationName} under meta database {Factory.GetMetaDatabase(this.Database)}.");
                 database = Factory.GetMetaDatabase(this.Database);
             }
 
@@ -95,11 +103,11 @@ namespace Frapid.Installer
 
             if (await this.HasSchemaAsync(database).ConfigureAwait(false))
             {
-                InstallerLog.Verbose($"Skipped {this.Installable.ApplicationName} schema ({this.Installable.DbSchema}) creation because it already exists.");
+                this.Notify($"Skipped {this.Installable.ApplicationName} schema ({this.Installable.DbSchema}) creation because it already exists.");
                 return;
             }
 
-            InstallerLog.Verbose($"Creating schema {this.Installable.DbSchema}");
+            this.Notify($"Creating schema {this.Installable.DbSchema}");
 
 
             string db = this.Installable.BlankDbPath;
@@ -112,7 +120,7 @@ namespace Frapid.Installer
                 //Manually override sample data installation
                 if (!this.WithoutSample)
                 {
-                    InstallerLog.Verbose($"Creating sample data of {this.Installable.ApplicationName}.");
+                    this.Notify($"Creating sample data of {this.Installable.ApplicationName}.");
                     db = this.Installable.SampleDbPath;
                     path = PathMapper.MapPath(db);
                     await this.RunSqlAsync(database, database, path).ConfigureAwait(false);
@@ -124,11 +132,17 @@ namespace Frapid.Installer
         {
             try
             {
-                await Store.RunSqlAsync(tenant, database, fromFile).ConfigureAwait(false);
+                var store = new Store();
+                store.Notification += delegate (object sender, string message)
+                {
+                    this.Notify(sender, message);
+                };
+
+                await store.RunSqlAsync(tenant, database, fromFile).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
-                InstallerLog.Verbose($"{ex.Message}");
+                this.Notify($"Error: {ex.Message}");
                 throw;
             }
         }
@@ -166,8 +180,19 @@ namespace Frapid.Installer
                 return;
             }
 
-            InstallerLog.Verbose($"Creating overide. Source: {source}, desitation: {destination}.");
+            this.Notify($"Creating overide. Source: {source}, desitation: {destination}.");
             FileHelper.CopyDirectory(source, destination);
+        }
+
+        private void Notify(string message)
+        {
+            this.Notify(this, message);
+        }
+
+        private void Notify(object sender, string message)
+        {
+            var notificationReceived = this.Notification;
+            notificationReceived?.Invoke(this, message);
         }
     }
 }

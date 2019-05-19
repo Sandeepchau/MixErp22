@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace Frapid.Installer.DAL
     public sealed class PostgreSQL : IStore
     {
         public string ProviderName { get; } = "Npgsql";
+
+        public event EventHandler<string> Notification;
 
         public async Task CreateDbAsync(string tenant)
         {
@@ -102,6 +105,12 @@ namespace Frapid.Installer.DAL
 
             string connectionString = FrapidDbServer.GetSuperUserConnectionString(tenant, database);
             await Factory.ExecuteAsync(connectionString, database, sql).ConfigureAwait(false);
+        }
+
+        public void Notify(object sender, string message)
+        {
+            var notificationReceived = this.Notification;
+            notificationReceived?.Invoke(sender, message);
         }
     }
 }
