@@ -50,8 +50,8 @@ namespace Frapid.Configuration.DbServer
                 Pooling = config.EnablePooling ?? true,
                 MinPoolSize = config.MinPoolSize ?? 1,
                 MaxPoolSize = config.MaxPoolSize ?? 100,
-                ApplicationName = "Frapid",
-                NetworkLibrary = config.NetworkLibrary,
+                //ApplicationName = "Frapid",
+                //NetworkLibrary = config.NetworkLibrary,
                 ConnectTimeout = config.Timeout ?? 120
             };
 
@@ -106,8 +106,8 @@ namespace Frapid.Configuration.DbServer
                 Pooling = enablePooling,
                 MinPoolSize = minPoolSize,
                 MaxPoolSize = maxPoolSize,
-                ApplicationName = "Frapid",
-                NetworkLibrary = networkLibrary.Or("dbmssocn")
+                //ApplicationName = "Frapid",
+                //NetworkLibrary = networkLibrary.Or("dbmssocn")
             }.ConnectionString;
         }
 

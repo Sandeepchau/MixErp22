@@ -74,6 +74,7 @@ function createAnnotationFields(annotation) {
 };
 
 $("#ShowButton").click(function () {
+    debugger;
     executeFunction();
 });
 
@@ -122,6 +123,7 @@ function addAnnotationField(item, fields, hidden) {
 };
 
 function executeFunction() {
+    debugger;
     function request(annotation) {
         var url = window.scrudFactory.viewAPI + "/execute";
         var data = JSON.stringify(annotation);

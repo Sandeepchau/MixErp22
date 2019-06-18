@@ -119,7 +119,6 @@ namespace Frapid.Reports.DAL
                     }
 
                     connection.Open();
-
                     using (var table = new DataTable())
                     {
                         table.Load(command.ExecuteReader());
