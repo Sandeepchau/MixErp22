@@ -1,0 +1,79 @@
+﻿@model dynamic
+
+@{
+    Layout = ViewBag.Layout;
+}
+<div class="finance layout container">
+    @RenderBody()
+</div>
+
+<script>
+    window.loadDatepicker();
+    window.setRegionalFormat();
+</script>
+
+<div class="ui small modal" id="EODModal">
+    <i class="close icon"></i>
+    <div class="ui icon header">
+        <i class="loading spinner icon"></i>
+        @I18N.EODProcessingBegun
+    </div>
+    <div class="content">
+        @Html.Raw(I18N.EODBegunSaveYourWork)
+        <div style="margin-left: 300px;">
+            <div class="ui circular segment" style="width: 120px; height: 120px;">
+                <h2 class="ui large header" style="font-size: 36px;"></h2>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui button">
+            @I18N.Cancel
+        </div>
+        <div class="ui button">
+            @I18N.OK
+        </div>
+    </div>
+</div>
+
+<script src="/signalr/hubs"></script>
+<script type="text/javascript">
+    $(function () {
+        var started = false;
+
+        $.connection.baseHub.client.terminate = function (c, tenant) {
+
+            if (window.meta.Tenant !== tenant) {
+                return;
+            };
+
+            if (typeof (window.terminateListener) === "function") {
+                window.terminateListener(c);
+            };
+
+            $("#EODModal .circular.segment h2").html(c + "%");
+
+            if (!started) {
+                $("#EODModal").modal("show");
+                started = true;
+            };
+
+            if (c === 100) {
+                localStorage.removeItem("access_token");
+                window.location = "/account/sign-out";
+            };
+        };
+
+        $.connection.hub.start().done(function () {
+            if (typeof (window.connectionListener) === "function") {
+                window.connectionListener();
+            };
+        });
+
+        $.connection.hub.disconnected(function () {
+            setTimeout(function () {
+                $.connection.hub.start();
+            }, 5000);
+        });
+    });
+</script>

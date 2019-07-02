@@ -1,0 +1,20 @@
+﻿@using MixERP.Finance.Extensions
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.JournalEntries;
+    Layout = ViewBag.FinanceLayoutPath;
+}
+
+
+@Html.PartialView("Shared/JournalView.cshtml", TenantConvention.GetTenant())
+
+<script>
+    window.prepareView({
+        Title: window.translate("JournalEntries"),
+        AddNewText: window.translate("AddNew"),
+        AddNewUrl: "/dashboard/finance/tasks/journal/entry/new",
+        Book: "Journal Entry",
+        ChecklistUrl: "/dashboard/finance/tasks/journal/checklist/{tranId}"
+    });
+</script>

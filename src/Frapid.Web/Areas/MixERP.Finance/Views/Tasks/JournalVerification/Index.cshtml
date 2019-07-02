@@ -1,0 +1,31 @@
+﻿@using MixERP.Finance.Extensions
+@model dynamic
+
+@{
+    ViewBag.Title = @I18N.JournalVerification;
+    Layout = ViewBag.FinanceLayoutPath;
+}
+
+
+@Html.PartialView("Shared/Verification.cshtml", TenantConvention.GetTenant())
+
+<script>
+    window.prepareVerification({
+        Title: window.translate("JournalEntryVerification"),
+        AddNewText: window.translate("AddNew"),
+        AddNewUrl: "/dashboard/finance/tasks/journal/entry/new",
+        Book: "Journal Entry",
+        ChecklistUrl: "/dashboard/finance/tasks/journal/checklist/{tranId}"
+    });
+
+    function showInvoice(tranId) {
+        $(".advice.modal iframe").attr("src", "/dashboard/reports/source/Areas/MixERP.Finance/Reports/JournalEntry.xml?transaction_master_id=" + tranId);
+
+        setTimeout(function () {
+            $(".advice.modal")
+                .modal('setting', 'transition', 'horizontal flip')
+                .modal("show");
+
+        }, 300);
+    };
+</script>

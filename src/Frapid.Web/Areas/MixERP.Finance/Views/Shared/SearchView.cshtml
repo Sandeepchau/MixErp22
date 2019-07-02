@@ -1,0 +1,708 @@
+﻿@using Frapid.ApplicationState.Cache
+@using MixERP.Finance.Extensions
+@using MixERP.Finance.PartialViewModels
+@{
+    Layout = ViewBag.Layout;
+    var meta = AppUsers.GetCurrent();
+}
+
+<style>
+    @@media (min-width: 801px) {
+        #Annotation {
+            padding: 1.5rem;
+        }
+
+            #Annotation .column {
+                padding: 0.5rem !important;
+            }
+    }
+
+    .modal iframe {
+        border: none;
+        height: 700px;
+        width: 100%;
+    }
+
+    table td a {
+        cursor: pointer;
+    }
+
+    #SearchView tfoot tr th {
+        font-weight: bold;
+        color: red;
+    }
+</style>
+
+<div class="ui attached shared view page segment" style="min-height: 100%; padding: 3em;">
+    <div class="ui huge title header"></div>
+    <div class="ui divider"></div>
+    <div class="ui basic buttons">
+        <a id="AddNewButton" class="ui basic add new button"></a>
+        <a id="ReturnButton" class="ui basic button" style=""></a>
+        <div class="ui icon top left pointing export dropdown basic button" id="ExportDropDown" tabindex="0">
+            <span>
+                @I18N.Export
+            </span>
+            <div class="menu" tabindex="-1">
+                <div class="header">
+                    @I18N.ExportThisDocument
+                </div>
+                <a class="item" href="javascript:void(0);" onclick="createDoc();">
+                    <i class="file word outline blue icon"></i> @I18N.ExportToDoc
+                </a>
+                <a class="item" href="javascript:void(0);" onclick="createXls();">
+                    <i class="file excel outline green icon"></i> @I18N.ExportToExcel
+                </a>
+                <a class="item" href="javascript:void(0);" onclick="createPDF();">
+                    <i class="file pdf outline red icon"></i> @I18N.ExportToPDF
+                </a>
+            </div>
+        </div>
+        <a id="PrintButton" href="javascript:void(0);" onclick="print()" class="ui basic button">
+            @I18N.Print
+        </a>
+    </div>
+    <div class="vpad8"></div>
+    <div class="ui stackable attached form segment" id="Annotation" style="">
+        <div class="ui stackable compact grid">
+
+        </div>
+    </div>
+    <div class="vpad8"></div>
+
+    <div class="fluid width overflown section">
+        <table id="SearchView" class="ui nowrap table segment">
+            <thead>
+                <tr></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+<div class="ui large advice modal">
+    <i class="close icon"></i>
+    <iframe></iframe>
+</div>
+
+<div class="ui documents modal">
+    <div class="header">Documents</div>
+    <div class="content">
+        @Html.PartialView("Shared/Documents.cshtml", TenantConvention.GetTenant(), new Document { Id = "DocumentsInputText", Documents = "", UploadHandler = "/dashboard/deposits/services/documents", DisableUpload = true, DisableDelete = true })
+    </div>
+</div>
+<input type="hidden" id="MarkupHidden" />
+<a id="DownloadAnchor"></a>
+
+<div id="ActionModal" class="ui modal">
+    <div class="ui massive red header"></div>
+    <div class="ui inverted red content">
+        <div class="ui form">
+            <div class="ui blue large dividing header"></div>
+            <div class="field">
+                <label for="ReasonTextArea">@I18N.VerificationReason</label>
+                <textarea id="ReasonTextArea"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui buttons">
+            <input type="button" class="ui red cancel button" value="@I18N.Cancel" />
+            <input type="button" id="VerifyButton" class="ui green ok button" value="@I18N.Verify" title="@I18N.CtrlReturn" />
+        </div>
+    </div>
+</div>
+
+<script>
+    function queryView(button, model) {
+        function getKeys(data) {
+            const keys = [];
+            for (let j in data) {
+                if (data.hasOwnProperty(j)) {
+                    const key = j;
+                    keys.push(key);
+                };
+            };
+
+            return keys;
+        };
+
+        function displayTable(data, model) {
+            function getCell(text, isDate, hasTime) {
+                const cell = $("<td/>");
+
+                cell.text(text);
+
+                if (isDate) {
+                    const date = new Date(text);
+
+                    if (hasTime) {
+                        if ((text || "").trim()) {
+                            cell.text(window.moment(date).fromNow() || "");
+                            cell.attr("title", date.toLocaleString());
+                        };
+                    } else {
+                        cell.text(date.toLocaleDateString());
+                        cell.attr("title", text);
+                    };
+                };
+
+                return cell;
+            };
+
+            function getActionCell(data, model) {
+                const cell = $("<td/>");
+
+
+                if (typeof (model.ChecklistUrlExpression) === "function") {
+                    const result = model.ChecklistUrlExpression(data);
+
+                    if (result) {
+                        const checklistAnchor = $(`<a title='${window
+                            .translate("ChecklistWindow")}'><i class='list icon'></i></a>`);
+                        checklistAnchor.attr("href", result);
+                        cell.append(checklistAnchor);
+                    };
+                };
+
+                if (typeof (model.DocumentExpression) === "function") {
+                    const result = model.DocumentExpression(data);
+
+                    if (result) {
+                        const documentAnchor = $(`<a data-documents='${result}' title='${window
+                            .translate("Documents")}'><i class='file outline icon'></i></a>`);
+                        documentAnchor.attr("href", "javascript:void(0);");
+                        documentAnchor.attr("onclick", `showDocumentModal(this);`);
+                        cell.append(documentAnchor);
+                    };
+                };
+
+                if (typeof (model.JournalAdviceExpression) === "function") {
+                    const result = model.JournalAdviceExpression(data);
+
+                    if (result) {
+                        const journalAdviceAnchor = $(`<a title='${window
+                            .translate("ViewJournalAdvice")}'><i class='search icon'></i></a>`);
+                        journalAdviceAnchor.attr("href", "javascript:void(0);");
+                        journalAdviceAnchor.attr("onclick", `showJournalAdvice(${result});`);
+                        cell.append(journalAdviceAnchor);
+                    };
+                };
+
+                $.each(model.ExtraButtons, function () {
+                    const advice = this;
+
+                    var clickExprssion;
+                    var href;
+
+                    if (typeof (advice.ClickExpression) === "function") {
+                        clickExprssion = advice.ClickExpression(data);
+                    };
+
+                    if (typeof (advice.HrefExpression) === "function") {
+                        href = advice.HrefExpression(data);
+                    };
+
+
+                    if (clickExprssion || href) {
+                        const adviceButton = $(`<a title='${advice.Title}'><i class='${advice.Icon} icon'></i></a>`);
+                        if (href) {
+                            adviceButton.attr("href", href);
+                        };
+
+                        if (clickExprssion) {
+                            adviceButton.attr("onclick", clickExprssion);
+                        };
+
+                        cell.append(adviceButton);
+                    };
+                });
+
+
+                return cell;
+            };
+
+            function getSelectionCell() {
+                const cell = $("<td/>");
+                const checkbox = $("<div class='ui toggle checkbox'/>");
+                const input = $("<input type='checkbox'/>");
+                const label = $("<label/>");
+
+                checkbox.append(input);
+                checkbox.append(label);
+
+                cell.append(checkbox);
+
+                return cell;
+            };
+
+            function addHeader(keys) {
+                const target = $("#SearchView thead tr").html("");
+
+                if (!keys.length) {
+                    return;
+                };
+
+                const actionCell = $("<th/>").text(window.translate("Actions"));
+                const selectCell = $("<th/>").text(window.translate("Select"));
+                target.append(actionCell).append(selectCell);
+
+                for (let i = 0; i < keys.length; i++) {
+                    const title = window.translate(keys[i]);
+                    const cell = $("<th/>").text(title);
+                    target.append(cell);
+                };
+            };
+
+
+            const target = $("#SearchView tbody").html("");
+            const keys = getKeys(data[0]);
+            addHeader(keys);
+
+            var sorted = data;
+
+            if (typeof (model.SortExpression) === "function") {
+                sorted = model.SortExpression(data);
+            };
+
+            $.each(sorted, function () {
+                const item = this;
+
+                const row = $("<tr/>").appendTo(target);
+                row.append(getActionCell(item, model));
+                row.append(getSelectionCell(item.TransactionMasterId));
+
+                $.each(keys, function () {
+                    const columnName = this;
+
+                    const text = item[columnName];
+                    const cell = getCell(text).appendTo(row);
+
+                    if (typeof (model.FormatExpression) === "function") {
+                        model.FormatExpression(cell, columnName, text);
+                    };
+                });
+            });
+        };
+
+        function setTotals() {
+            const indices = model.IndiciesForTotal;
+
+            if (!indices) {
+                return;
+            };
+
+            const spannedColumns = Math.min.apply(null, indices) || 0;
+            const numberOfColumns = $("#SearchView tr:first-of-type td").length;
+            const totalLocalized = model.TotalLocalized || "Total";
+
+            if (!$("#SearchView tfoot").length) {
+                $("#SearchView").append("<tfoot><tr></tr></tfoot>");
+            };
+
+            const footerRow = $("#SearchView tfoot tr").html("");
+
+            if (spannedColumns) {
+                footerRow.append("<th class='right aligned' colspan='" + spannedColumns + "'>" + totalLocalized + "</th>");
+            };
+
+            for (let i = spannedColumns; i < numberOfColumns; i++) {
+                footerRow.append("<th class='right aligned'></th>");
+            };
+
+            for (let i = 0; i < indices.length; i++) {
+                const index = indices[i];
+                const columnPosition = index + 1;
+
+                const amount = window.sumOfColumn("#SearchView tbody", columnPosition);
+
+                footerRow.find("th:nth-child(" + (columnPosition - spannedColumns + 1) + ")").text(window.getFormattedCurrency(amount));
+            };
+        };
+
+        function request(data) {
+            data = JSON.stringify(data);
+            return window.getAjaxRequest(model.SearchApi, "POST", data);
+        };
+
+        function getModel() {
+            return window.serializeForm($("#Annotation"));
+        };
+
+        const data = getModel();
+        const ajax = request(data);
+
+
+        ajax.success(function (response) {
+            displayTable(response, model);
+            setTotals();
+        });
+
+        ajax.fail(function (xhr) {
+            window.logAjaxErrorMessage(xhr);
+        });
+    };
+
+    function prepareView(model) {
+        const container = $(".shared.view.segment");
+
+        function setHeader() {
+            container.find(".title").text(model.Title);
+
+            if (model.AddNewButtonText) {
+                $("#AddNewButton").text(model.AddNewButtonText).attr("href", model.AddNewUrl);
+            } else {
+                $("#AddNewButton").remove();
+            };
+
+            if (!model.ReturnButtonText) {
+                $("#ReturnButton").remove();
+            } else {
+                $("#ReturnButton").text(model.ReturnButtonText);
+            };
+        };
+
+        function setAnnotation() {
+            const target = $("#Annotation .grid");
+
+            $.each(model.Annotation, function () {
+                const item = this;
+                const column = $("<div class='two wide column'/>").appendTo(target);
+                const field = $("<div class='fluid field'/>").appendTo(column);
+
+                $("<label/>").appendTo(field).text(item.Text).attr("for", item.Id + "InputText");
+                const input = $("<input type='text'/>").appendTo(field).val(item.DefaultValue);
+                input.attr("id", item.Id + "InputText").addClass(item.CssClass);
+
+                if (!item.DefaultValue) {
+                    input.attr("data-persist", "data-persist");
+                };
+            });
+
+            (function () {
+                const field = $("<div class='two wide field column'/>").appendTo(target);
+                $("<label/>").appendTo(field).html("&nbsp;");
+                const button = $("<button class='ui positive button' id='ShowButton'>").appendTo(field);
+                button.text(window.translate("Show"));
+
+                button.off("click").on("click", function () {
+                    queryView(this, model);
+                });
+            })();
+
+            window.loadDatepicker();
+            window.loadPersister();
+        };
+
+        if (model.HasVerification) {
+            prepareVerification();
+        };
+
+        setHeader();
+        setAnnotation();
+        $(".ui.dropdown").dropdown();
+
+
+        setTimeout(function () {
+            window.setRegionalFormat();
+            $("#ShowButton").trigger("click");
+        }, 500);
+    };
+
+    function getTitle() {
+        return $(".huge.title.header").text().trim();
+    };
+
+    function createPDF() {
+        const table = $("#SearchView").clone();
+        window.printGridView(getTitle(), table, '', 2, 0, $("#MarkupHidden"), downloadPDF);
+    };
+
+    function createXls() {
+        const table = $("#SearchView").clone();
+
+        window.printGridView(getTitle(), table, '', 2, 0, $("#MarkupHidden"), downloadExcel);
+    };
+
+    function createDoc() {
+        const table = $("#SearchView").clone();
+
+        window.printGridView(getTitle(), table, '', 2, 0, $("#MarkupHidden"), downloadWord);
+    };
+
+    function print() {
+        const table = $("#SearchView").clone();
+
+        window.printGridView(getTitle(), table, '', 2, 0);
+    };
+
+    function startDownload(path, fileName) {
+        const anchor = $("#DownloadAnchor");
+        anchor.attr("target", "_self");
+        anchor.attr("href", path);
+        anchor.attr("download", fileName);
+        anchor[0].click();
+    };
+
+    function downloadFile(extension) {
+        function request(model) {
+            const url = `/dashboard/reports/export/${extension}`;
+
+            const data = JSON.stringify(model);
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        function getModel() {
+            const html = $("#MarkupHidden").val();
+            const fileName = getTitle() + "." + extension;
+
+            return {
+                Html: html,
+                DocumentName: fileName
+            };
+        };
+
+        var model = getModel();
+        const ajax = request(model);
+
+        ajax.success(function (response) {
+            startDownload(response, model.DocumentName);
+        });
+
+        ajax.fail(function (xhr) {
+            window.logAjaxErrorMessage(xhr);
+        });
+    };
+
+    function downloadPDF() {
+        downloadFile("pdf");
+    };
+
+
+    function downloadExcel() {
+        downloadFile("xls");
+    };
+
+
+    function downloadWord() {
+        downloadFile("docx");
+    };
+
+    function showJournalAdvice(tranId) {
+        $(".modal iframe").attr("src",
+            `/dashboard/reports/source/Areas/MixERP.Finance/Reports/JournalEntry.xml?transaction_master_id=${tranId}`);
+
+        setTimeout(function () {
+            $(".advice.modal")
+                .modal('setting', 'transition', 'horizontal flip')
+                .modal("show");
+
+        }, 300);
+    };
+
+    function showDocumentModal(el) {
+        el = $(el).closest("a");
+        const documents = el.attr("data-documents");
+        const container = $(".documents.modal");
+        window.showDocuments(container, documents);
+
+        container.modal("show");
+    };
+
+
+    var reasonTextArea = $("#ReasonTextArea");
+    var searchView = $("#SearchView");
+    var modal = $("#ActionModal");
+    var verifyButton = $("#VerifyButton");
+    var tranId;
+    var approve;
+
+    verifyButton.click(function () {
+        function getModel(tranId) {
+            const reason = reasonTextArea.val();
+
+            return {
+                TranId: tranId,
+                Reason: reason
+            };
+        };
+
+        function request(model, type) {
+            const url = `/dashboard/finance/tasks/verification/${type}`;
+            const data = JSON.stringify(model);
+
+            return window.getAjaxRequest(url, "POST", data);
+        }
+
+        if (tranIds.length) {
+            $.each(tranIds, function(index, item) {
+                const model = getModel(item);
+                const type = approve ? "approve" : "reject";
+
+                const ajax = request(model, type);
+
+                ajax.success(function (response) {
+                    var cascadingTranId = window.parseFloat(response);
+
+                    if (cascadingTranId) {
+                        searchView.find("tr td:nth-child(3)").each(function (i) {
+                            const tranId = window.parseFloat2($(this).text() || 0);
+
+                            if (cascadingTranId === tranId) {
+                                removeRow(i);
+                            };
+                        });
+                    };
+
+                    searchView.find("input:checked").first().parent().parent().parent().remove();
+                    hideModal();
+                });
+
+                ajax.fail(function (xhr) {
+                    window.logAjaxErrorMessage(xhr);
+                });
+            })
+        } else {
+            const model = getModel(tranIds);
+            const type = approve ? "approve" : "reject";
+
+            const ajax = request(model, type);
+
+            ajax.success(function (response) {
+                var cascadingTranId = window.parseFloat(response);
+
+                if (cascadingTranId) {
+                    searchView.find("tr td:nth-child(3)").each(function (i) {
+                        const tranId = window.parseFloat2($(this).text() || 0);
+
+                        if (cascadingTranId === tranId) {
+                            removeRow(i);
+                        };
+                    });
+                };
+
+                searchView.find("input:checked").first().parent().parent().parent().remove();
+                hideModal();
+            });
+
+            ajax.fail(function (xhr) {
+                window.logAjaxErrorMessage(xhr);
+            });
+        }
+
+        return false;
+    });
+    shortcut.add("CTRL+RETURN", function () {
+        if (modal.is(":visible")) {
+            verifyButton.trigger("click");
+        };
+    });
+
+    function showModal() {
+        const header = modal.find(".ui.massive.header");
+        const subheader = modal.find(".ui.dividing.header");
+
+        header.html("Reject Transaction");
+        subheader.html(window.stringFormat("TranId: #{0}", tranId));
+        header.removeClass("green").addClass("red");
+
+        if (approve) {
+            header.html("Approve Transaction");
+            header.removeClass("red").addClass("green");
+        };
+
+        modal.modal('setting', 'closable', false).modal('show');
+    };
+
+    function getSelectedItem() {
+        const selected = searchView.find("input:checked").first();
+
+        if (selected.length) {
+            const row = selected.parent().parent().parent();
+            const id = row.find("td:nth-child(4)").html();
+            return window.parseInt(id);
+        };
+
+        return 0;
+    };
+
+    function removeRow(index, callback) {
+        searchView.find("tr").eq(index + 1).addClass("negative").fadeOut(500, function () {
+            $(this).remove();
+
+            if (typeof (callback) === "function") {
+                callback();
+            };
+        });
+    };
+
+    function hideModal() {
+        modal.modal("hide");
+    };
+
+    var tranIds;
+    function getSelectedItranIds() {
+        var journalView = $("#SearchView");
+        const selected = journalView.find("input:checked");
+
+        if (selected.length === 1) {
+            const row = selected.parent().parent().parent();
+            const id = row.find("td:nth-child(3)").html();
+            tranIds = window.parseInt(id);
+            return tranIds;
+        };
+
+        if (selected.length > 1) {
+            tranIds = [];
+            $.each(selected, function(index, item) {
+                const row = $(item).parent().parent().parent();
+                const id = row.find("td:nth-child(3)").html();
+                tranIds.push(window.parseInt(id));
+            });
+
+            return tranIds;
+        }
+
+        return 0;
+    };
+
+    function prepareVerification() {
+        function getButton(id, text) {
+            const button = $("<a class='ui basic button'/>");
+            button.attr("id", id);
+            button.html(text);
+
+            return button;
+        };
+
+        $("#StatusInputText").val("Unverified");
+
+
+        const approveButton = getButton("ApproveButton", "Approve");
+        const rejectButton = getButton("RejectButton", "Reject");
+
+        $("#AddNewButton").after(approveButton);
+        approveButton.after(rejectButton);
+
+
+        approveButton.click(function () {
+            tranIds = getSelectedItranIds();
+
+            if (tranIds) {
+                tranId = !tranIds.length? tranIds : '(Multiple Selected)';
+                approve = true;
+                showModal();
+            };
+        });
+
+        rejectButton.click(function () {
+            tranIds = getSelectedItranIds();
+
+            if (tranIds) {
+                tranId = !tranIds.length ? tranIds : '(Multiple Selected)';
+                approve = false;
+                showModal();
+            };
+        });
+    };
+
+</script>

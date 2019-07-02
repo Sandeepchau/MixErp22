@@ -1,0 +1,79 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.ChartOfAccounts;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("ChartOfAccounts");
+
+    scrudFactory.viewAPI = "/api/views/finance/account-scrud-view";
+    scrudFactory.viewTableName = "finance.account_scrud_view";
+
+    scrudFactory.formAPI = "/api/forms/finance/accounts";
+    scrudFactory.formTableName = "finance.accounts";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "AccountName";
+
+    scrudFactory.card = {
+        header: "AccountName",
+        meta: "AccountNumber",
+        description: "AccountMaster"        
+    };
+
+    scrudFactory.layout = [
+        {
+            tab: "",
+            fields: [
+                ["AccountId", ""],
+            ]
+        }
+    ];
+
+    scrudFactory.keys = [
+        {
+            property: "AccountMasterId",
+            url: '/api/forms/finance/account-masters/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CurrencyCode",
+            url: '/api/forms/core/currencies/lookup-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "ParentAccountId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        }
+    ];
+
+
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

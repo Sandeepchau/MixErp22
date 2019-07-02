@@ -1,0 +1,20 @@
+﻿@using MixERP.Finance.Extensions
+@model long
+@{
+    ViewBag.Title = I18N.Checklist;
+    Layout = ViewBag.FinanceLayoutPath;
+}
+@Html.PartialView("Shared/Checklist.cshtml", TenantConvention.GetTenant())
+<script>
+    window.overridePath = "/dashboard/finance/tasks/journal/entry";
+
+    window.prepareChecklist({
+        TranId: "@Model",
+        Title: window.translate("JournalEntry") + " #@Model",
+        ViewText: window.translate("ViewJournalEntries"),
+        ViewUrl: "/dashboard/finance/tasks/journal/entry",
+        AddNewText: window.translate("AddNewJournalEntry"),
+        AddNewUrl: "/dashboard/finance/tasks/journal/entry/new",
+        ReportPath: "/dashboard/reports/source/Areas/MixERP.Finance/Reports/JournalEntry.xml?transaction_master_id=@Model"
+    });
+</script>

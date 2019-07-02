@@ -1,0 +1,899 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.JournalEntries;
+    Layout = ViewBag.FinanceLayoutPath;
+}
+<div class="ui attached page segment" style="min-height: 100%;padding:3em;">
+    <div class="ui huge header">@I18N.AddNewJournalEntry</div>
+    <div class="ui divider"></div>
+
+    <div class="ui form segment" style="width:700px;">
+        <div class="three fields">
+            <div class="field">
+                <label for="ValueDateTextBox">
+                    @I18N.ValueDate
+                </label>
+                <input id="ValueDateTextBox" class="date" type="text">
+            </div>
+            <div class="field">
+                <label for="BookDateTextBox">
+                    @I18N.BookDate
+                </label>
+                <input id="BookDateTextBox" class="date" type="text">
+            </div>
+            <div class="field">
+                <label for="ReferenceNumberInputText">
+                    @I18N.ReferenceNumber
+                </label>
+                <input id="ReferenceNumberInputText" type="text">
+            </div>
+        </div>
+    </div>
+
+    <input id="TransactionGridViewHidden" type="hidden">
+
+    <div class="fluid width section">
+        <table id="TransactionGridView" class="ui nowrap celled table segment" style="min-width: 1200px; max-width: 2000px;">
+            <thead>
+                <tr>
+                    <th style="width: 17%">
+                        <label for="StatementReferenceInputText">
+                            @I18N.StatementReference
+                        </label>
+                    </th>
+                    <th scope="col" style="width: 5%;">
+                        <label for="AccountNumberInputText">
+                            @I18N.AccountNumber
+                        </label>
+                    </th>
+                    <th style="width: 15%;">
+                        <label for="AccountSelect">
+                            @I18N.Account
+                        </label>
+                    </th>
+                    <th style="width: 7%;">
+                        <label for="CashRepositorySelect">
+                            @I18N.CashRepository
+                        </label>
+                    </th>
+                    <th style="width: 8%;">
+                        <label for="CurrencySelect">
+                            @I18N.Currency
+                        </label>
+                    </th>
+                    <th class="text-right" style="width: 9%;">
+                        <label for="DebitInputText">
+                            @I18N.Debit
+                        </label>
+                    </th>
+                    <th class="text-right" style="width: 9%;">
+                        <label for="CreditInputText">
+                            @I18N.Credit
+                        </label>
+                    </th>
+                    <th class="text-right" style="width: 7%;">
+                        <label for="ERInputText">
+                            @I18N.Er
+                        </label>
+                    </th>
+                    <th class="text-right" style="width: 7%;">
+                        <label for="LCDebitInputText">
+                            @I18N.LCDebit
+                        </label>
+                    </th>
+                    <th class="text-right" style="width: 7%;">
+                        <label for="LCCreditInputText">
+                            @I18N.LCCredit
+                        </label>
+                    </th>
+                    <th style="width: 9%;">
+                        @I18N.Action
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="ui form footer-row">
+                    <td>
+                        <input id="StatementReferenceInputText" title=@I18N.CtrlAltS type="text">
+                    </td>
+                    <td>
+                        <input id="AccountNumberInputText" title=@I18N.CtrlAltT type="text">
+                    </td>
+                    <td>
+                        <select id="AccountSelect" title=@I18N.CtrlAltA></select>
+                    </td>
+                    <td>
+                        <select id="CashRepositorySelect" class="native"></select>
+                    </td>
+                    <td>
+                        <select id="CurrencySelect" class="native"></select>
+                    </td>
+                    <td>
+                        <input id="DebitInputText" class="text-right currency" title=@I18N.CtrlAltD type="text">
+                    </td>
+                    <td>
+                        <input id="CreditInputText" class="text-right currency" title=@I18N.CtrlAltC type="text">
+                    </td>
+                    <td>
+                        <input id="ERInputText" class="text-right decimal" type="text">
+                    </td>
+                    <td>
+                        <input id="LCDebitInputText" class="text-right currency" readonly="readonly" title=@I18N.CtrlAltD type="text">
+                    </td>
+                    <td>
+                        <input id="LCCreditInputText" class="text-right currency" readonly="readonly" title=@I18N.CtrlAltC type="text">
+                    </td>
+                    <td>
+                        <input id="AddInputButton" class="ui small blue button" title=@I18N.CtrlReturn value=@I18N.Add type="button">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="ui form segment" style="width: 700px;">
+        <div class="field">
+            <label for="CostCenterSelect">
+                @I18N.CostCenter
+            </label>
+            <select id="CostCenterSelect"></select>
+        </div>
+        <div class="field">
+            <label for="DebitTotalTextBox">
+                @I18N.DebitTotal
+            </label>
+            <input id="DebitTotalTextBox" readonly="readonly" class="text-right currency" type="text">
+        </div>
+        <div class="field">
+            <label for="CreditTotalLiteral">
+                @I18N.CreditTotal
+            </label>
+            <input id="CreditTotalTextBox" readonly="readonly" class="text-right currency" type="text">
+        </div>
+        <div class="ui buttons">
+            <button id="PostButton" type="button"  class="ui small positive button">
+                @I18N.PostTransaction
+            </button>
+            <a href="/dashboard/finance/tasks/journal/entry" onclick="return (confirm(window.translate('AreYouSure')))" class="ui small blue button">@I18N.ReturnBack</a>            
+        </div>
+    </div>
+    <span id="ErrorLabelBottom" class="big error"></span>
+</div>
+
+<script>
+    var addInputButton = $("#AddInputButton");
+    var accountNumberInputText = $("#AccountNumberInputText");
+    var accountSelect = $("#AccountSelect");
+    var attachmentDiv = $("#AttachmentDiv");
+    var attachmentLabel = $("#AttachmentLabel");
+
+    var cashRepositorySelect = $("#CashRepositorySelect");
+    var costCenterSelect = $("#CostCenterSelect");
+    var creditInputText = $("#CreditInputText");
+
+    var creditTotalTextBox = $("#CreditTotalTextBox");
+    var currencySelect = $("#CurrencySelect");
+
+    var debitInputText = $("#DebitInputText");
+    var debitTotalTextBox = $("#DebitTotalTextBox");
+
+    var errorLabelBottom = $("#ErrorLabelBottom");
+    var erInputText = $("#ERInputText");
+
+    var lcCreditInputText = $("#LCCreditInputText");
+    var lcDebitInputText = $("#LCDebitInputText");
+
+    var postButton = $("#PostButton");
+
+    var referenceNumberInputText = $("#ReferenceNumberInputText");
+
+    var statementReferenceInputText = $("#StatementReferenceInputText");
+
+    var transactionGridView = $("#TransactionGridView");
+    var transactionGridViewHidden = $("#TransactionGridViewHidden");
+
+    var valueDateTextBox = $("#ValueDateTextBox");
+    var bookDateTextBox = $("#BookDateTextBox");
+
+    //Variables
+    var accountNumber = "";
+    var account = "";
+    var attachments;
+
+    var cashRepositoryCode = "";
+    var costCenterId = 0;
+    var credit = 0;
+    var currencyCode = '';
+
+    var debit = 0;
+
+    var lcCredit = 0;
+    var lcDebit = 0;
+    var er = 0.00;
+
+    var valueDate;
+    var bookDate;
+
+    var url = "";
+    var data = "";
+    var referenceNumber = "";
+    var statementReference = "";
+
+    function addLoader(el) {
+        el.addClass("loading");
+    };
+
+    function removeLoader(el) {
+        el.removeClass("loading");
+    };
+
+
+    //Utilities
+    var addShortcuts = function () {
+        "use strict";
+
+        shortcut.add("CTRL+ALT+T", function () {
+            $('#AccountNumberTextBox').focus();
+        });
+
+        shortcut.add("CTRL+ALT+A", function () {
+            $('#AccountSelect').focus();
+        });
+
+        shortcut.add("CTRL+ALT+S", function () {
+            $('#StatementReferenceTextBox').focus();
+        });
+
+        shortcut.add("CTRL+ALT+D", function () {
+            $('#lcDebitTextBox').focus();
+        });
+
+        shortcut.add("CTRL+ALT+C", function () {
+            $('#lcCreditTextBox').focus();
+        });
+
+        shortcut.add("CTRL+RETURN", function () {
+            $('#AddInputButton').click();
+        });
+    };
+
+
+    function createCascadingPair(select, input) {
+        input.blur(function () {
+            selectDropDownListByValue(this.id, select.attr("id"));
+        });
+
+        select.change(function () {
+            input.val(select.getSelectedValue());
+        });
+    };
+
+    var selectDropDownListByValue = function (textBoxId, dropDownListId) {
+        const listControl = $("#" + dropDownListId);
+        const textBox = $("#" + textBoxId);
+        var selectedValue = textBox.val();
+        var exists;
+
+        if (window.isNullOrWhiteSpace(textBox.val())) {
+            return;
+        };
+
+        if (listControl.length) {
+            listControl.find('option').each(function () {
+                if (this.value === selectedValue) {
+                    exists = true;
+                }
+            });
+        }
+
+        if (exists) {
+            listControl.val(selectedValue).trigger('change');
+        } else {
+            textBox.val('').trigger('change');
+        }
+
+        window.triggerChange(dropDownListId);
+    };
+
+
+    //Page Load Event
+    $(document).ready(function () {
+        "use strict";
+        addShortcuts();
+        initializeAjaxData();
+        createCascadingPair(accountSelect, accountNumberInputText);
+    });
+
+    function initializeAjaxData() {
+        loadAccounts();
+        loadCostCenters();
+    };
+
+    function loadAccounts() {
+        function request() {
+            url = "/dashboard/finance/chart-of-accounts/list";
+            return window.getAjaxRequest(url);
+        };
+
+        const ajax = request();
+
+        ajax.success(function (response) {
+            var options = `<option>${window.translate("Select")}</option>`;
+
+            $.each(response, function () {
+                var option = "<option value='{accountNumber}' data-account-master-id='{accountMasterId}' data-currency-code='{currencyCode}'>{accountName}</option>";
+                option = option.replace("{accountNumber}", this.AccountNumber);
+                option = option.replace("{accountName}", this.AccountName);
+                option = option.replace("{accountMasterId}", this.AccountMasterId);
+                option = option.replace("{currencyCode}", this.CurrencyCode);
+
+                options += option;
+            });
+
+            accountSelect.html(options);
+        });
+
+        ajax.fail(function (xhr) {
+            window.logAjaxErrorMessage(xhr);
+        });
+    };
+
+    function loadCashRepositories() {
+        const url = "/api/forms/finance/cash-repositories/lookup-fields";
+        window.ajaxDataBind(url, cashRepositorySelect, null, "Key", "Value");
+    };
+
+    function loadCostCenters() {
+		window.displayFieldBinder(costCenterSelect, "/api/forms/finance/cost-centers/display-fields", true);
+    };
+
+    function loadCurrencies() {
+        url = "/api/forms/core/currencies/lookup-fields";
+        window.ajaxDataBind(url, currencySelect, null, "Key", "Key");
+    };
+
+    //Control Events
+    accountSelect.change(function () {
+        accountNumberInputText.val(accountSelect.getSelectedValue());
+    });
+
+    function isCashAccount() {
+        const selectedAccount = accountSelect.find("option:selected");
+        const accountMasterId = window.parseInt(selectedAccount.attr("data-account-master-id"));
+        if (accountMasterId === 10101) {
+            return true;
+        };
+
+        return false;
+    };
+
+    accountSelect.blur(function () {
+        function loadCurrency(selectedAccount) {
+            const currencyCode = selectedAccount.attr("data-currency-code");
+
+            var option = "<option value='{currencyCode}'>{currencyCode}</option>";
+            option = option.replace(/{currencyCode}/g, currencyCode);
+
+            currencySelect.html(option);
+        };
+
+        const selectedAccount = accountSelect.find("option:selected");
+        loadCurrency(selectedAccount);
+
+
+        //Cash Account
+        if (isCashAccount()) {
+            loadCashRepositories();
+            loadCurrencies();
+        } else {
+            cashRepositorySelect.html("");
+        };
+    });
+
+    addInputButton.click(function () {
+        statementReference = statementReferenceInputText.val();
+        accountNumber = accountNumberInputText.val();
+        account = accountSelect.getSelectedText();
+        cashRepositoryCode = cashRepositorySelect.getSelectedValue();
+
+        currencyCode = currencySelect.getSelectedValue();
+
+        debit = window.parseFloat2(debitInputText.val() || 0);
+        credit = window.parseFloat2(creditInputText.val() || 0);
+
+        er = window.parseFloat2(erInputText.val() || 0);
+
+        lcDebit = window.parseFloat2(lcDebitInputText.val() || 0);
+        lcCredit = window.parseFloat2(lcCreditInputText.val() || 0);
+
+        if (window.isNullOrWhiteSpace(statementReference)) {
+            window.makeDirty(statementReferenceInputText);
+            return;
+        };
+
+        window.removeDirty(statementReferenceInputText);
+
+        if (window.isNullOrWhiteSpace(accountNumberInputText.val())) {
+            window.makeDirty(accountNumberInputText);
+            return;
+        };
+
+        window.removeDirty(accountNumberInputText);
+
+        if (window.isNullOrWhiteSpace(accountSelect.getSelectedText())) {
+            window.makeDirty(accountSelect);
+            return;
+        };
+
+        window.removeDirty(accountSelect);
+
+
+        if (er <= 0) {
+            window.makeDirty(erInputText);
+            return;
+        };
+
+        window.removeDirty(erInputText);
+
+        if ((debit > 0 && credit > 0) || (debit === 0 && credit === 0)) {
+            window.makeDirty(debitInputText);
+            window.makeDirty(creditInputText);
+            return;
+        };
+
+        if ((lcDebit > 0 && lcCredit > 0) || (lcDebit === 0 && lcCredit === 0)) {
+            window.makeDirty(lcDebitInputText);
+            window.makeDirty(lcCreditInputText);
+            return;
+        };
+
+        if (lcDebit < 0) {
+            window.makeDirty(lcDebitInputText);
+            return;
+        };
+
+        if (lcCredit < 0) {
+            window.makeDirty(lcCreditInputText);
+            return;
+        };
+
+        window.removeDirty(debitInputText);
+        window.removeDirty(creditInputText);
+        window.removeDirty(lcDebitInputText);
+        window.removeDirty(lcCreditInputText);
+        window.removeDirty(cashRepositorySelect);
+
+        if (cashRepositorySelect.find("option").size() > 1 && window.isNullOrWhiteSpace(cashRepositorySelect.getSelectedValue())) {
+            window.displayMessage(window.translate("InvalidCashRepositorySpecified"));
+            return;
+        };
+
+        var isCash = isCashAccount();
+
+        if (isCash) {
+            if (window.isNullOrWhiteSpace(cashRepositoryCode)) {
+                window.makeDirty(cashRepositorySelect);
+                window.displayMessage(window.translate("InvalidCashRepositorySpecified"), "error");
+                return;
+            };
+        } else {
+            if (!window.isNullOrWhiteSpace(cashRepositoryCode)) {
+                window.displayMessage(window.translate("InvalidCashRepositorySpecified"));
+                window.makeDirty(cashRepositorySelect);
+                return;
+            };
+
+            addLoader(transactionGridView);
+            addRow(statementReference, accountNumber, account, "", currencyCode, debit, credit, er, lcDebit, lcCredit, false);
+            return;
+        };
+
+
+        addLoader(transactionGridView);
+
+
+        if (debit > 0) {
+            addRow(statementReference, accountNumber, account, cashRepositoryCode, currencyCode, debit, credit, er, lcDebit, lcCredit, true);
+            return;
+        } else {
+            if (isCash) {
+                var ajaxHasBalance = hasBalance(cashRepositoryCode, currencyCode, credit);
+
+                ajaxHasBalance.fail(function (xhr) {
+                    removeLoader(transactionGridView);
+                    window.logAjaxErrorMessage(xhr);
+                });
+
+                ajaxHasBalance.success(function (response) {
+                    const hasBalance = response;
+
+                    if (!hasBalance) {
+                        window.displayMessage(window.translate("NotEnoughBalanceCashRepository") + " " + cashRepositoryCode, "error");
+                        removeLoader(transactionGridView);
+                        window.makeDirty(cashRepositorySelect);
+                        return;
+                    };
+
+                    addRow(statementReference, accountNumber, account, cashRepositoryCode, currencyCode, debit, credit, er, lcDebit, lcCredit, true);
+                });
+            };
+        };
+    });
+
+    function editRow(anchor) {
+        const row = $(anchor).closest("tr");
+        row.removeClass("negative positive").toggleClass("editing indicator");
+
+        if (!row.is(".editing")) {
+            $("#AccountNumberInputText").prop("disabled", false);
+            $("#AccountSelect").prop("disabled", false);
+            return;
+        };
+
+
+        $("#TransactionGridView tr.editing.indicator").not(row).removeClass("editing indicator");
+
+        const statementReference = row.find("td:nth-child(1)").text();
+        const accountNumber = row.find("td:nth-child(2)").text();
+        const cashRepository = row.find("td:nth-child(4)").text();
+        const currencyCode = row.find("td:nth-child(5)").text();
+        const debit = window.parseFloat2(row.find("td:nth-child(6)").text());
+        const credit = window.parseFloat2(row.find("td:nth-child(7)").text());
+        const er = window.parseFloat2(row.find("td:nth-child(8)").text());
+        const lcDebit = window.parseFloat2(row.find("td:nth-child(9)").text());
+        const lcCredit = window.parseFloat2(row.find("td:nth-child(10)").text());
+
+        $("#StatementReferenceInputText").val(statementReference);
+        $("#AccountNumberInputText").val(accountNumber).prop("disabled", true).trigger("change").trigger("blur");
+        $("#AccountSelect").val(accountNumber).prop("disabled", true).trigger("change").trigger("blur");
+        $("#DebitInputText").val(debit);
+        $("#CreditInputText").val(credit);
+        $("#ERInputText").val(er);
+        $("#LCDebitInputText").val(lcDebit);
+        $("#LCCreditInputText").val(lcCredit);
+
+        setTimeout(function() {
+            $("#CashRepositorySelect").val(cashRepository);
+            $("#CurrencySelect").val(currencyCode);
+        }, 1000);
+    };
+
+    var addRow = function (statementReference, accountNumber, account, cashRepository, currencyCode, debit, credit, er, lcDebit, lcCredit, isCash) {
+        const grid = transactionGridView;
+        const rows = grid.find("tbody tr:not(:last-child)");
+        var duplicateEntry = false;
+
+        if (!currencyCode) {
+            window.makeDirty(currencySelect);
+            removeLoader(transactionGridView);
+            return;
+        };
+
+        window.removeDirty(currencySelect);
+
+        if ($("#AccountSelect").is(":disabled")) {
+            const target = $("tr.editing.indicator");
+            target.find("td:nth-child(1)").text(statementReference);
+            target.find("td:nth-child(2)").text(accountNumber);
+            target.find("td:nth-child(3)").text(account);
+            target.find("td:nth-child(4)").text(cashRepository);
+            target.find("td:nth-child(5)").text(currencyCode);
+            target.find("td:nth-child(6)").text(window.getFormattedCurrency(debit));
+            target.find("td:nth-child(7)").text(window.getFormattedCurrency(credit));
+            target.find("td:nth-child(8)").text(window.getFormattedNumber(er));
+            target.find("td:nth-child(9)").text(window.getFormattedCurrency(lcDebit));
+            target.find("td:nth-child(10)").text(window.getFormattedCurrency(lcCredit));
+
+            target.removeClass("editing indicator").addClass("negative");
+            $("#AccountSelect").prop("disabled", false);
+            $("#AccountNumberInputText").prop("disabled", false).focus();
+            removeLoader(transactionGridView);
+            summate();
+            return;
+        };
+
+        rows.each(function () {
+            const row = $(this);
+
+            if (!isCash) {
+                if (window.getColumnText(row, 1) === accountNumber) {
+                    window.displayMessage(window.translate("DuplicateEntry"));
+                    window.makeDirty(accountNumberInputText);
+                    duplicateEntry = true;
+
+                    removeLoader(transactionGridView);
+                };
+            };
+
+            if (isCash) {
+                if (window.getColumnText(row, 3) === cashRepository) {
+                    window.displayMessage(window.translate("DuplicateEntry"));
+                    window.makeDirty(accountNumberInputText);
+                    duplicateEntry = true;
+                };
+            };
+        });
+
+
+        const html = "<tr class='grid2-row'><td>" + statementReference + "</td><td>" + accountNumber + "</td><td>" + account + "</td><td>" + cashRepository + "</td><td>" + currencyCode + "</td><td class='text-right'>" + window.getFormattedCurrency(debit) + "</td><td class='text-right'>" + window.getFormattedCurrency(credit) + "</td>"
+            + "<td class='text-right'>" + window.getFormattedNumber(er) + "</td><td class='text-right'>" + window.getFormattedCurrency(lcDebit) + "</td><td class='text-right'>" + window.getFormattedCurrency(lcCredit) + "</td>"
+            + "<td><a class='pointer' onclick='editRow($(this));'><i class='ui edit icon'></i></a><a class='pointer' onclick='removeRow($(this));summate();'><i class='ui delete icon'></i></a><a class='pointer' onclick='toggleDanger($(this));'><i class='ui pointer check mark icon'></a></i><a class='pointer' onclick='toggleSuccess($(this));'><i class='ui pointer thumbs up icon'></i></a></td></tr>";
+        grid.find("tr:last").before(html);
+
+        summate();
+
+        lcDebitInputText.val("");
+        lcCreditInputText.val("");
+        debitInputText.val("");
+        creditInputText.val("");
+
+        creditInputText.prop("disabled", false);
+
+        removeLoader(transactionGridView);
+        window.repaint();
+        statementReferenceInputText.focus();
+    };
+
+    attachmentLabel.on("click", function () {
+        attachmentDiv.toggle(500);
+    });
+
+    currencySelect.blur(function () {
+        const ajaxGetExchangeRate = getExchangeRate(currencySelect.getSelectedValue());
+
+        ajaxGetExchangeRate.done(function (response) {
+            erInputText.val(response);
+        });
+
+        ajaxGetExchangeRate.fail(function (xhr) {
+            window.logAjaxErrorMessage(xhr);
+        });
+    });
+
+    debitInputText.blur(function () {
+        debit = window.parseFloat2(debitInputText.val() || 0);
+
+        if (debit > 0) {
+            creditInputText.prop("disabled", true);
+            erInputText.focus();
+            return;
+        };
+
+        creditInputText.prop("disabled", false);
+    });
+
+    debitInputText.keyup(function () {
+        UpdateLocalCurrencies();
+    });
+
+    creditInputText.keyup(function () {
+        UpdateLocalCurrencies();
+    });
+
+    erInputText.keyup(function () {
+        UpdateLocalCurrencies();
+    });
+
+    function UpdateLocalCurrencies() {
+        er = window.parseFloat2(erInputText.val() || 0);
+
+        if (er > 0) {
+            lcDebitInputText.val(window.parseFloat2(debitInputText.val() || 0) * er);
+            lcCreditInputText.val(window.parseFloat2(creditInputText.val() || 0) * er);
+        };
+    };
+
+    postButton.click(function () {
+        valueDate = window.parseLocalizedDate(valueDateTextBox.val());
+        bookDate = window.parseLocalizedDate(bookDateTextBox.val());
+        referenceNumber = referenceNumberInputText.val();
+        costCenterId = window.parseInt(costCenterSelect.getSelectedValue() || 0);
+
+        if (validate()) {
+            post();
+        };
+    });
+
+    var post = function () {
+        function request(model) {
+            const url = "/dashboard/finance/tasks/journal/entry/new";
+            const data = JSON.stringify(model);
+
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        const model = getModel();
+
+        postButton.addClass("loading").prop("disabled", true);
+        const ajax = request(model);
+
+        ajax.success(function (response) {
+            postButton.removeClass("loading").prop("disabled", false);
+            const id = response;
+            window.location = "/dashboard/finance/tasks/journal/checklist/" + id;
+        });
+
+        ajax.fail(function (xhr) {
+            postButton.removeClass("loading").prop("disabled", false);
+            window.logAjaxErrorMessage(xhr);
+
+            const errorMessage = window.getAjaxErrorMessage(xhr);
+            errorLabelBottom.html(errorMessage);
+        });
+    };
+
+    function getModel() {
+        var details = [];
+
+        transactionGridView.find("tbody tr:not(:last-child)")
+            .each(function () {
+                const row = $(this);
+                const statementReference = row.find("td:nth-child(1)").text();
+                const accountNumber = row.find("td:nth-child(2)").text();
+                const account = row.find("td:nth-child(3)").text();
+                const cashRepositoryCode = (row.find("td:nth-child(4)").text() || null);
+                const currencyCode = row.find("td:nth-child(5)").text();
+                const debit = window.parseFloat2(row.find("td:nth-child(6)").text());
+                const credit = window.parseFloat2(row.find("td:nth-child(7)").text());
+                const er = window.parseFloat2(row.find("td:nth-child(8)").text());
+                const lcDebit = window.parseFloat2(row.find("td:nth-child(9)").text());
+                const lcCredit = window.parseFloat2(row.find("td:nth-child(10)").text());
+
+
+                details.push({
+                    Account: account,
+                    AccountNumber: accountNumber,
+                    CashRepositoryCode: cashRepositoryCode,
+                    Credit: credit,
+                    CurrencyCode: currencyCode,
+                    Debit: debit,
+                    ExchangeRate: er,
+                    LocalCurrencyCredit: lcCredit,
+                    LocalCurrencyDebit: lcDebit,
+                    StatementReference: statementReference
+                });
+            });
+
+        const model = {
+            ValueDate: valueDate,
+            BookDate: bookDate,
+            ReferenceNumber: referenceNumber,
+            CostCenterId: costCenterId,
+            Details: details,
+            Attachemnts: []
+        };
+
+        return model;
+    };
+
+    var validate = function () {
+        errorLabelBottom.html("");
+
+        window.removeDirty(valueDateTextBox);
+        window.removeDirty(referenceNumberInputText);
+        window.removeDirty(statementReferenceInputText);
+        window.removeDirty(accountNumberInputText);
+        window.removeDirty(accountSelect);
+        window.removeDirty(cashRepositorySelect);
+        window.removeDirty(lcDebitInputText);
+        window.removeDirty(lcCreditInputText);
+        window.removeDirty(costCenterSelect);
+
+        if (!window.isDate(valueDate)) {
+            window.makeDirty(valueDateTextBox);
+            errorLabelBottom.html(window.translate("InvalidDate"));
+            return false;
+        };
+
+        if (window.parseInt(costCenterSelect.getSelectedValue() || 0) <= 0) {
+            window.makeDirty(costCenterSelect);
+            errorLabelBottom.html(window.translate("InvalidCostCenter"));
+            return false;
+        };
+
+
+        if (transactionGridView.find("tr").length === 2) {
+            errorLabelBottom.html(window.translate("GridViewEmpty"));
+            return false;
+        };
+
+        const rows = transactionGridView.find("tr:not(:first-child):not(:last-child)");
+
+        if (rows.each(function () {
+            const row = $(this);
+
+            debit = window.parseFloat2(window.getColumnText(row, 8));
+            credit = window.parseFloat2(window.getColumnText(row, 9));
+
+            if (debit > 0 && credit > 0) {
+                window.addDanger(row);
+                return false;
+        };
+
+            if (debit < 0 || credit < 0) {
+                window.addDanger(row);
+                return false;
+        };
+
+            if (debit === 0 && credit === 0) {
+                window.addDanger(row);
+                return false;
+        };
+
+            return true;
+        }) === false) {
+            return false;
+        };
+
+        summate();
+
+        if (window.parseFloat2(debitTotalTextBox.val() || 0) !== window.parseFloat2(creditTotalTextBox.val() || 0)) {
+            window.displayMessage(window.translate("ReferencingSidesNotEqual"), "error");
+            return false;
+        };
+
+        return true;
+    };
+
+    //GridView Data Function
+
+    //GridView Manipulation
+
+    //Ajax Requests
+    function getExchangeRate(currencyCode) {
+        url = "/dashboard/finance/currency/exchange-rate/of/{currencyCode}";
+        url = url.replace("{currencyCode}", currencyCode);
+
+        return window.getAjaxRequest(url);
+    };
+
+    function hasBalance(cashRepositoryCode, currencyCode, amount) {
+        url = "/dashboard/finance/cash-repository/check-balance/{cashRepositoryCode}/{currencyCode}/{amount}";
+        url = url.replace("{cashRepositoryCode}", cashRepositoryCode);
+        url = url.replace("{currencyCode}", currencyCode);
+        url = url.replace("{amount}", credit);
+
+
+        return window.getAjaxRequest(url);
+    };
+
+    //Boolean Validation
+
+    //Validation Helper Functions
+
+    //Logic & Validation
+    var summate = function () {
+        const debitTotal = window.parseFloat2(window.sumOfColumn("#" + transactionGridView.attr("id"), 8) || 0);
+        const creditTotal = window.parseFloat2(window.sumOfColumn("#" + transactionGridView.attr("id"), 9) || 0);
+
+        debitTotalTextBox.val(window.getFormattedCurrency(debitTotal));
+        creditTotalTextBox.val(window.getFormattedCurrency(creditTotal));
+    };
+
+
+    $(document).ajaxStop(function () {
+        var importModel = window.localStorage.getItem('ImportModel');
+        localStorage.removeItem('ImportModel');
+
+        if (!importModel) {
+            return;
+        };
+
+        importModel = JSON.parse(importModel);
+
+
+        valueDateTextBox.val(importModel.valueDate);
+        bookDateTextBox.val(importModel.bookDate);
+        referenceNumberInputText.val(importModel.referenceNumber);
+        costCenterSelect.val(importModel.costCenter.toString());
+
+        $.each(importModel.table, function (i, v) {
+            addRow(v[0], v[1], v[2], v[3], v[4], v[5], v[6], v[7], v[8], v[9]);
+        });
+    });
+
+
+
+    window.overridePath = "/dashboard/finance/tasks/journal/entry";
+</script>

@@ -1,0 +1,67 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.Currencies;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("Currencies");
+
+    scrudFactory.viewAPI = "/api/forms/core/currencies";
+    scrudFactory.viewTableName = "core.currencies";
+
+    scrudFactory.formAPI = "/api/forms/core/currencies";
+    scrudFactory.formTableName = "core.currencies";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+    scrudFactory.skipPrimaryKey = true;
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "CurrencyName";
+
+    scrudFactory.card = {
+        header: "CurrencyName",
+        meta: "CurrencySymbol",
+        description: "HundredthName"        
+    };
+
+    //scrudFactory.layout = [
+    //    {
+    //        tab: "",
+    //        fields: [
+    //            ["", ""],
+    //            ["", ""],
+    //        ]
+    //    }
+    //];
+
+    //scrudFactory.keys = [
+    //    {
+    //        property: "CamelCase",
+    //        url: '/api/forms/finance/display-fields',
+    //        data: null,
+    //        valueField: "Key",
+    //        textField: "Value"
+    //    }
+    //];
+
+
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>
