@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Inventory Daily Report</Title>
+  <Body>
+    <Content>
+      <div class='center aligned'>
+        <h3>As of {Query.From} and {Query.To}</h3>
+      </div>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>    
+        WITH opening AS
+          (
+	          SELECT 
+		          item_code,
+		          item_name,
+		          CASE WHEN transaction_type = 'Dr' THEN SUM(COALESCE(quantity, 0)) END AS debit,
+		          CASE WHEN transaction_type = 'Cr' THEN SUM(COALESCE(quantity, 0)) END AS credit,
+		          unit_code,
+		          store_name
+	          FROM inventory.checkout_detail_view
+	          JOIN finance.transaction_master ON checkout_detail_view.transaction_master_id = transaction_master.transaction_master_id
+	          WHERE transaction_master.verification_status_id > 0
+            AND transaction_master.office_id = @OfficeId::int
+	          AND transaction_master.value_date &lt;= @From::date
+	          AND (COALESCE(@StoreId::int, 0) = 0 OR checkout_detail_view.store_id = @StoreId::int)
+	          GROUP BY item_code, item_name, unit_code, transaction_type, store_name
+          ),
+          closing AS
+          (
+	          SELECT 
+		          item_code,
+		          item_name,
+		          CASE WHEN transaction_type = 'Dr' THEN SUM(COALESCE(quantity, 0)) END AS debit,
+		          CASE WHEN transaction_type = 'Cr' THEN SUM(COALESCE(quantity, 0)) END AS credit,
+		          unit_code,
+		          store_name
+	          FROM inventory.checkout_detail_view
+	          JOIN finance.transaction_master ON checkout_detail_view.transaction_master_id = transaction_master.transaction_master_id
+	          WHERE transaction_master.verification_status_id > 0
+            AND transaction_master.office_id = @OfficeId::int
+	          AND transaction_master.value_date &lt;= @To::date
+	          AND (COALESCE(@StoreId::int, 0) = 0 OR checkout_detail_view.store_id = @StoreId::int)
+	          GROUP BY item_code, item_name, unit_code, transaction_type, store_name
+          ),
+          total AS
+          (
+	          SELECT 
+		          opening.store_name,
+		          opening.item_code, opening.item_name, 
+		          SUM(COALESCE(opening.debit, 0)) - SUM(COALESCE(opening.credit, 0)) AS opening,
+		          null AS closing,
+		          opening.unit_code
+	          FROM opening
+	          GROUP BY opening.item_code, opening.item_name, opening.unit_code, opening.store_name
+	          UNION ALL
+
+	          SELECT 
+		          closing.store_name,
+		          closing.item_code, closing.item_name, 
+		          null AS opening,
+		          SUM(COALESCE(closing.debit, 0)) - SUM(COALESCE(closing.credit, 0)) AS closing,
+		          closing.unit_code
+	          FROM closing
+	          GROUP BY closing.item_code, closing.item_name, closing.unit_code, closing.store_name
+          )
+          SELECT 
+	          store_name,
+	          item_code, 
+	          item_name, 
+	          SUM(COALESCE(opening, 0)) AS opening,
+	          CASE WHEN SUM(COALESCE(opening, 0))&lt;SUM(COALESCE(closing, 0)) THEN SUM(COALESCE(closing, 0)) - SUM(COALESCE(opening, 0)) END AS increase,
+	          CASE WHEN SUM(COALESCE(opening, 0))&gt;SUM(COALESCE(closing, 0)) THEN SUM(COALESCE(opening, 0)) - SUM(COALESCE(closing, 0)) END AS decrease,
+	          SUM(COALESCE(closing, 0)) AS closing,
+	          unit_code
+          FROM total
+          GROUP BY store_name, item_code, item_name, unit_code
+          ORDER BY item_code;
+      </Query>
+      <Parameters>
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+        <Parameter Name="@StoreId" FieldLabel="Store" Type="int" PopulateFrom="/api/forms/inventory/stores/display-fields" KeyField="Key" ValueField="Value" Optional="true" />
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+      </Parameters>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

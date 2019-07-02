@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Inventory Transfer</Title>
+  <TopSection>
+    <table class="table horizontal">
+      <tr>
+        <td>{i18n.TransactionDate}</td>
+        <td>{DataSource[0].transaction_ts}</td>
+      </tr>
+      <tr>
+        <td>{i18n.ValueDate}</td>
+        <td>{DataSource[0].value_date}</td>
+      </tr>
+      <tr>
+        <td>{i18n.EnteredBy}</td>
+        <td> {DataSource[0].entered_by}</td>
+      </tr>
+      <tr>
+        <td>{i18n.TransactionStatus}</td>
+        <td> {DataSource[0].status}</td>
+      </tr>
+      <tr>
+        <td>{i18n.VerifiedBy}</td>
+        <td> {DataSource[0].verified_by}</td>
+      </tr>
+      <tr>
+        <td>{i18n.VerificationReason}</td>
+        <td> {DataSource[0].verification_reason}</td>
+      </tr>
+      <tr>
+        <td>{i18n.TranCode}</td>
+        <td>{DataSource[0].transaction_code}</td>
+      </tr>
+      <tr>
+        <td>{i18n.Office}</td>
+        <td>{DataSource[0].office_name}</td>
+      </tr>
+      <tr>
+        <td>{i18n.ReferenceNumber}</td>
+        <td>{DataSource[0].reference_number}</td>
+      </tr>
+      <tr>
+        <td>{i18n.StatementReference}</td>
+        <td>{DataSource[0].statement_reference}</td>
+      </tr>
+    </table>
+    <br />
+  </TopSection>
+  <Body>
+    <Content>
+      <h2>{i18n.TransferDetails}</h2>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="1">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT
+        finance.transaction_master.transaction_ts,
+        finance.transaction_master.value_date,
+        account.users.name AS entered_by,
+        core.verification_statuses.verification_status_name AS status,
+        verified_by_user.name AS verified_by,
+        finance.transaction_master.verification_reason,
+        finance.transaction_master.transaction_code,
+        core.offices.office_name,
+        finance.transaction_master.reference_number,
+        finance.transaction_master.statement_reference
+        FROM finance.transaction_master
+        INNER JOIN core.offices
+        ON finance.transaction_master.office_id = core.offices.office_id
+        INNER JOIN inventory.checkouts
+        ON finance.transaction_master.transaction_master_id = inventory.checkouts.transaction_master_id
+        INNER JOIN account.users
+        ON finance.transaction_master.user_id = account.users.user_id
+        LEFT JOIN core.verification_statuses
+        ON finance.transaction_master.verification_status_id = core.verification_statuses.verification_status_id
+        LEFT JOIN account.users AS verified_by_user
+        ON finance.transaction_master.verified_by_user_id = verified_by_user.user_id
+        WHERE finance.transaction_master.transaction_master_id=@transaction_master_id;
+      </Query>
+      <Parameters>
+        <Parameter Name="@transaction_master_id" Type="long" />
+      </Parameters>
+    </DataSource>
+    <DataSource>
+      <Query>
+        SELECT
+        inventory.checkout_details.transaction_type,
+        inventory.stores.store_code + ' (' + inventory.stores.store_name + ')' AS store,
+        inventory.items.item_code,
+        inventory.items.item_name,
+        inventory.checkout_details.quantity,
+        inventory.units.unit_name,
+        inventory.checkout_details.price,
+        inventory.checkout_details.price * inventory.checkout_details.quantity AS amount
+        FROM
+        inventory.checkout_details
+        INNER JOIN
+        inventory.items
+        ON inventory.checkout_details.item_id = inventory.items.item_id
+        INNER JOIN
+        inventory.units
+        ON inventory.checkout_details.unit_id = inventory.units.unit_id
+        INNER JOIN inventory.stores
+        ON inventory.checkout_details.store_id = inventory.stores.store_id
+        WHERE
+        checkout_id =
+        (
+        select inventory.checkouts.checkout_id
+        FROM inventory.checkouts
+        WHERE inventory.checkouts.transaction_master_id=@transaction_master_id
+        )
+        ORDER BY checkout_detail_id;
+      </Query>
+      <Parameters>
+        <Parameter Name="@transaction_master_id" Type="long" />
+      </Parameters>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Inventory Transaction Details</Title>
+  <Body>
+    <Content>
+      <h2></h2>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+			WITH data
+			AS
+			(
+				SELECT
+					finance.transaction_master.book,
+					finance.transaction_master.value_date,
+					finance.transaction_master.book_date,
+					inventory.items.item_name,
+					inventory.stores.store_name,
+					inventory.brands.brand_name,
+					inventory.checkout_details.quantity,
+					inventory.units.unit_code,
+					CASE WHEN inventory.checkout_details.transaction_type = 'Dr' THEN inventory.checkout_details.quantity * inventory.checkout_details.price END AS debit,
+					CASE WHEN inventory.checkout_details.transaction_type = 'Cr' THEN inventory.checkout_details.quantity * inventory.checkout_details.price END AS credit,
+					finance.transaction_master.statement_reference
+				FROM inventory.checkout_details
+				INNER JOIN inventory.stores
+				ON inventory.stores.store_id = inventory.checkout_details.store_id
+				INNER JOIN inventory.items
+				ON inventory.items.item_id = inventory.checkout_details.item_id
+				INNER JOIN inventory.brands
+				ON inventory.brands.brand_id = inventory.items.brand_id
+				INNER JOIN inventory.checkouts
+				ON inventory.checkouts.checkout_id = inventory.checkout_details.checkout_id
+				INNER JOIN finance.transaction_master
+				ON finance.transaction_master.transaction_master_id = inventory.checkouts.transaction_master_id
+				INNER JOIN inventory.units
+				ON inventory.units.unit_id = inventory.checkout_details.unit_id
+				WHERE finance.transaction_master.verification_status_id > 0
+				AND finance.transaction_master.value_date BETWEEN @From AND @To
+				AND inventory.checkouts.office_id = @OfficeId
+				AND (COALESCE(@ItemId, 0) = 0 OR inventory.items.item_id = @ItemId)
+				AND (COALESCE(@StoreId, 0) = 0 OR inventory.checkout_details.store_id = @StoreId)
+				AND (COALESCE(@BrandId, 0) = 0 OR inventory.items.brand_id = @BrandId)
+			)
+			SELECT * FROM data
+			ORDER BY value_date;
+      </Query>
+      <Parameters>
+        <Parameter Name="@BrandId" FieldLabel="Brand Id" Type="int" PopulateFrom="/api/forms/inventory/brands/display-fields" KeyField="Key" ValueField="Value" Optional="True"  />
+        <Parameter Name="@ItemId" FieldLabel="Item Id" Type="int" PopulateFrom="/api/forms/inventory/items/display-fields" KeyField="Key" ValueField="Value" Optional="True"  />
+        <Parameter Name="@StoreId" FieldLabel="Store Id" Type="int" PopulateFrom="/api/forms/inventory/stores/display-fields" KeyField="Key" ValueField="Value" Optional="True"  />
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>7</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>8,9</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

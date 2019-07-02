@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Physical Counting Status</Title>
+  <Body>
+    <Content>
+      <h2></h2>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+		WITH summary
+		AS
+		(
+			SELECT
+				inventory.verified_checkout_details_view.store_id,
+				inventory.get_store_name_by_store_id(inventory.verified_checkout_details_view.store_id) AS store_name,
+				inventory.verified_checkout_details_view.item_id,
+				inventory.verified_checkout_details_view.base_unit_id,
+				SUM(CASE WHEN inventory.verified_checkout_details_view.transaction_type = 'Dr' 
+						THEN inventory.verified_checkout_details_view.base_quantity
+						ELSE inventory.verified_checkout_details_view.base_quantity * -1 END)
+				AS base_total_quantity
+			FROM inventory.verified_checkout_details_view
+			WHERE store_id = @StoreId OR 0 = @StoreId::integer
+			AND value_date &lt;= @Date::date
+			GROUP BY 
+				inventory.verified_checkout_details_view.store_id, 
+				inventory.verified_checkout_details_view.item_id,
+				inventory.verified_checkout_details_view.base_unit_id
+		)
+		SELECT 
+			store_id, 
+			store_name, 
+			item_id,
+			inventory.get_item_code_by_item_id(item_id) AS item_code,
+			inventory.get_item_name_by_item_id(item_id) AS item_name,
+			inventory.convert_unit(base_unit_id, inventory.get_root_unit_id(base_unit_id)) *  base_total_quantity AS quantity,
+			inventory.get_unit_name_by_unit_id(inventory.get_root_unit_id(base_unit_id)) AS unit
+		FROM summary
+		ORDER BY store_id, item_id;
+      </Query>
+      <Parameters>
+        <Parameter Name="@Date" FieldLabel="Till Date" Type="System.DateTime" />
+        <Parameter Name="@StoreId" FieldLabel="Store Id" Type="int" Optional="true" PopulateFrom="/api/forms/inventory/stores/display-fields" KeyField="Key" ValueField="Value" />
+      </Parameters>
+    </DataSource>
+  </DataSources>
+</FrapidReport>
