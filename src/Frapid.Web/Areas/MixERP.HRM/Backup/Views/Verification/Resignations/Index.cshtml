@@ -1,0 +1,28 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.VerifyResignations;
+    Layout = ViewBag.Layout;
+}
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("VerifyResignations");
+
+    scrudFactory.viewAPI = "/api/views/hrm/resignation-verification-scrud-view";
+    scrudFactory.viewTableName = "hrm.resignation_verification_scrud_view";
+
+    scrudFactory.formAPI = "/api/forms/hrm/resignations";
+    scrudFactory.formTableName = "hrm.resignations";
+
+    scrudFactory.hasVerification = true;
+    scrudFactory.verificationApi = "/dashboard/hrm/verification/resignations";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
+    $.get('/ScrudFactory/View.html', function (view) {
+        $("#ScrudFactoryView").html(view);
+        $.cachedScript("/assets/js/scrudfactory-view.js");
+    });
+</script>
+
+<div id="ScrudFactoryView"></div>

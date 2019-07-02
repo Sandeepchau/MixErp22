@@ -1,0 +1,44 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.EmployeeTypes;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+	var scrudFactory = new Object();
+    scrudFactory.title = window.translate("EmployeeTypes");
+
+    scrudFactory.viewAPI = "/api/views/hrm/employee-type-scrud-view";
+    scrudFactory.viewTableName = "hrm.employee_type_scrud_view";
+
+    scrudFactory.formAPI = "/api/forms/hrm/employee-types";
+    scrudFactory.formTableName = "hrm.employee_types";
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+
+    scrudFactory.live = "EmployeeTypeName";
+
+    scrudFactory.card = {
+        header: "EmployeeTypeName",
+        description: "EmployeeTypeCode"
+    };
+
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

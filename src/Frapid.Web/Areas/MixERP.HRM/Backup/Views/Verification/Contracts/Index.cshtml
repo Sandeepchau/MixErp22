@@ -1,0 +1,29 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.VerifyContracts;
+    Layout = ViewBag.Layout;
+}
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("VerifyContracts");
+
+    scrudFactory.viewAPI = "/api/views/hrm/contract-verification-scrud-view";
+    scrudFactory.viewTableName = "hrm.contract_verification_scrud_view";
+
+    scrudFactory.formAPI = "/api/forms/hrm/contracts";
+    scrudFactory.formTableName = "hrm.contracts";
+
+    scrudFactory.hasVerification = true;
+    scrudFactory.verificationApi = "/dashboard/hrm/verification/contracts";
+    
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $("#ScrudFactoryView").html(view);
+        $.cachedScript("/assets/js/scrudfactory-view.js");
+    });
+</script>
+
+<div id="ScrudFactoryView"></div>

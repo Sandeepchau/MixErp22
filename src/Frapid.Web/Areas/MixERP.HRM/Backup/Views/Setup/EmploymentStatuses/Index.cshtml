@@ -1,0 +1,65 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.EmploymentStatuses;
+    Layout = ViewBag.Layout;
+}
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("EmploymentStatuses");
+
+    scrudFactory.viewAPI = "/api/forms/hrm/employment-statuses";
+    scrudFactory.viewTableName = "hrm.employment_statuses";
+
+    scrudFactory.formAPI = "/api/forms/hrm/employment-statuses";
+    scrudFactory.formTableName = "hrm.employment_statuseses";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "EmploymentStatusName";
+
+    scrudFactory.card = {
+        header: "EmploymentStatusName",
+        meta: "EmploymentStatusCode",
+        description: "IsContract"
+    };
+
+    scrudFactory.layout = [
+        {
+            tab: "",
+            fields: [
+                ["EmploymentStatusId"],
+                ["EmploymentStatusCode", "EmploymentStatusName"],
+                ["IsContract", "DefaultEmploymentStatusCodeId"],
+                ["Description"]
+            ]
+        }
+    ];
+
+    scrudFactory.keys = [
+        {
+            property: "DefaultEmploymentStatusCodeId",
+            url: '/api/views/hrm/status-code-view/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        }
+    ];
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

@@ -1,0 +1,38 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.SocialNetworks;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+	var scrudFactory = new Object();
+
+	scrudFactory.title = window.translate("SocialNetworks");
+
+    scrudFactory.viewAPI = "/api/forms/hrm/social-networks";
+    scrudFactory.viewTableName = "hrm.social_networks";
+
+    scrudFactory.formAPI = "/api/forms/hrm/social-networks";
+    scrudFactory.formTableName = "hrm.social_networks";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "SocialNetworkName";
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

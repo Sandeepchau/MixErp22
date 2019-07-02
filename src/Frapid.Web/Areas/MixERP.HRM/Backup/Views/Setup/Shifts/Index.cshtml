@@ -1,0 +1,56 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.Shifts;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("Shifts");
+
+    scrudFactory.viewAPI = "/api/forms/hrm/shifts";
+    scrudFactory.viewTableName = "hrm.shifts";
+
+    scrudFactory.formAPI = "/api/forms/hrm/shifts";
+    scrudFactory.formTableName = "hrm.shifts";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.layout = [
+        {
+            tab: "",
+            fields: [
+                ["ShiftId"],
+                ["ShiftCode", "ShiftName"],
+                ["BeginsFrom", "EndsOn"],
+                ["Description"]
+            ]
+        }
+    ];
+
+    scrudFactory.live = "ShiftName";
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+
+    scrudFactory.card = {        
+        header: "ShiftName",
+        meta: "BeginsFrom",
+        description: "EndsOn"
+    };
+
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

@@ -1,0 +1,56 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.LeaveTypes;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("LeaveTypes");
+
+    scrudFactory.viewAPI = "/api/forms/hrm/leave-types";
+    scrudFactory.viewTableName = "hrm.leave_types";
+
+    scrudFactory.formAPI = "/api/forms/hrm/leave-types";
+    scrudFactory.formTableName = "hrm.leave_types";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.layout = [
+        {
+            tab: "",
+            fields: [
+                ["LeaveTypeId"],
+                ["LeaveTypeCode", "LeaveTypeName"],
+                ["Description"]
+            ]
+        }
+    ];
+
+
+    scrudFactory.live = "LeaveTypeName";
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+
+    scrudFactory.card = {
+        header: "LeaveTypeName",        
+        description: "LeaveTypeCode"
+    };
+
+
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

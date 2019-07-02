@@ -1,0 +1,456 @@
+﻿@model MixERP.HRM.ViewModels.EmployeeInfo
+
+@{
+    ViewBag.Title = I18N.EmployeeInfo;
+    Layout = ViewBag.Layout;
+}
+
+<div class="ui container">
+    <div class="ui attached padded segment">
+        <div class="ui purple header">
+            <img src="@Model.Details.Photo?Width=200&Height=200"
+                 class="ui circular image" alt="@Model.Details.EmployeeName" />
+            <div class="content">
+                @Model.Details.EmployeeName
+                <div class="sub header">
+                    @Model.Details.EmployeeType
+                </div>
+            </div>
+        </div>
+
+
+        <div class="bpad8">
+            <div class="ui basic buttons">
+                <a href="/dashboard/hrm/tasks/employees" class="ui basic button">Employees</a>
+                <a href="/dashboard/hrm/tasks/employees/identification-details?EmployeeId=@Model.Details.EmployeeId" class="ui basic button">@I18N.IdentificationDetails</a>
+                <a href="/dashboard/hrm/tasks/employees/social-networks?EmployeeId=@Model.Details.EmployeeId" class="ui basic button">@I18N.SocialNetworks</a>
+                <a href="/dashboard/hrm/tasks/employees/experiences?EmployeeId=@Model.Details.EmployeeId" class="ui basic button">@I18N.Experiences</a>
+                <a href="/dashboard/hrm/tasks/employees/qualifications?EmployeeId=@Model.Details.EmployeeId" class="ui basic button">@I18N.Qualifications</a>
+                <a href="/dashboard/hrm/tasks/employees/leave-application?EmployeeId=@Model.Details.EmployeeId" class="ui basic button">@I18N.LeaveApplication</a>
+            </div>
+        </div>
+
+        <div class="ui attached tabular menu">
+            <a class="active item" data-tab="general-info-tab">@I18N.GeneralInformation</a>
+            <a class="item" data-tab="identification-tab">@I18N.IdentificationDetails</a>
+            <a class="item" data-tab="social-networks-tab">@I18N.SocialNetworks</a>
+            <a class="item" data-tab="experiences-tab">@I18N.Experiences</a>
+            <a class="item" data-tab="qualifications-tab">@I18N.Qualifications</a>
+        </div>
+        <div class="ui active tab attached segment" data-tab="general-info-tab">
+            <div class="ui stackable grid">
+                <div class="five wide column">
+                    <div class="ui segment">
+                        <div class="ui large header">
+                            @Model.Details.EmployeeName
+                        </div>
+                        <a href="@Model.Details.Photo" target="_blank">
+                            <img src="@Model.Details.Photo?Height=300&Width=272" class="ui image" alt="@Model.Details.EmployeeName" />
+                        </a>
+                        <br />
+                        <table class="ui striped definition table">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        @I18N.EmailAddress
+                                    </td>
+                                    <td>
+                                        <i class="mail icon"></i>
+                                        <a href="mailto:@Model.Details.EmailAddress">@Model.Details.EmailAddress</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @I18N.Website
+                                    </td>
+                                    <td>
+                                        <i class="world icon"></i>
+                                        <a href="@Model.Details.Website" target="_blank">@Model.Details.Website</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @I18N.Blog
+                                    </td>
+                                    <td>
+                                        <i class="world icon"></i>
+                                        <a href="@Model.Details.Blog" target="_blank">@Model.Details.Blog</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @I18N.HomePhone
+                                    </td>
+                                    <td>
+                                        <i class="phone icon"></i>
+                                        <a href="tel:@Model.Details.PhoneHome">@Model.Details.PhoneHome</a>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @I18N.CellPhone
+                                    </td>
+                                    <td>
+                                        <i class="mobile icon"></i>
+                                        <a href="tel:@Model.Details.PhoneCell">@Model.Details.PhoneCell</a>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        @I18N.PhoneOfficeExtension
+                                    </td>
+                                    <td>
+                                        <i class="phone icon"></i>
+                                        <a href="tel:@Model.Details.PhoneOfficeExtension">@Model.Details.PhoneOfficeExtension</a>
+
+                                    </td>
+                                </tr>
+                                <tr class="negative">
+                                    <td>
+                                        @I18N.EmergencyPhone
+                                    </td>
+                                    <td>
+                                        <i class="red phone icon"></i>
+                                        <a href="tel:@Model.Details.PhoneEmergency">@Model.Details.PhoneEmergency</a>
+                                    </td>
+                                </tr>
+                                <tr class="negative">
+                                    <td>
+                                        @I18N.EmergencyPhone2
+                                    </td>
+                                    <td>
+                                        <i class="red phone icon"></i>
+                                        <a href="tel:@Model.Details.PhoneEmergency2">@Model.Details.PhoneEmergency2</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="width: 200px;">
+                                        @I18N.User
+                                    </td>
+                                    <td>
+                                        <i class="user icon"></i>
+                                        @Model.Details.UserName
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+                <div class="eleven wide column">
+                    <table class="ui striped definition table">
+                        <tbody>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.JoinedOn
+                                </td>
+                                <td title="@Model.Details.JoinedOn.ToString()">
+                                    @Model.Details.JoinedOn
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.Office
+                                </td>
+                                <td>
+                                    @Model.Details.Office
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.Gender
+                                </td>
+                                <td>
+                                    @Model.Details.GenderName
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.MaritalStatus
+                                </td>
+                                <td>
+                                    @Model.Details.MaritalStatus
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.EmployeeType
+                                </td>
+                                <td>
+                                    @Model.Details.EmployeeType
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.Department
+                                </td>
+                                <td>
+                                    @Model.Details.CurrentDepartment
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.Role
+                                </td>
+                                <td>
+                                    @Model.Details.Role
+                                </td>
+                            </tr>
+                            <tr class="negative">
+                                <td style="width: 200px;">
+                                    @I18N.EmploymentStatus
+                                </td>
+                                <td>
+                                    @Model.Details.EmploymentStatus
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.JobTitle
+                                </td>
+                                <td>
+                                    @Model.Details.JobTitle
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.PayGrade
+                                </td>
+                                <td>
+                                    @Model.Details.PayGrade
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.Shift
+                                </td>
+                                <td>
+                                    @Model.Details.Shift
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.Nationality
+                                </td>
+                                <td>
+                                    @Model.Details.Nationality
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 200px;">
+                                    @I18N.DateOfBirth
+                                </td>
+                                <td title="@Model.Details.DateOfBirth.ToString()">
+                                    @Model.Details.DateOfBirth
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @I18N.AddressLine1
+                                </td>
+                                <td>
+                                    @Model.Details.AddressLine1
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @I18N.AddressLine2
+                                </td>
+                                <td>
+                                    @Model.Details.AddressLine2
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @I18N.ZipCode
+                                </td>
+                                <td>
+                                    @Model.Details.ZipCode
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @I18N.Street
+                                </td>
+                                <td>
+                                    @Model.Details.Street
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @I18N.City
+                                </td>
+                                <td>
+                                    @Model.Details.City
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @I18N.State
+                                </td>
+                                <td>
+                                    @Model.Details.State
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    @I18N.Country
+                                </td>
+                                <td>
+                                    <i class="{{getCountryCode(employee.Country)}} flag"></i>@Model.Details.Country
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="ui tab attached segment" data-tab="identification-tab">
+            <div class="ui grey header">
+                @I18N.IdentificationDetails
+            </div>
+
+            <table class="ui striped table">
+                <thead>
+                    <tr>
+                        <th>@I18N.IdentificationTypeCode</th>
+                        <th>@I18N.IdentificationTypeName</th>
+                        <th>@I18N.IdentificationNumber</th>
+                        <th>Expires On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.IdentificationDetails)
+                    {
+                        <tr>
+                            <td>@item.IdentificationTypeCode</td>
+                            <td>@item.IdentificationTypeName</td>
+                            <td>@item.IdentificationNumber</td>
+                            <td>@item.ExpiresOn</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <a href="/dashboard/hrm/tasks/employees/identification-details?View=FormView&EmployeeId=@Model.Details.EmployeeId&ReturnUrl={{thispage}}&data-tab=identification-tab" class="ui green button">
+                @I18N.AddNew
+            </a>
+        </div>
+        <div class="ui tab attached segment" data-tab="social-networks-tab">
+            <div class="ui grey header">
+                @I18N.SocialNetworks
+            </div>
+
+            <table class="ui striped table">
+                <thead>
+                    <tr>
+                        <th>@I18N.SocialNetworkName</th>
+                        <th>@I18N.SocialNetworkId</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.SocialNetworks)
+                    {
+                        <tr>
+                            <td>
+                                <i class="@item.SemanticCssClass icon"></i>
+                                <a href="@item.BaseUrl" target="_blank">
+                                    @item.SocialNetworkName
+                                </a>
+                            </td>
+                            <td>
+                                <a href="@item.ProfileUrl" target="_blank">
+                                    @item.SocialNetworkId
+                                </a>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <a href="/dashboard/hrm/tasks/employees/social-networks?View=FormView&EmployeeId=@Model.Details.EmployeeId&ReturnUrl={{thispage}}&data-tab=social-networks-tab" class="ui green button">
+                @I18N.AddNew
+            </a>
+        </div>
+        <div class="ui tab attached segment" data-tab="experiences-tab">
+            <div class="ui grey header">
+                @I18N.Experiences
+            </div>
+
+            <table class="ui striped table">
+                <thead>
+                    <tr>
+                        <th>@I18N.OrganizationName</th>
+                        <th>@I18N.Title</th>
+                        <th>@I18N.StartedOn</th>
+                        <th>@I18N.EndedOn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Experiences)
+                    {
+                        <tr>
+                            <td>@item.OrganizationName</td>
+                            <td>@item.Title</td>
+                            <td title="@item.StartedOn.Value">@item.StartedOn.Value.ToLocalTime()</td>
+                            <td title="@item.EndedOn.Value">@item.EndedOn.Value.ToLocalTime()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <a href="/dashboard/hrm/tasks/employees/experiences?View=FormView&EmployeeId=@Model.Details.EmployeeId&ReturnUrl={{thispage}}&data-tab=experiences-tab" class="ui green button">
+                @I18N.AddNew
+            </a>
+        </div>
+        <div class="ui tab attached segment" data-tab="qualifications-tab">
+            <div class="ui grey header">
+                @I18N.Qualifications
+            </div>
+
+            <table class="ui striped table">
+                <thead>
+                    <tr>
+                        <th>@I18N.EducationLevelName</th>
+                        <th>@I18N.Institution</th>
+                        <th>@I18N.Majors</th>
+                        <th>@I18N.TotalYears</th>
+                        <th>@I18N.StartedOn</th>
+                        <th>@I18N.CompletedOn</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Qualifications)
+                    {
+                        <tr>
+                            <td>@item.EducationLevelName</td>
+                            <td>@item.Institution</td>
+                            <td>@item.Majors</td>
+                            <td>@item.TotalYears</td>
+                            <td title="@item.StartedOn.Value">@item.StartedOn.Value.ToLocalTime()</td>
+                            <td title="@item.CompletedOn.Value">@item.CompletedOn.Value.ToLocalTime()</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <a href="/dashboard/hrm/tasks/employees/qualifications?View=FormView&EmployeeId=@Model.Details.EmployeeId&ReturnUrl={{thispage}}&data-tab=qualifications-tab" class="ui green button">
+                @I18N.AddNew
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $(".tabular.menu .item").tab();
+
+        const tab = window.getQueryStringByName("data-tab");
+
+        if (tab) {
+            $(".tabular.menu .item").tab('change tab', tab);
+        };
+    });
+
+    window.overridePath = "/dashboard/hrm/tasks/employees";
+</script>
