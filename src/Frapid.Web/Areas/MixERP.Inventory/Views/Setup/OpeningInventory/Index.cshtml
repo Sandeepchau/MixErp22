@@ -1,0 +1,268 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.OpeningInventories;
+    Layout = ViewBag.InventoryLayoutPath;
+}
+<style>
+    .modal iframe {
+        width: 100%;
+        border: none;
+        height: 700px;
+    }
+</style>
+<div class="ui attached page segment" style="min-height: 100%; padding: 3em;">
+    <div class="ui huge header">@I18N.OpeningInventories</div>
+    <div class="ui divider"></div>
+    <div class="ui basic buttons">
+        <a id="AddNewButton" class="ui basic button" style="" href="/dashboard/inventory/setup/opening-inventories/new">
+            @I18N.AddNew
+        </a>
+        @*<a class="ui basic button" id="Import" href="ImportTransaction.mix">Import</a>*@
+        <div class="ui icon top left pointing dropdown basic button" id="ExportDropDown" tabindex="0">
+            <span>
+                @I18N.Export
+            </span>
+            <div class="menu" tabindex="-1">
+                <div class="header">
+                    @I18N.ExportDocument
+                </div>
+                <a class="item" href="javascript:void(0);" onclick="createDoc();">
+                    <i class="file word outline blue icon"></i> @I18N.ExportDoc
+                </a>
+                <a class="item" href="javascript:void(0);" onclick="createXls();">
+                    <i class="file excel outline green icon"></i> @I18N.ExportExcel
+                </a>
+                <a class="item" href="javascript:void(0);" onclick="createPDF();">
+                    <i class="file pdf outline red icon"></i> @I18N.ExportPdf
+                </a>
+            </div>
+        </div>
+        <a id="PrintButton" href="javascript:void(0);" onclick="print()" class="ui basic button">
+            @I18N.Print
+        </a>
+    </div>
+
+    <div class="ui stackable form segment" id="Annotation" style="">
+        <div class="eight fields">
+            <div class="field">
+                <input class="date" data-persist placeholder="@I18N.From" id="FromInputDate" title="@I18N.From" type="date">
+            </div>
+            <div class="field">
+                <input class="date" data-persist placeholder="@I18N.To" id="ToInputDate" title="@I18N.To" type="date">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.TranId" id="TranIdInputText" title="@I18N.TranId" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.TranCode" id="TranCodeInputText" title="@I18N.TranCode" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.ReferenceNumber" id="ReferenceNumberInputText" title="@I18N.ReferenceNumber" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.StatementReference" id="StatementReferenceInputText" title="@I18N.StatementReference" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.PostedBy" id="PostedByInputText" title="@I18N.PostedBy" type="text">
+            </div>
+        </div>
+        <div class="eight fields">
+            <div class="field">
+                <input placeholder="@I18N.Office" id="OfficeInputText" title="@I18N.Office" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.Status" id="StatusInputText" title="@I18N.Status" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.VerifiedBy" id="VerifiedByInputText" title="@I18N.VerifiedBy" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.Reason" id="ReasonInputText" title="@I18N.Reason" type="text">
+            </div>
+            <div class="field hidden">
+                <input placeholder="@I18N.UserId" id="UserIdInputText" title="@I18N.UserId" type="text">
+            </div>
+            <div class="field hidden">
+                <input placeholder="@I18N.OfficeId" id="OfficeIdInputText" title="@I18N.OfficeId" type="text">
+            </div>
+            <div class="field">
+                <div class="ui green button" id="ShowButton">@I18N.Show</div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="fluid width overflown section">
+        <table id="InventoryView" class="ui nowrap table segment">
+            <thead>
+                <tr>
+                    <th>@I18N.Actions</th>
+                    <th>@I18N.Select</th>
+                    <th>@I18N.TranId</th>
+                    <th>@I18N.TranCode</th>
+                    <th>@I18N.ValueDate</th>
+                    <th>@I18N.BookDate</th>
+                    <th>@I18N.ReferenceNumberAbbrebiated</th>
+                    <th>@I18N.StatementReference</th>
+                    <th>@I18N.PostedBy</th>
+                    <th>@I18N.Office</th>
+                    <th>@I18N.Status</th>
+                    <th>@I18N.VerifiedBy</th>
+                    <th>@I18N.VerifiedOn</th>
+                    <th>@I18N.Reason</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div class="ui large advice modal">
+    <i class="close icon"></i>
+    <iframe></iframe>
+</div>
+<script>
+    function displayTable(target, model) {
+        target.find("tbody").html("");
+
+        function getCell(text, isDate, hasTime) {
+            const cell = $("<td />");
+
+            cell.text(text);
+
+            if (isDate) {
+                const date = new Date(text);
+
+                if (hasTime) {
+                    if ((text || "").trim()) {
+                        cell.text(window.moment(date).fromNow() || "");
+                        cell.attr("title", date.toLocaleString());
+                    };
+                } else {
+                    cell.text(date.toLocaleDateString());
+                    cell.attr("title", text);
+                };
+            };
+
+            return cell;
+        };
+
+        function getActionCell(tranId) {
+            const cell = $("<td />");
+
+            const checklistAnchor = $("<a title='" + window.translate("ChecklistWindow") + "'><i class='list icon'></i></a>");
+            checklistAnchor.attr("href", "/dashboard/inventory/setup/opening-inventories/checklist/" + tranId);
+
+            const inventoryAdviceAnchor = $("<a title='" + window.translate("ViewOpeningInventoryAdvice") + "'><i class='zoom icon'></i></a>");
+            inventoryAdviceAnchor.attr("href", "javascript:void(0);");
+            inventoryAdviceAnchor.attr("onclick", "showOpeningAdvice(" + tranId + ");");
+
+
+            cell.append(checklistAnchor);
+            cell.append(inventoryAdviceAnchor);
+            return cell;
+        };
+
+        function getSelectionCell() {
+            const cell = $("<td />");
+            const checkbox = $("<div class='ui toggle checkbox'/>");
+            const input = $("<input type='checkbox' />");
+            const label = $("<label />");
+
+            checkbox.append(input);
+            checkbox.append(label);
+
+            cell.append(checkbox);
+
+            return cell;
+        };
+
+        const sorted = window.Enumerable.From(model)
+            .OrderByDescending(function (x) {
+                return new Date(x.ValueDate);
+            }).ThenByDescending(function (x) {
+                return new Date(x.VerifiedOn);
+            }).ToArray();
+
+        $.each(model, function () {
+            const item = this;
+
+            const row = $("<tr />");
+
+            row.append(getActionCell(item.TransactionMasterId));
+            row.append(getSelectionCell(item.TransactionMasterId));
+            row.append(getCell(item.TransactionMasterId));
+            row.append(getCell(item.TransactionCode));
+            row.append(getCell(item.ValueDate, true, false));
+            row.append(getCell(item.BookDate, true, false));
+            row.append(getCell(item.ReferenceNumber));
+            row.append(getCell(item.StatementReference));
+            row.append(getCell(item.PostedBy));
+            row.append(getCell(item.Office));
+            row.append(getCell(item.Status));
+            row.append(getCell(item.VerifiedBy));
+            row.append(getCell(item.VerifiedOn, true, true));
+            row.append(getCell(item.Reason));
+
+            target.find("tbody").append(row);
+        });
+    };
+    function processQuery() {
+        function getModel() {
+            const model = window.serializeForm($("#Annotation"));
+            model.Book = "Opening Inventory";
+            return model;
+        };
+
+        function displayGrid(target) {
+            function request(model) {
+                const url = "/dashboard/finance/tasks/journal/view";
+                const data = JSON.stringify(model);
+                return window.getAjaxRequest(url, "POST", data);
+            };
+
+            const model = getModel();
+
+            const ajax = request(model);
+
+            ajax.success(function (response) {
+                displayTable(target, response);
+                target.removeClass("loading");
+            });
+
+            ajax.fail(function (xhr) {
+                window.logAjaxErrorMessage(xhr);
+            });
+        };
+
+        const view = $("#InventoryView").addClass("loading");
+
+        displayGrid(view);
+    };
+
+    $("#ShowButton").off("click").on("click", function () {
+        processQuery();
+    });
+
+    loadDatepicker();
+
+
+    function showOpeningAdvice(tranId) {
+        $(".advice.modal iframe").attr("src", "/dashboard/reports/source/Areas/MixERP.Inventory/Reports/Opening.xml?transaction_master_id=" + tranId);
+
+        setTimeout(function () {
+            $(".advice.modal")
+                .modal('setting', 'transition', 'horizontal flip')
+                .modal({
+                    blurring: true
+                })
+                .modal("show");
+
+        }, 300);
+    };
+    setTimeout(function () {
+        processQuery();
+    }, 1000);
+</script>

@@ -1,0 +1,707 @@
+﻿@using Frapid.ApplicationState.Cache
+@model MixERP.Inventory.ViewModels.OpeningInventoryViewModel
+
+@{
+    ViewBag.Title = I18N.OpeningInventory;
+    Layout = ViewBag.InventoryLayoutPath;
+    var meta = AppUsers.GetCurrent();
+}
+@if (!Model.MultipleInventoryAllowed && Model.HasOpeningInventory)
+{
+    <div class="ui attached segment" style="min-height: 100%; padding: 3em;">
+        <div class="ui huge header">@I18N.OpeningInventory</div>
+        <div class="ui divider"></div>
+        <div class="ui positive message">@I18N.OpeningInventoryAlreadyEnteredOffice</div>
+
+        <a href="/dashboard/inventory/setup/opening-inventories" class="ui positive button">@I18N.Okay</a>
+    </div>
+}
+else
+{
+
+    <link rel="stylesheet" href="/Areas/MixERP.Inventory/styles/checkout.css" />
+
+
+    <div class="ui attached inverted pos opening inventory segment">
+        <div class="ui active inverted dimmer" id="POSDimmer">
+            <div class="ui large text loader">@I18N.DoingSomething</div>
+        </div>
+        <div class="ui grid">
+            <div class="eleven wide column">
+                <div class="status head">
+                    <div class="left">
+                        <strong class="title info">
+                            @I18N.OpeningInventory
+                        </strong>
+                        <span class="office info" title="@I18N.CurrentBranchOffice">
+                            @meta.OfficeName
+                        </span>
+                        <span class="user info" title="@I18N.You">
+                            @meta.Name
+                        </span>
+                        <span class="area info" title="@I18N.CurrentArea">
+                            @meta.OfficeCode
+                        </span>
+                    </div>
+                </div>
+
+
+
+                <div class="category list">
+                    <div class="cat filter" style="display: none;">
+                        @I18N.Clear
+                        <i class="delete icon"></i>
+                    </div>
+                </div>
+                <div class="search panel">
+                    <input type="search" placeholder="@I18N.Search" />
+
+                </div>
+                <div class="item list" id="POSItemList">
+                </div>
+            </div>
+            <div class="five wide column">
+                <div class="tender info">
+                    <div id="SummaryItems" class="two summary items">
+                        <div class="amount item">
+                            <div class="description">@I18N.Amount</div>
+                            <div class="money">
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="store item">
+                            <div class="description">@I18N.Store</div>
+                            <div class="control">
+                                <select id="StoreSelect"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="two summary items">
+                        <div class="value date item">
+                            <div class="description">@I18N.ValueDate</div>
+                            <div class="control">
+                                <input type="text" class="date" id="ValueDateInputDate" />
+                            </div>
+                        </div>
+                        <div class="book date item">
+                            <div class="description">@I18N.BookDate</div>
+                            <div class="control">
+                                <input type="text" class="date" id="BookDateInputDate" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="two summary items">
+                        <div class="reference number item">
+                            <div class="description">@I18N.ReferenceNumberAbbrebiated</div>
+                            <div class="control">
+                                <input type="text" id="ReferenceNumberInputText" />
+                            </div>
+                        </div>
+                        <div class="memo item">
+                            <div class="description">@I18N.Memo</div>
+                            <div class="control">
+                                <input type="text" id="StatementReferenceInputText" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui one column padded grid">
+                        <div class="column">
+                            <button id="CheckoutButton" class="ui green icon big button">
+                                <i class="cart icon"></i>
+                                @I18N.Checkout
+                            </button>
+                            <button id="ClearScreenButton" class="ui red icon big button">
+                                <i class="delete icon"></i>
+                                @I18N.Cls
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div id="OpeningItems" class="opening items">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $("#OpeningItems .item")
+            .on("contextmenu",
+                function (e) {
+                    e.preventDefault();
+                    const el = $(this);
+                    const defaultMenu = el.find(".info.block, .number.block");
+                    const contextMenu = el.find(".context.menu");
+
+                    defaultMenu.toggle();
+                    contextMenu.toggle();
+                });
+    </script>
+
+    <script>
+        var itemTemplate = `<div class="item" id="pos-{ItemId}" data-cost-price="{CostPrice}" data-photo="{Photo}" data-unit-id="{UnitId}" data-valid-units="{ValidUnits}" data-brand="{BrandName}" data-item-group="{ItemGroupName}" data-item-name="{ItemName}" data-item-code="{ItemCode}" data-item-id="{ItemId}" data-price="{Price}" data-is-taxable-item="{isTaxableItem}">
+	<div class="photo block">
+		<img src="{Photo}">
+	</div>
+	<div class="info block">
+		<div class="header">{ItemName}</div>
+		<div class="price info">
+			<span class="rate">{CostPrice}</span>
+			<span>&nbsp; x&nbsp; </span>
+			<span class="quantity">1</span>
+			<span>&nbsp; =&nbsp; </span>
+			<span class="amount"></span>
+		</div>
+		<div>
+			<select class="unit inverted" data-item-id="{ItemId}">
+			</select>
+		</div>
+	</div>
+	<div class="number block">
+		<input type="text" class="price" title="${window.translate('EditPrice')}" value="{CostPrice}">
+		<input type="text" class ="quantity" title="${window.translate('EnterQuantity')}" value="1">
+		<button class ="ui red fluid button" onclick="removeItem(this);" style="display:none;">${window.translate("Edit Price")}</button>
+	</div>
+</div>`
+    </script>
+
+    <script>
+        var products = [];
+        var metaUnits = [];
+
+        function fetchUnits() {
+            function request() {
+                const url = "/api/forms/inventory/units/all";
+                return window.getAjaxRequest(url);
+            };
+
+            const ajax = request();
+
+            ajax.success(function (response) {
+                window.metaUnits = response;
+            });
+        };
+
+        function fetchProducts() {
+            function request() {
+                const url = "/dashboard/inventory/items/stockable/view";
+                return window.getAjaxRequest(url);
+            };
+
+            const ajax = request();
+
+            ajax.success(function (response) {
+                window.products = response;
+                $(document).trigger("itemFetched");
+            });
+        };
+
+        $(".search.panel input").keyup(function () {
+            const el = $(this);
+            const term = el.val();
+
+            const categoryEl = $(".category.list .selected.category");
+            var category = "";
+
+            if (categoryEl.length) {
+                category = categoryEl.text();
+            };
+
+            displayProducts(category, term);
+
+            initializeClickAndAction();
+        });
+
+        $(".search.panel input").keydown(function (e) {
+            if (e.keyCode === 13) {
+                const item = $(".item.list .item:first");
+
+                if (item.length) {
+                    item.trigger("click");
+                };
+            };
+        });
+
+        window.fetchUnits();
+        window.fetchProducts();
+
+        setTimeout(function () {
+            window.fetchProducts();
+        }, 120000);
+
+        function removeItem(el) {
+            const confirmed = confirm(window.translate("AreYouSure"));
+
+            if (!confirmed) {
+                return;
+            };
+
+            el = $(el);
+            const container = el.parent().parent();
+            container.remove();
+            window.updateTotal();
+        };
+
+        $(document).on("itemFetched", function () {
+            $("#POSDimmer").removeClass("active");
+            displayProducts();
+            displayCategories();
+            initializeClickAndAction();
+        });
+
+
+        function initializeClickAndAction() {
+            $("#POSItemList .item").off("click").on("click", function () {
+                var el = $(this);
+                var costPrice = el.attr("data-cost-price");
+                var photo = el.attr("data-photo") || "";
+
+                var barCode = el.attr("data-barcode");
+                var brand = el.attr("data-brand");
+                var unitId = window.parseInt(el.attr("data-unit-id"));
+                var validUnits = el.attr("data-valid-units");
+                var itemGroup = el.attr("data-item-group");
+                var itemName = el.attr("data-item-name");
+                var itemCode = el.attr("data-item-code");
+                var itemId = window.parseInt(el.attr("data-item-id"));
+                var price = window.parseFloat(costPrice || 0);
+                var isTaxableItem = el.attr("data-is-taxable-item") === "true";
+
+                if (!price) {
+                    alert(window.translate("CannotAddItemBecausePriceZero"));
+                    return;
+                };
+
+
+
+                var targetEl = $("#OpeningItems");
+                var selector = "pos-" + itemId;
+                var existingEl = $("#" + selector);
+
+                if (existingEl.length) {
+                    var existingQuantitySpan = existingEl.find("span.quantity");
+                    var existingQuantityInput = existingEl.find("input.quantity");
+
+                    var quantity = window.parseFloat2(existingQuantitySpan.text() || 0);
+                    quantity++;
+
+                    existingQuantitySpan.text(quantity);
+                    existingQuantityInput.val(quantity).trigger("keyup");
+
+                    window.updateTotal();
+                    return;
+                };
+
+                var template = itemTemplate;
+
+                template = template.replace(/{ItemId}/g, itemId);
+                template = template.replace(/{CostPrice}/g, costPrice);
+                template = template.replace(/{Photo}/g, photo);
+                template = template.replace(/{BarCode}/g, barCode);
+                template = template.replace(/{BrandName}/g, brand);
+                template = template.replace(/{ItemGroupName}/g, itemGroup);
+                template = template.replace(/{ItemName}/g, itemName);
+                template = template.replace(/{ItemCode}/g, itemCode);
+                template = template.replace(/{Price}/g, price);
+                template = template.replace(/{UnitId}/g, unitId);
+                template = template.replace(/{ValidUnits}/g, validUnits);
+                template = template.replace(/{IsTaxableItem}/g, isTaxableItem.toString());
+
+                var item = $(template);
+                var quantityInput = item.find("input.quantity");
+                var priceInput = item.find("input.price");
+                var unitSelect = item.find("select.unit");
+
+                function loadUnits(el, defaultUnitId, validUnits) {
+                    el.html("");
+
+                    const units = window.Enumerable.From(window.metaUnits)
+                        .Where(function (x) {
+                            return validUnits.indexOf(x.UnitId.toString()) > -1;
+                        }).ToArray();
+
+                    $.each(units, function () {
+                        const unit = this;
+
+                        const option = $("<option/>");
+                        option.attr("value", unit.UnitId);
+                        option.html(unit.UnitName);
+
+                        if (defaultUnitId === unit.UnitId) {
+                            option.attr("selected", "");
+                        };
+
+                        option.appendTo(el);
+                    });
+
+                };
+
+                loadUnits(unitSelect, unitId, validUnits.split(','));
+
+                function updateItemTotal(el) {
+                    const quantityEl = el.find("input.quantity");
+
+                    const quantity = window.parseFloat2(quantityEl.val() || 0);
+                    const price = window.parseFloat2(el.find("input.price").val());
+                    //var price = window.parseFloat(el.attr("data-price") || 0);
+
+                    const amount = (price * quantity).toFixed(2);
+
+                    el.find("span.quantity").html(quantity);
+                    el.find("span.amount").html(amount);
+
+                    window.updateTotal();
+
+                };
+
+                quantityInput.on("keyup", function () {
+                    const el = $(this);
+                    const parentInfo = el.parent().parent();
+                    updateItemTotal(parentInfo);
+                });
+
+                priceInput.on("keyup", function () {
+                    const el = $(this);
+                    const parentInfo = el.parent().parent();
+                    updateItemTotal(parentInfo);
+                });
+
+
+                function getPrice(el) {
+                    function request(itemId, unitId) {
+                        var url = "/dashboard/inventory/items/cost-price/{itemId}/{unitId}";
+                        url = url.replace("{itemId}", itemId);
+                        url = url.replace("{unitId}", unitId);
+
+                        return window.getAjaxRequest(url);
+                    };
+
+                    const itemId = el.attr("data-item-id");
+                    const unitId = el.val();
+
+                    $(".pos.opening.segment").addClass("loading");
+                    const ajax = request(itemId, unitId);
+
+                    ajax.success(function (response) {
+                        $(".pos.opening.segment").removeClass("loading");
+                        const priceInput = el.parent().parent().parent().find("input.price");
+                        priceInput.val(response).trigger("keyup");
+                    });
+
+                    ajax.fail(function (xhr) {
+                        $(".pos.opening.segment").removeClass("loading");
+                        console.log(window.getAjaxErrorMessage(xhr));
+                    });
+                };
+
+                unitSelect.on("change", function () {
+                    getPrice($(this));
+                });
+
+                item.on("contextmenu", function (e) {
+                    e.preventDefault();
+                    const el = $(this);
+                    const inputEl = el.find(".number.block input");
+                    const buttonEl = el.find(".number.block button");
+
+                    inputEl.toggle();
+                    buttonEl.toggle();
+                });
+
+                item.appendTo(targetEl);
+                quantityInput.trigger("keyup");
+                window.updateTotal();
+            });
+        };
+
+        function updateTotal() {
+            const candidates = $("#OpeningItems div.item");
+            const amountEl = $("#SummaryItems div.amount .money");
+
+            var totalPrice = 0;
+            //var totalQuantity = 0;
+
+            $.each(candidates, function () {
+                const el = $(this);
+                const quantityEl = el.find("input.quantity");
+
+                const quantity = window.parseFloat2(quantityEl.val() || 0);
+                const price = window.parseFloat2(el.find("input.price").val());
+                //var price = window.parseFloat(el.attr("data-price") || 0);
+
+                const amount = price * quantity;
+                totalPrice += amount;
+                //totalQuantity += quantity;
+            });
+
+            totalPrice = window.round(totalPrice, 2);
+
+            amountEl.html(totalPrice);
+        };
+
+        function displayCategories() {
+            const categories = window.Enumerable.From(products).Distinct(function (x) { return x.ItemGroupName }).Select(function (x) { return x.ItemGroupName }).ToArray();
+            var targetEl = $(".cat.filter");
+            $(".category.list").find(".category").remove();
+
+            targetEl.off("click").on("click", function () {
+                displayProducts();
+                $(".category").removeClass("selected");
+                targetEl.hide();
+                initializeClickAndAction();
+            });
+
+            $.each(categories, function () {
+                const category = $("<div class='category' />");
+                category.html(this);
+
+                category.off("click").on("click", function () {
+                    $(".search.panel input").val("");
+                    const el = $(this);
+                    const name = el.text();
+
+                    if (name) {
+                        displayProducts(name);
+                        $(".category").removeClass("selected");
+                        el.addClass("selected");
+
+                        targetEl.show();
+                    } else {
+                        targetEl.hide();
+                    };
+
+                    initializeClickAndAction();
+                });
+
+                targetEl.before(category);
+            });
+        };
+
+        function displayProducts(category, searchQuery) {
+            var target = $("#POSItemList");
+
+            var groupItems;
+
+            if (!category && !searchQuery) {
+                groupItems = products;
+            } else {
+                if (category && searchQuery) {
+                    groupItems = window.Enumerable
+                        .From(products)
+                        .Where(function (x) {
+                            return x.ItemGroupName.toLowerCase() === category.toString().toLowerCase()
+                                && x.ItemName.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;
+                        }).ToArray();
+                } else if (!category && searchQuery) {
+                    groupItems = window.Enumerable
+                        .From(products)
+                        .Where(function (x) {
+                            return x.ItemName.toLowerCase().indexOf(searchQuery.toLowerCase()) > -1;
+                        }).ToArray();
+                } else {
+                    groupItems = window.Enumerable
+                        .From(products)
+                        .Where(function (x) {
+                            return x.ItemGroupName.toLowerCase() === category.toString().toLowerCase();
+                        }).ToArray();
+                };
+            };
+
+            target.html("").hide();
+
+            $.each(groupItems, function () {
+                const product = this;
+
+                var costPrice = product.CostPrice;
+
+                if (product.CostPriceIncludesTax) {
+                    costPrice = (100 * costPrice) / (100 + window.parseFloat(product.SalesTaxRate));
+                    costPrice = window.round(costPrice, 2);
+                };
+
+                const item = $("<div class='item' />");
+                item.attr("data-item-id", product.ItemId);
+                item.attr("data-item-code", product.ItemCode);
+                item.attr("data-item-name", product.ItemName);
+                item.attr("data-item-group", product.ItemGroupName);
+                item.attr("data-brand", product.BrandName);
+                item.attr("data-unit-id", product.UnitId);
+                item.attr("data-valid-units", product.ValidUnits);
+                item.attr("data-barcode", product.Barcode);
+                item.attr("data-photo", product.Photo);
+                item.attr("data-cost-price", costPrice);
+                item.attr("data-sales-tax-rate", product.SalesTaxRate);
+                item.attr("data-cost-price-includes-tax", product.CostPriceIncludesTax);
+                item.attr("data-is-taxable-item", product.IsTaxableItem);
+
+                if (product.HotItem) {
+                    item.addClass("hot");
+                };
+
+                const info = $("<div class='info' />");
+
+                const price = $("<div class='price' />");
+                price.html(window.getFormattedNumber(costPrice));
+
+                price.appendTo(info);
+
+
+                const photo = $("<div class='photo' />");
+
+                if (product.Photo) {
+                    const img = $("<img />");
+                    img.attr("src", product.Photo + "?Height=200&Width=200");
+                    img.appendTo(photo);
+                };
+
+                photo.appendTo(info);
+
+                const name = $("<div class='name' />");
+                name.html(product.ItemName);
+
+                name.appendTo(info);
+
+                info.appendTo(item);
+                item.appendTo(target);
+            });
+
+            if (searchQuery) {
+                target.show();
+                return;
+            };
+
+            target.fadeIn(500);
+        };
+
+    </script>
+    <script>
+        $("#CheckoutButton").off("click").on("click", function () {
+
+            function request(model) {
+                const url = "/dashboard/inventory/setup/opening-inventories/new";
+                const data = JSON.stringify(model);
+                return window.getAjaxRequest(url, "POST", data);
+            };
+
+            function getModel() {
+                function getDetails() {
+                    const items = $("#OpeningItems .item");
+                    var model = [];
+
+                    $.each(items, function () {
+                        const el = $(this);
+                        const itemId = window.parseInt(el.attr("data-item-id"));
+                        const quantity = window.parseFloat2(el.find("input.quantity").val());
+                        const unitId = window.parseInt(el.find("select.unit").val());
+                        const price = window.parseFloat2(el.find("input.price").val() || 0);
+
+                        model.push({
+                            StoreId: $("#StoreSelect").val(),
+                            ItemId: itemId,
+                            Quantity: quantity,
+                            UnitId: unitId,
+                            Price: price
+                        });
+                    });
+
+                    return model;
+                };
+
+                const valueDate = $("#ValueDateInputDate").datepicker("getDate");
+                const bookDate = $("#BookDateInputDate").datepicker("getDate");
+                const referenceNumber = $("#ReferenceNumberInputText").val();
+                const statementReference = $("#StatementReferenceInputText").val();
+                const storeId = $("#StoreSelect").val();
+                const details = getDetails();
+
+                return {
+                    ValueDate: valueDate,
+                    BookDate: bookDate,
+                    ReferenceNumber: referenceNumber,
+                    StatementReference: statementReference,
+                    Details: details
+                };
+            };
+
+            const model = getModel();
+
+            if (!model.Details.length) {
+                window.displayMessage(window.translate("PleaseSelectItem"));
+                return;
+            };
+
+            const confirmed = confirm(window.translate("AreYouSure"));
+
+            if (!confirmed) {
+                return;
+            };
+
+
+            $("#CheckoutButton").addClass("loading").prop("disabled", true);
+
+            const ajax = request(model);
+
+            ajax.success(function (response) {
+                const id = response;
+                document.location = "/dashboard/inventory/setup/opening-inventories/checklist/" + id;
+            });
+
+            ajax.fail(function (xhr) {
+                $("#CheckoutButton").removeClass("loading").prop("disabled", false);
+                window.logAjaxErrorMessage(xhr);
+            });
+        });
+    </script>
+
+    <script>
+        $("#ClearScreenButton")
+            .unbind("click")
+            .bind("click",
+                function () {
+                    clearScreen();
+                });
+
+        function clearScreen() {
+            $("#OpeningItems").html("");
+            window.updateTotal();
+        };
+    </script>
+
+    <script>
+        function displayFieldBinder(el, url) {
+            function request() {
+                return window.getAjaxRequest(url);
+            };
+
+            const ajax = request();
+
+            ajax.success(function (response) {
+                var options = "";
+
+                $.each(response, function () {
+                    var option = "<option value='{key}'>{value}</option>";
+                    option = option.replace("{key}", this.Key);
+                    option = option.replace("{value}", this.Value);
+
+                    options += option;
+                });
+
+                el.html(options);
+            });
+        };
+
+        function loadStores() {
+            displayFieldBinder($("#StoreSelect"), "/api/forms/inventory/stores/display-fields");
+        };
+
+        loadStores();
+    </script>
+
+    <script>
+        setTimeout(function () {
+            window.setRegionalFormat();
+        }, 100);
+
+        window.overridePath = "/dashboard/inventory/setup/opening-inventories";
+    </script>
+}

@@ -1,0 +1,1056 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.CustomerTypes;
+    Layout = ViewBag.Layout;
+}
+
+<style>
+    #CheckoutGrid td:nth-child(2),
+    #CheckoutGrid td:nth-child(6),
+    #CheckoutGrid td:nth-child(7) {
+        width: 80px;
+    }
+
+    #CheckoutGrid td:nth-child(9) {
+        width: 100px;
+    }
+
+    #CheckoutGrid td:nth-child(3),
+    #CheckoutGrid td:nth-child(4),
+    #CheckoutGrid td:nth-child(5),
+    #CheckoutGrid td:nth-child(8) {
+        width: 120px;
+    }
+
+    #CheckoutGrid tbody td:first-child {
+        cursor: move;
+    }
+</style>
+
+
+<input type="hidden" id="SalesTaxRateHidden" />
+<div class="ui attached very relaxed checkout borderless segment" style="padding: 2em;">
+    <div class="ui title huge header"></div>
+    <div class="ui divider"></div>
+    <div class="ui attached flat form">
+        <div class="fields">
+            <div class="two wide field">
+                <label>Value Date</label>
+                <input type="text" id="ValueDateInputDate" class="date" value="d" />
+            </div>
+            <div class="two wide field">
+                <label>Book Date</label>
+                <input type="text" id="BookDateInputDate" class="date" value="d" />
+            </div>
+            <div class="two wide field">
+                <label>Store</label>
+                <select id="StoreSelect"></select>
+            </div>
+            <div class="two wide field">
+                <label>Counter</label>
+                <select id="CounterSelect"></select>
+            </div>
+            <div class="two wide field">
+                <label>Price Type</label>
+                <select id="PriceTypeSelect"></select>
+            </div>
+            <div class="six wide customer field">
+                <label>Customer</label>
+                <select id="CustomerSelect"></select>
+            </div>
+            <div class="six wide supplier field">
+                <label>Supplier</label>
+                <select id="SupplierSelect"></select>
+            </div>
+        </div>
+    </div>
+
+    <div class="vpad8"></div>
+    <table id="CheckoutGrid" class="ui attached table">
+        <thead>
+            <tr>
+                <th>
+                    <label for="ItemSelect">Item&nbsp;Name</label>
+                </th>
+                <th>
+                    <label for="QuantityInputText">Qty</label>
+                </th>
+                <th>
+                    <label for="UnitSelect">Unit</label>
+                </th>
+                <th>
+                    <label for="PriceInputText">Price</label>
+                </th>
+                <th>
+                    <label for="AmountInputText">Amount</label>
+                </th>
+                <th>
+                    <label for="ShippingChargeInputText">Shipping</label>
+                </th>
+                <th>
+                    <label for="LineDiscountInputText">Discount</label>
+                </th>
+                <th>
+                    <label for="SubTotalInputText">Total</label>
+                </th>
+                <th>
+                    Action
+                </th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" class="right aligned"><strong>Totals</strong></td>
+                <td>
+                    <span class="total amount"></span>
+                </td>
+                <td>
+                    <span class="total shipping"></span>
+                </td>
+                <td>
+                    <span class="total discount"></span>
+                </td>
+                <td>
+                    <span class="line total"></span>
+                </td>
+                <td></td>
+            </tr>
+            <tr class="ui footer-row flat form">
+                <td>
+                    <div class="form">
+                        <div class="field">
+                            <select id="ItemSelect" style="width: 100%;"></select>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <input id="QuantityInputText" title="Ctrl + Q" class="decimal4 text-right" value="1" type="text">
+                </td>
+                <td>
+                    <select id="UnitSelect" title="Ctrl + U"></select>
+                </td>
+                <td>
+                    <input id="PriceInputText" title="Alt + P" class="decimal4 text-right" type="text">
+                </td>
+                <td>
+                    <input id="AmountInputText" class="decimal text-right" readonly="readonly" type="text">
+                </td>
+                <td>
+                    <input id="ShippingChargeInputText" title="Ctrl + D" class="decimal text-right" type="text">
+                </td>
+                <td>
+                    <input id="LineDiscountInputText" title="Ctrl + D" class="decimal text-right" type="text">
+                </td>
+                <td>
+                    <input id="SubTotalInputText" class="decimal text-right" readonly="readonly" type="text">
+                </td>
+                <td>
+                    <input id="AddButton" class="small ui button blue" value="Add" title="Ctrl + Return" type="button">
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    <div class="vpad8"></div>
+    <div class="ui flat form attached">
+        <div class="six fields">
+            <div class="field">
+                <label>Cost Center</label>
+                <select id="CostCenterSelect"></select>
+            </div>
+            <div class="field">
+                <label>Shipper</label>
+                <select id="ShipperSelect"></select>
+            </div>
+            <div class="field">
+                <label>Reference Number</label>
+                <input type="text" id="ReferenceNumberInputText" />
+            </div>
+            <div class="field">
+                <label>Statement Reference</label>
+                <input type="text" id="StatementReferenceInputText" />
+            </div>
+        </div>
+        <div class="fields">
+            <div class="four wide coupon code field" style="display: none;">
+                <label>Coupoun Code</label>
+                <input type="text" class="" id="CouponCodeInputText" />
+            </div>
+            <div class="two wide field">
+                <label>Discount Type</label>
+                <select id="DiscountTypeSelect">
+                    <option value="1">Rate</option>
+                    <option value="2">Amount</option>
+                </select>
+            </div>
+            <div class="two wide field">
+                <label>Discount</label>
+                <input type="text" class="decimal" id="DiscountInputText" value="0" />
+            </div>
+        </div>
+        <div class="fields">
+            <div class="field">
+                <label>Total</label>
+                <input class="taxable total before discount" type="text" readonly="" disabled="" />
+            </div>
+            <div class="field">
+                <label>Discount</label>
+                <input class="invoice discount" type="text" readonly="" disabled="" />
+            </div>
+            <div class="field">
+                <label>Taxable Total</label>
+                <input id="TaxableTotalInputText" class="taxable total after discount" type="text" readonly="" disabled="" />
+            </div>
+            <div class="field">
+                <label>Tax</label>
+                <input id="TaxInputText" class="invoice tax" type="text" readonly="" disabled="" />
+            </div>
+            <div class="field">
+                <label>Non Taxable Total</label>
+                <input id="NonTaxableTotalInputText" class="nontaxable total" type="text" readonly="" disabled="" />
+            </div>
+            <div class="field">
+                <label>Invoice Total</label>
+                <input id="InvoiceTotalInputText" class="invoice total" type="text" readonly="" disabled="" />
+            </div>
+        </div>
+        <button class="ui positive button" id="SaveButton">Save</button>
+    </div>
+</div>
+
+<div class="ui serial-number modal" style="padding:2em;">
+    <div class="ui big grey header">Serial Numbers#<span></span></div>
+    <div class="ui divider"></div>
+    <div id="AddSerialButton" class="ui blue small button">Add</div>
+    <table class="ui basic selectable table">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Serial Number</th>
+                <th>Batch Number</th>
+                <th>Expiry Date</th>
+                <th>Unit</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<script>
+
+    function getModel() {
+        function getDetails() {
+            const model = [];
+            const candidates = $("#CheckoutGrid tbody tr");
+
+            $.each(candidates, function () {
+                const candidate = $(this);
+                const itemId = window.parseInt(candidate.attr("data-item-id"));
+                const quantity = window.parseFloat(candidate.attr("data-quantity"));
+                const unitId = window.parseInt(candidate.attr("data-unit-id"));
+                const price = window.parseFloat(candidate.attr("data-price"));
+                const shipping = window.parseFloat(candidate.attr("data-shipping"));
+                const storeId = window.parseInt($("#StoreSelect").val());
+
+                const discount = window.parseFloat(candidate.attr("data-line-discount"));
+
+                const amount = (price * quantity) + shipping;
+
+                const discountRate = window.round(100 * (discount / amount), 2);
+
+                const isTaxableItem = candidate.attr("data-is-taxable-item") === "true";
+
+                model.push({
+                    ValueDate: $("#ValueDateInputDate").datepicker("getDate"),
+                    ItemId: itemId,
+                    Quantity: quantity,
+                    UnitId: unitId,
+                    Price: price,
+                    DiscountRate: discountRate,
+                    Discount: discount,
+                    ShippingCharge: shipping,
+                    IsTaxed: isTaxableItem,
+                    IsTaxableItem: isTaxableItem,
+                    StoreId: storeId
+                });
+            });
+
+            return model;
+        };
+
+        const valueDate = $("#ValueDateInputDate").datepicker("getDate");
+        const bookDate = $("#BookDateInputDate").datepicker("getDate");
+        const storeId = window.parseInt($("#StoreSelect").val());
+        const counterId = window.parseInt($("#CounterSelect").val());
+        const priceTypeId = window.parseInt($("#PriceTypeSelect").val());
+        const customerId = window.parseInt($("#CustomerSelect").val());
+        const supplierId = window.parseInt($("#SupplierSelect").val());
+
+        const costCenterId = window.parseInt($("#CostCenterSelect").val());
+        const shipperId = window.parseInt($("#ShipperSelect").val());
+        const referenceNumber = $("#ReferenceNumberInputText").val();
+        const statementReference = $("#StatementReferenceInputText").val();
+
+        const couponCode = $("#CouponCodeInputText").val();
+        const discountType = window.parseInt($("#DiscountTypeSelect").val());
+
+        var discountRate = window.parseFloat2($("#DiscountInputText").val()) || 0;
+        const discount = window.parseFloat2($("input.invoice.discount").val()) || 0;
+        const taxableTotal = window.parseFloat2($("input.taxable.total.before.discount").val()) || 0;
+        const tax = window.parseFloat2($("#TaxInputText").val()) || 0;
+        const nonTaxableTotal = window.parseFloat2($("#NonTaxableTotalInputText").val()) || 0;
+        const invoiceTotal = window.parseFloat2($("#InvoiceTotalInputText").val()) || 0;
+        const taxRate = window.parseFloat($("#SalesTaxRateHidden").val()) || 0;
+
+        if(discountType === 1) {
+            discountRate = (discount / taxableTotal) * 100;
+        };
+
+        return {
+            Details: getDetails(),
+            ValueDate: valueDate,
+            BookDate: bookDate,
+            StoreId: storeId,
+            CounterId: counterId,
+            PriceTypeId: priceTypeId,
+            CustomerId: customerId,
+            SupplierId: supplierId,
+            CostCenterId: costCenterId,
+            ShipperId: shipperId,
+            ReferenceNumber: referenceNumber,
+            StatementReference: statementReference,
+            CouponCode: couponCode,
+            DiscountType: discountType,
+            IsFlatDiscount: discountType === 2,
+            Discount: discount,
+            DiscountRate: window.round(discountRate, 2),
+            TaxableTotal: taxableTotal,
+            Tax: tax,
+            TaxRate: taxRate,
+            NonTaxableTotal: nonTaxableTotal,
+            InvoiceTotal: invoiceTotal
+        };
+    };
+
+    function initializeCheckout(model) {
+        function loadUnits(el, defaultUnitId, validUnits) {
+            el.html("");
+            const units = window.Enumerable.From(window.metaUnits)
+                .Where(function (x) {
+                    return validUnits.indexOf(x.UnitId.toString()) > -1;
+                }).ToArray();
+
+            $.each(units, function () {
+                const unit = this;
+
+                const option = $("<option/>");
+                option.attr("value", unit.UnitId);
+                option.html(unit.UnitName);
+
+                if (defaultUnitId === unit.UnitId) {
+                    option.attr("selected", "");
+                };
+
+                option.appendTo(el);
+            });
+
+        };
+
+        function displayPrice(itemSelect, unitSelect) {
+            const option = itemSelect.find("option:selected");
+            const priceInputEl = $("#PriceInputText");
+
+            const defaultUnitId = window.parseInt(option.attr("data-unit-id"));
+            const selectedUnitId = window.parseInt(unitSelect.val());
+            const supplierId = window.parseInt($("#SupplierSelect").val());
+            const customerId = window.parseInt($("#CustomerSelect").val());
+
+            if (!(supplierId || customerId) && defaultUnitId === selectedUnitId) {
+                const salesTaxRate = window.parseFloat(option.attr("data-sales-tax-rate"));
+
+                const costPriceIncludesTax = option.attr("data-cost-price-includes-tax") === "true";
+                const sellingPriceIncludesTax = option.attr("data-selling-price-includes-tax") === "true";
+
+                var costPrice = window.parseFloat(option.attr("data-cost-price"));
+                var sellingPrice = window.parseFloat(option.attr("data-selling-price"));
+
+                if (sellingPriceIncludesTax) {
+                    sellingPrice = (100 * sellingPrice) / (100 + salesTaxRate);
+                    sellingPrice = window.round(sellingPrice, 2);
+                };
+
+                if (costPriceIncludesTax) {
+                    costPrice = (100 * costPrice) / (100 + salesTaxRate);
+                    costPrice = window.round(costPrice, 2);
+                };
+
+                const price = costPrice || sellingPrice;
+
+
+                priceInputEl.val(price).trigger("keyup").trigger("change");
+
+                return;
+            };
+
+            if (typeof (model.UpdatePrice) === "function") {
+				model.UpdatePrice();
+            };
+        };
+
+        $("#UnitSelect").off("change").on("change", function () {
+            const unitSelect = $("#UnitSelect");
+            const itemSelect = $("#ItemSelect");
+
+            displayPrice(itemSelect, unitSelect);
+        });
+
+        $("#ItemSelect").off("blur").on("blur", function () {
+            const unitSelect = $("#UnitSelect");
+            const itemSelect = $("#ItemSelect");
+
+
+            const option = itemSelect.find("option:selected");
+
+            if (!option.attr("value")) {
+                return;
+            };
+
+            const unitId = option.attr("data-unit-id");
+            const validUnits = option.attr("data-valid-units");
+            loadUnits(unitSelect, window.parseInt(unitId), validUnits.split(','));
+            displayPrice(itemSelect, unitSelect);
+        });
+
+        function fetchUnits() {
+            function request() {
+                const url = "/api/forms/inventory/units/all";
+                return window.getAjaxRequest(url);
+            };
+
+            const ajax = request();
+
+            ajax.success(function (response) {
+                window.metaUnits = response;
+            });
+        };
+
+		$("#CustomerSelect").off("change").on("change", function () {
+			fetchProducts();
+		});
+		
+        function fetchProducts() {
+            function displayProducts() {
+                const target = $("#ItemSelect");
+                target.html("<option>Select</option>");
+
+                for (let i = 0; i < window.products.length; i++) {
+                    const product = window.products[i];
+
+                    const option = $("<option/>");
+                    option.attr("value", product.ItemId);
+                    option.text(product.ItemName);
+
+                    option.attr("data-item-id", product.ItemId);
+                    option.attr("data-item-code", product.ItemCode);
+                    option.attr("data-item-name", product.ItemName);
+                    option.attr("data-valid-units", product.ValidUnits);
+                    option.attr("data-unit-id", product.UnitId);
+                    option.attr("data-unit-id", product.UnitId);
+
+                    option.attr("data-selling-price-includes-tax", product.SellingPriceIncludesTax);
+                    option.attr("data-selling-price", product.SellingPrice);
+
+                    option.attr("data-cost-price-includes-tax", product.CostPriceIncludesTax);
+                    option.attr("data-cost-price", product.CostPrice);
+
+                    option.attr("data-sales-tax-rate", product.SalesTaxRate);
+                    option.attr("data-is-taxable-item", product.IsTaxableItem);
+
+                    target.append(option);
+                };
+            };
+
+            function request() {
+				const customerId = $("#CustomerSelect").val();
+
+				var url = model.ProductApi;	
+				if(customerId) {
+					url += "/" + customerId;
+				}
+                return window.getAjaxRequest(url);
+            };
+		
+            const ajax = request();
+			
+            ajax.success(function (response) {
+                window.products = response;
+                displayProducts();
+            });
+        };
+
+		function setTaxable(){
+			function request(customerId) {
+				const url = "/api/forms/sales/customerwise-selling-prices/get-where/-1";
+				const filters = [];
+				filters.push(window.getAjaxColumnFilter("WHERE", "CustomerId", "int", window.FilterConditions.IsEqualTo,
+					customerId));
+
+				return window.getAjaxRequest(url, "POST", filters);
+			};
+
+			
+			
+			const ajax = request(customerId);
+
+			ajax.success(function (response) {
+				const salesTaxRate = window.parseFloat2(response[0].SalesTaxRate) || 0;
+				$("#SalesTaxRateHidden").val(salesTaxRate);
+			});
+        };
+		
+        function setBinder() {
+            $("#StoreSelect").off("change").on("change", function () {
+                var el = $(this);
+
+                function loadCounters() {
+                    const storeId = el.val();
+
+                    if (!storeId) {
+                        return;
+                    };
+
+                    const filters = [];
+                    filters.push(window.getAjaxColumnFilter("WHERE", "StoreId", "int", window.FilterConditions.IsEqualTo, storeId));
+
+                    window.displayFieldBinder($("#CounterSelect"), "/api/forms/inventory/counters/display-fields/get-where", true, filters, function () {
+                        const counterId = el.attr("data-counter-id");
+
+                        el.removeAttr("data-counter-id");
+
+                        if (!counterId) {
+                            return;
+                        };
+
+                        $("#CounterSelect").val(counterId);
+                    });
+                };
+
+                loadCounters();
+            });
+
+            function loadStores() {
+				var url = "/api/forms/inventory/stores/display-fields";
+				if(window.isSales){
+					url = "/dashboard/inventory/store/sales"
+				}
+                window.displayFieldBinder($("#StoreSelect"), url, true);
+            };
+
+            function loadShippers() {
+                window.displayFieldBinder($("#ShipperSelect"), "/api/forms/inventory/shippers/display-fields", true);
+            };
+
+            function loadCostCenters() {
+                window.displayFieldBinder($("#CostCenterSelect"), "/api/forms/finance/cost-centers/display-fields", true);
+            };
+
+            function loadPriceTypes() {
+                window.displayFieldBinder($("#PriceTypeSelect"), model.PriceTypeApi, true);
+            };
+
+            function loadCustomers() {
+                const el = $("#CustomerSelect");
+                if (el.length) {
+                    window.displayFieldBinder(el, "/api/forms/inventory/customers/display-fields");
+                };
+            };
+
+            function loadSuppliers() {
+                const el = $("#SupplierSelect");
+                if (el.length) {
+                    window.displayFieldBinder(el, "/api/forms/inventory/suppliers/display-fields");
+                };
+            };
+
+            loadStores();
+            loadPriceTypes();
+            loadCustomers();
+            loadSuppliers();
+            loadCostCenters();
+            loadShippers();
+        };
+
+        function getTaxRate() {
+            function request() {
+                const url = "/api/forms/finance/tax-setups/get-where/-1";
+                const filters = [];
+                filters.push(window.getAjaxColumnFilter("WHERE", "OfficeId", "int", window.FilterConditions.IsEqualTo,
+                    window.metaView.OfficeId));
+
+                return window.getAjaxRequest(url, "POST", filters);
+            };
+
+            const ajax = request();
+
+            ajax.success(function (response) {
+                const salesTaxRate = window.parseFloat(response[0].SalesTaxRate) || 0;
+                $("#SalesTaxRateHidden").val(salesTaxRate);
+            });
+        };
+
+        function setUI() {
+            $(".ui.checkbox").checkbox();
+            if (model.ShowCouponCode) {
+                $(".coupon.code.field").show();
+            };
+
+            if (model.BookDateText) {
+                $("#BookDateInputDate").closest(".field").find("label").text(model.BookDateText);
+            };
+        };
+
+
+        function updateTotal() {
+            function sumOfColumn(tableSelector, columnIndex, filter) {
+                var total = 0;
+
+                if (!filter) {
+                    filter = "tbody tr";
+                };
+
+                $(tableSelector).find(filter).each(function () {
+                    const value = window.parseFloat2($("td", this).eq(columnIndex).text());
+                    total += value;
+                });
+
+                return total;
+            };
+
+            const quantity = window.parseFloat2($("#QuantityInputText").val());
+            const price = window.parseFloat2($("#PriceInputText").val());
+            const lineDiscount = window.parseFloat2($("#LineDiscountInputText").val());
+            const shipping = window.parseFloat2($("#ShippingChargeInputText").val());
+
+            const amount = quantity * price;
+            var total = (quantity * price) + shipping - lineDiscount;
+            total = window.round(total, 2);
+
+            $("#SubTotalInputText").val(window.getFormattedNumber(total));
+            $("#AmountInputText").val(window.getFormattedNumber(amount));
+
+            $("span.total.amount").text(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 4)));
+            $("input.total.amount").text(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 4)));
+
+            $("span.total.shipping").text(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 5)));
+            $("input.total.shipping").text(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 5)));
+
+            $("span.total.discount").text(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 6)));
+            $("input.total.discount").text(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 6)));
+
+            $("span.line.total").text(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 7)));
+            $("input.line.total").val(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 7)));
+
+            $("input.line.total").val(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 7)));
+            $("input.taxable.total.before.discount").val(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 7, "tbody tr[data-is-taxable-item='true']")));
+            $("input.nontaxable.total").val(window.getFormattedNumber(sumOfColumn($("#CheckoutGrid"), 7, "tbody tr[data-is-taxable-item='false']")));
+
+
+            //Invoice wise totals
+            (function () {
+                const rateOfDiscount = $("#DiscountInputText").val();
+                const discountType = window.parseInt($("#DiscountTypeSelect").val());
+                var invoiceDiscount = rateOfDiscount;
+                const taxableTotalBeforeDiscount = window.parseFloat2($("input.taxable.total.before.discount").val());
+                const nonTaxableTotal = window.parseFloat2($("input.nontaxable.total").val());
+
+                if (discountType === 1) {
+                    if (rateOfDiscount > 100) {
+                        $("#DiscountInputText").val("0");
+                        invoiceDiscount = 0;
+                    } else {
+                        invoiceDiscount = taxableTotalBeforeDiscount * (rateOfDiscount / 100);
+                    };
+                };
+
+                $("input.invoice.discount").val(window.getFormattedNumber(window.round(invoiceDiscount, 2)));
+
+                var taxableTotal = taxableTotalBeforeDiscount;
+                //if (taxableTotalBeforeDiscount > invoiceDiscount)
+                //    taxableTotal = taxableTotalBeforeDiscount - invoiceDiscount
+
+                $("input.taxable.total.after.discount").val(window.getFormattedNumber(window.round(taxableTotal, 2)));
+
+                const taxRate = window.parseFloat($("#SalesTaxRateHidden").val()) || 0;
+                const tax = taxableTotal * (taxRate / 100);
+                const invoiceTotal = taxableTotal + tax + nonTaxableTotal - invoiceDiscount;
+
+                $("input.invoice.tax").val(window.getFormattedNumber(window.round(tax, 2)));
+                $("input.invoice.total").val(window.getFormattedNumber(window.round(invoiceTotal, 2)));
+            })();
+
+            if (typeof (model.UpdateTotalExtension) === "function") {
+                model.UpdateTotalExtension();
+            };
+        };
+
+
+        $("#DiscountInputText, #DiscountTypeSelect, #QuantityInputText, #PriceInputText, #LineDiscountInputText, #ShippingChargeInputText")
+            .off("keyup change").on("keyup change", function () {
+                updateTotal();
+            });
+
+        $("#DiscountInputText, #DiscountTypeSelect, #QuantityInputText, #LineDiscountInputText, #ShippingChargeInputText")
+            .off("blur").on("blur", function () {
+                updateTotal();
+            });
+
+        $("#PriceInputText")
+            .off("blur").on("blur", function () {
+                updateTotal();
+
+                function getCell(data) {
+                    const cell = $("<td/>");
+                    if (data) {
+                        cell.append(data);
+                    }
+
+                    return cell;
+                }
+
+                //Serial Number
+                const storeId = parseInt($("#StoreSelect").val() || 0);
+                const itemId = parseInt($("#ItemSelect").val() || 0);
+                const unitId = parseInt($("#UnitSelect").val() || 0);
+                var quantity = parseInt($("#QuantityInputText").val() || 0);
+
+                var serials = $("#QuantityInputText").attr("data-serials");
+                if (serials) {
+                    serials = serials.split(",");
+                }
+
+                var url = "/dashboard/sales/items/serial-numbers/{itemId}/{unitId}/{storeId}";
+                url = url.replace("{itemId}", itemId);
+                url = url.replace("{unitId}", unitId);
+                url = url.replace("{storeId}", storeId); 
+
+                const ajax = window.getAjaxRequest(url);
+                ajax.success(function (response) {
+                    if (response.length <= 0) {
+                        return;
+                    };
+
+                    const el = $(".serial-number.modal");
+                    el.find(".header .span").html(response[0].ItemName);
+
+                    const table = el.find("table tbody");
+                    table.html("");
+
+                    $.each(response, function (index, item) {
+                        const row = $("<tr/>");
+                        const checkbox = $(`<input type="checkbox" data-id="${item.SerialNumberId}"/>`);
+                        if (!serials) {
+                            if (quantity > 0) {
+                                checkbox.attr("checked", "checked");
+                            }
+                        }
+
+                        if (serials && serials.includes(item.SerialNumberId.toString())) {
+                            checkbox.attr("checked", "checked");
+                        }
+
+                        const actionCell = getCell(checkbox);
+                        actionCell.addClass("center aligned")
+                        row.append(actionCell);
+
+                        row.append(getCell(item.SerialNumber));
+                        row.append(getCell(item.BatchNumber));
+                        if (item.ExpiryDate) {
+                            var date = window.moment(new Date(item.ExpiryDate)).fromNow();
+                            row.append(getCell(date));
+                        } else {
+                            row.append(getCell());
+                        }
+                        row.append(getCell(item.UnitCode));
+
+                        quantity = quantity - 1;
+                        table.append(row);
+                    });
+
+                    el.modal("show");
+                });
+
+            });
+
+        function setHeader() {
+            $(".ui.title.header").text(model.Title);
+        };
+
+        setTimeout(function () {
+            setHeader();
+            getTaxRate();
+            setUI();
+            setBinder();
+            fetchUnits();
+            fetchProducts();
+        }, 200);
+
+        function addRow() {
+            function setRowAttributes(row, model) {
+                row.attr("data-item-id", model.ItemId);
+                row.attr("data-unit-id", model.UnitId);
+                row.attr("data-price", model.Price);
+                row.attr("data-quantity", model.Quantity);
+                row.attr("data-line-discount", model.LineDiscount);
+                row.attr("data-shipping", model.Shipping);
+                row.attr("data-is-taxable-item", model.IsTaxableItem);				
+            };
+
+            function getCell(text, cssClass, id) {
+                const cell = $("<td/>");
+                cell.text(text);
+
+                if (id) {
+                    cell.attr("data-id", id);
+                };
+
+                if (cssClass) {
+                    cell.addClass(cssClass);
+                };
+
+                return cell;
+            };
+
+            function getActionCell() {
+                function getAnchor(icon, title) {
+                    const anchor = $("<a href='javascript:void(0);'/>");
+
+                    if (title) {
+                        anchor.attr("title", title);
+                    };
+
+                    if (icon) {
+                        const i = $("<i/>");
+                        i.addClass(icon);
+                        i.addClass("icon").appendTo(anchor);
+                    };
+
+                    return anchor;
+                };
+
+                const cell = $("<td/>");
+                const editAnchor = getAnchor("edit", "Edit").appendTo(cell);
+                const negativeAnchor = getAnchor("check mark", "").appendTo(cell);
+                const positiveAnchor = getAnchor("thumbs up", "").appendTo(cell);
+                const deleteAnchor = getAnchor("delete", "Delete").appendTo(cell);
+
+                deleteAnchor.off("click").on("click", function () {
+                    if (!window.confirmAction()) {
+                        return;
+                    };
+
+                    $(this).closest("tr").remove();
+                });
+
+                positiveAnchor.off("click").on("click", function () {
+                    $(this).closest("tr").toggleClass("positive");
+                });
+
+                negativeAnchor.off("click").on("click", function () {
+                    $(this).closest("tr").toggleClass("negative");
+                });
+
+                editAnchor.off("click").on("click", function () {
+                    const row = $(this).closest("tr");
+                    row.removeClass("negative positive").toggleClass("editing indicator");
+
+                    if (!row.is(".editing")) {
+                        $("#ItemSelect").prop("disabled", false);
+                        return;
+                    };
+
+                    $("#CheckoutGrid tr.editing.indicator").not(row).removeClass("editing indicator");
+
+                    const itemId = row.attr("data-item-id");
+                    const quantity = row.attr("data-quantity");
+                    const unitId = row.attr("data-unit-id");
+                    const price = row.attr("data-price");
+                    const lineDiscount = row.attr("data-line-discount");
+                    const shipping = row.attr("data-shipping");
+                    const isTaxableItem = row.attr("data-is-taxable-item").toString() === "true";
+
+                    $("#ItemSelect").val(itemId).prop("disabled", true);
+                    $("#QuantityInputText").val(quantity);
+                    $("#UnitSelect").val(unitId);
+                    $("#PriceInputText").val(price);
+                    $("#LineDiscountInputText").val(lineDiscount);
+                    $("#ShippingChargeInputText").val(shipping);
+                });
+
+                return cell;
+            };
+
+            function getModel() {
+                const option = $("#ItemSelect option:selected");
+                const itemId = window.parseInt(option.attr("value"));
+                const isTaxableItem = option.attr("data-is-taxable-item") === "true";
+
+                const itemName = option.text().trim();
+
+                const unitId = window.parseInt($("#UnitSelect").val());
+                const unitName = $("#UnitSelect option:selected").text().trim();
+
+                const quantity = window.parseFloat2($("#QuantityInputText").val());
+                const price = window.parseFloat2($("#PriceInputText").val());
+                const amount = window.parseFloat2($("#AmountInputText").val());
+                const lineDiscount = window.parseFloat2($("#LineDiscountInputText").val());
+                const shipping = window.parseFloat2($("#ShippingChargeInputText").val());
+                const lineTotal = window.parseFloat2($("#SubTotalInputText").val());
+
+                if (!itemId) {
+                    window.displayMessage("Please select an item.");
+                    return null;
+                };
+
+                if (quantity <= 0) {
+                    window.displayMessage("Please enter quantity.");
+                    return null;
+                };
+
+                if (price <= 0) {
+                    window.displayMessage("Please enter price.");
+                    return null;
+                };
+
+                if (lineTotal <= 0) {
+                    return null;
+                };
+
+                return {
+                    ItemId: itemId,
+                    ItemName: itemName,
+                    UnitId: unitId,
+                    UnitName: unitName,
+                    Quantity: quantity,
+                    Price: price,
+                    Amount: amount,
+                    LineDiscount: lineDiscount,
+                    Shipping: shipping,
+                    LineTotal: lineTotal,
+                    IsTaxableItem: isTaxableItem
+                };
+            };
+
+            updateTotal();
+            const model = getModel();
+
+            if (!model) {
+                return;
+            };
+
+            const target = $("#CheckoutGrid tbody");
+
+            if ($("#ItemSelect").is(":disabled")) {
+                const target = $("tr.editing.indicator");
+                target.find("td:nth-child(2)").text(model.Quantity);
+                target.find("td:nth-child(3)").text(model.UnitName).attr("data-id", model.UnitId);
+                target.find("td:nth-child(4)").text(window.getFormattedNumber(model.Price));
+                target.find("td:nth-child(5)").text(window.getFormattedNumber(model.Amount));
+                target.find("td:nth-child(6)").text(window.getFormattedNumber(model.Shipping));
+                target.find("td:nth-child(7)").text(window.getFormattedNumber(model.LineDiscount));
+                target.find("td:nth-child(8)").text(window.getFormattedNumber(model.LineTotal));
+
+                target.removeClass("editing indicator").addClass("negative");
+                $("#ItemSelect").prop("disabled", false).focus();
+                setRowAttributes(target, model);
+                updateTotal();
+                return;
+            };
+
+            const duplicate = $(`#CheckoutGrid td.item[data-id='${model.ItemId}']`);
+
+            if (duplicate.length) {
+                duplicate.closest("tr").addClass("negative");
+                window.displayMessage("Duplicate entry!");
+                return;
+            };
+
+
+            const row = $("<tr/>").appendTo(target);
+
+
+            row.append(getCell(model.ItemName, "item", model.ItemId));
+            const quantityCell = getCell(model.Quantity)
+            var serials = $("#QuantityInputText").attr("data-serials");
+            quantityCell.attr("data-serials", serials);
+            row.append(quantityCell);
+            $("#QuantityInputText").attr("data-serials", "");
+
+            row.append(getCell(model.UnitName, "unit", model.UnitId));
+            row.append(getCell(window.getFormattedNumber(model.Price)));
+            row.append(getCell(window.getFormattedNumber(model.Amount)));
+            row.append(getCell(window.getFormattedNumber(model.Shipping)));
+            row.append(getCell(window.getFormattedNumber(model.LineDiscount)));
+            row.append(getCell(window.getFormattedNumber(model.LineTotal)));
+            row.append(getActionCell());
+
+            setRowAttributes(row, model);
+
+            $("#LineDiscountInputText").val("");
+            $("#ShippingChargeInputText").val("");
+            updateTotal();
+            $("#ItemSelect").focus();
+        };
+
+        $("#AddButton").off("click").on("click", function () {
+            addRow();
+        });
+
+        $(document).off("keyup").on("keyup", function (e) {
+            if ((e.ctrlKey || e.metaKey) && (e.keyCode === 13 || e.keyCode === 10)) {
+                addRow();
+            };
+        });
+
+        const fixHelperModified = function (e, tr) {
+            var $originals = tr.children();
+            const $helper = tr.clone();
+            $helper.children().each(function (index) {
+                $(this).width($originals.eq(index).width());
+            });
+            return $helper;
+        };
+
+        const updateIndex = function (e, ui) {
+            $('td.index', ui.item.parent()).each(function (i) {
+                $(this).html(i + 1);
+            });
+        };
+
+        $("#CheckoutGrid tbody").sortable({
+            helper: fixHelperModified,
+            stop: updateIndex,
+            handle: "td:first-child"
+        }).disableSelection();
+    };
+
+    $("#AddSerialButton").off("click").on("click", function () {
+        const modal = $(".serial-number.modal");
+        const items = modal.find("table tbody input:checked");
+
+        const input = $("#QuantityInputText");
+        var serialIds = [];
+
+        $.each(items, function () {
+            const item = $(this);
+            serialIds.push(item.attr("data-id"));
+        });
+
+        input.attr("data-serials", serialIds.toString());
+
+        modal.find("table tbody").html("");
+        modal.modal("hide");
+    });
+
+</script>

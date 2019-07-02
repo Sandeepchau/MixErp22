@@ -1,0 +1,6 @@
+﻿@using MixERP.Inventory.Extensions
+<script>
+    window.overridePath = "/dashboard/inventory/tasks/inventory-transfers";
+    window.widgetScope = "Inventory";
+</script>
+@Html.DashboardPartialView("Default/Console.cshtml", TenantConvention.GetTenant())

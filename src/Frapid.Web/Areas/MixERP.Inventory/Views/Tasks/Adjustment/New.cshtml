@@ -1,0 +1,313 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.Inventory;
+    Layout = ViewBag.InventoryLayoutPath;
+}
+<div class="ui attached segment" style="min-height: 100%;padding:3em;">
+    <div class="">
+        <div class="ui huge header">@I18N.InventoryAdjustments</div>
+
+        <div class="ui form segment">
+            <div class="six fields">
+                <div class="field">
+                    <label for="ValueDateInputText">@I18N.ValueDate</label>
+                    <input id="ValueDateInputText" class="date" type="text" />
+                </div>
+                <div class="field">
+                    <label for="BookDateInputText">@I18N.BookDate</label>
+                    <input id="BookDateInputText" class="date" type="text" />
+                </div>
+                <div class="field">
+                    <label for="ReferenceNumberInputText">@I18N.ReferenceNumber</label>
+                    <input id="ReferenceNumberInputText" type="text">
+                </div>
+                <div class="three wide field">
+                    <label for="StoreSelect">@I18N.SelectStore</label>
+                    <select id="StoreSelect" class="ui search dropdown"></select>
+                    <input id="StoreHidden" type="hidden">
+                </div>
+                <div class="three wide field">
+                    <label for="StoreSelect">@I18N.Type</label>
+                    <select id="AdjustmentTypeSelect" class="ui dropdown">
+                        <option>Decrease</option>
+                        <option>Increase</option>
+                    </select>
+                    <input id="StoreHidden" type="hidden">
+                </div>
+                <div class="field">
+                    <label for="ShowButton">@I18N.ShowItems</label>
+                    <input value="@I18N.Show" id="ShowButton" class="ui small positive button" type="submit">
+                </div>
+            </div>
+        </div>
+        <table id="ClosingInventoryGrid" class="ui collapsing table form segment">
+            <thead>
+                <tr>
+                    <th>@I18N.ItemId</th>
+                    <th>@I18N.ItemCode</th>
+                    <th>@I18N.ItemName</th>
+                    <th>@I18N.UnitId</th>
+                    <th>@I18N.UnitName</th>
+                    <th>@I18N.Quantity</th>
+                    <th>@I18N.Actual</th>
+                    <th>@I18N.Difference</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <div id="ErrorDiv" class="big error vpad16"></div>
+        <div class="ui form" style="width: 300px;">
+            <div class="field">
+                <label for="StatementReferenceTextArea">@I18N.StatementReference</label>
+                <textarea id="StatementReferenceTextArea" rows="4"></textarea>
+            </div>
+            <div id="ErrorLabel" class="big error vpad16"></div>
+            <div class="ui buttons">
+                <button id="SaveButton" class="ui green button" type="button">
+                    @I18N.Save
+                </button>
+                <a href="/dashboard/inventory/tasks/inventory-adjustments" class="ui blue button">@I18N.Back</a>
+            </div>
+
+        </div>
+        <script>
+            var showButton = $("#ShowButton");
+            var storeHidden = $("#StoreHidden");
+            var storeSelect = $("#StoreSelect");
+            var closingInventoryGrid = $("#ClosingInventoryGrid");
+            var actualInputText = $(".actual");
+            var differenceInputText = $(".difference");
+            var saveButton = $("#SaveButton");
+            var referenceNumberInputText = $("#ReferenceNumberInputText");
+            var statementReferenceTextArea = $("#StatementReferenceTextArea");
+            var valueDateInputText = $("#ValueDateInputText");
+            var bookDateInputText = $("#BookDateInputText");
+            var errorLabel = $("#ErrorLabel");
+
+
+            function loadStores() {
+                window.displayFieldBinder($("#StoreSelect"), "/api/forms/inventory/stores/display-fields", true);
+            };
+
+            loadStores();
+
+            function displayClosingInventory(model) {
+                function getCell(text) {
+                    const cell = $("<td />");
+                    cell.html(text);
+                    return cell;
+                };
+
+                var tabIndex = 0;
+                var totalRows = model.length;
+                closingInventoryGrid.find("tbody").html("");
+
+                $.each(model, function () {
+                    const row = $("<tr />");
+                    tabIndex++;
+
+                    row.append(getCell(this.ItemId));
+                    row.append(getCell(this.ItemCode));
+                    row.append(getCell(this.ItemName));
+                    row.append(getCell(this.UnitId));
+                    row.append(getCell(this.UnitName));
+                    row.append(getCell(this.Quantity));
+
+                    row.append(getCell(`<input type='text' tabindex='${tabIndex}' class='decimal actual' />`));
+                    row.append(getCell(`<input type='text' tabindex='${tabIndex + totalRows}' class='decimal difference' />`));
+
+
+                    closingInventoryGrid.find("tbody").append(row);
+                });
+            };
+
+            function isPositiveAdjustment() {
+                return $("#AdjustmentTypeSelect").val().trim() === "Increase";
+            };
+
+            function initializeCalculator() {
+                $("input.actual").blur(function () {
+                    const quantity = window.parseFloat2($(this).parent().parent().find("td:nth-last-child(3)").html());
+                    var actual= window.parseFloat2($(this).val());
+
+                    if (window.isNullOrWhiteSpace($(this).val())) {
+                        $(this).val(quantity);
+                        actual = quantity;
+                    };
+
+                    var final = quantity - actual;
+
+                    if (isPositiveAdjustment()) {
+                        final = actual - quantity;
+                    };
+
+                    if (final < 0) {
+                        window.makeDirty($(this).parent());
+                        return;
+                    };
+
+                    window.removeDirty($(this).parent());
+
+                    $(this).parent().parent().find("td:nth-last-child(1) input").val(final);
+                });
+
+                $("input.difference").blur(function () {
+                    const quantity = window.parseFloat2($(this).parent().parent().find("td:nth-last-child(3)").html());
+                    var difference = window.parseFloat2($(this).val());
+                    if (difference < 0) {
+                        $(this).val("");
+                        difference = 0;
+                    }
+
+                    var final = quantity - difference;
+
+                    if (isPositiveAdjustment()) {
+                        final = quantity + difference;
+                    };
+
+                    if (final < 0) {
+                        window.makeDirty($(this).parent());
+                        return;
+                    };
+
+                    window.removeDirty($(this).parent());
+
+                    $(this).parent().parent().find("td:nth-last-child(2) input").val(final);
+                });
+            };
+
+            $("#ShowButton").off("click").on("click", function () {
+                function request(storeId) {
+                    var url = "/dashboard/inventory/tasks/inventory-adjustments/closing/{storeId}";
+                    url = url.replace("{storeId}", storeId);
+                    return window.getAjaxRequest(url);
+                };
+
+                const storeId = window.parseInt(storeSelect.val());
+
+                if (!storeId) {
+                    window.displayMessage(window.translate("PleaseSelectStore"));
+                    return;
+                };
+
+                const ajax = request(storeId);
+
+                ajax.success(function (response) {
+                    displayClosingInventory(response);
+                    initializeCalculator();
+                });
+
+                ajax.fail(function (xhr) {
+                    window.logAjaxErrorMessage(xhr);
+                });
+            });
+        </script>
+        <script type="text/javascript">
+            saveButton.click(function () {
+                function request(model) {
+                    const url = "/dashboard/inventory/tasks/inventory-adjustments";
+                    const data = JSON.stringify(model);
+
+                    return window.getAjaxRequest(url, "POST", data);
+                };
+
+                function getModel(tranType) {
+                    var isValid = true;
+                    closingInventoryGrid.find("tbody tr").each(function() {
+                        if ($(this).hasClass("error")) {
+                            isValid = false;
+                            return;
+                        }
+                    });
+                    if (!isValid) return null;
+
+                    function getDetails() {
+                        var model = [];
+
+                        closingInventoryGrid.find("tbody tr").each(function () {
+                            const itemCode = $(this).find("td:nth-child(2)").html();
+                            const quantity = window.parseFloat2($(this).find("td:nth-child(8)").find("input").val());
+                            const unitName = $(this).find("td:nth-child(5)").html();
+
+                            if (quantity) {
+                                model.push(
+                                    {
+                                        TransactionType: tranType,
+                                        ItemCode: itemCode,
+                                        Quantity: quantity,
+                                        UnitName: unitName
+                                    }
+                                );
+                            };
+                        });
+
+                        return model;
+                    };
+
+                    const storeId = window.parseInt(storeSelect.val());
+                    const valueDate = window.parseLocalizedDate(valueDateInputText.val());
+                    const bookDate = window.parseLocalizedDate(bookDateInputText.val());
+                    const referenceNumber = referenceNumberInputText.val();
+                    const statementReference = statementReferenceTextArea.val();
+
+                    if (!storeId) {
+                        window.makeDirty(storeSelect);
+                        errorLabel.html(window.translate("InvalidStore"));
+                        return null;
+                    };
+
+                    if (!window.isDate(valueDate)) {
+                        window.makeDirty(valueDateInputText);
+                        errorLabel.html(window.translate("InvalidDate"));
+                        return null;
+                    };
+
+                    if (!window.isDate(bookDate)) {
+                        window.makeDirty(bookDateInputText);
+                        errorLabel.html(window.translate("InvalidDate"));
+                        return null;
+                    };
+
+
+                    return {
+                        StoreId: storeId,
+                        ValueDate: valueDate,
+                        BookDate: bookDate,
+                        ReferenceNumber: referenceNumber,
+                        StatementReference: statementReference,
+                        Details: getDetails()
+                    };
+                };
+
+                const tranType = isPositiveAdjustment() ? "Dr" : "Cr";
+
+                const model = getModel(tranType);
+
+                if (!model) {
+                    return;
+                };
+
+                saveButton.addClass("loading").prop("disabled", true);
+                const ajax = request(model);
+
+                ajax.success(function(response) {
+                    saveButton.removeClass("loading").prop("disabled", false);
+                    const tranId = response;
+
+                    if (tranId) {
+                        window.location = "/dashboard/inventory/tasks/adjustments/checklist/" + tranId;
+                    };
+                });
+
+                ajax.fail(function (xhr) {
+                    saveButton.removeClass("loading").prop("disabled", false);
+                    window.logAjaxErrorMessage(xhr);
+                });
+            });
+
+            window.overridePath = "/dashboard/inventory/tasks/inventory-adjustments";
+        </script>
+
+    </div>
+</div>

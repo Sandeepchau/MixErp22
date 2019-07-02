@@ -1,0 +1,65 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.Attributes;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("Attributes");
+
+    scrudFactory.viewAPI = "/api/forms/inventory/attributes";
+    scrudFactory.viewTableName = "inventory.attributes";
+
+    scrudFactory.formAPI = "/api/forms/inventory/attributes";
+    scrudFactory.formTableName = "inventory.attributes";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "AttributeName";
+
+    scrudFactory.card = {
+        header: "AttributeName",
+        description: "AttributeCode"        
+    };
+
+    //scrudFactory.layout = [
+    //    {
+    //        tab: "",
+    //        fields: [
+    //            ["", ""],
+    //            ["", ""],
+    //        ]
+    //    }
+    //];
+
+    //scrudFactory.keys = [
+    //    {
+    //        property: "CamelCase",
+    //        url: '/api/forms/schema/table/display-fields',
+    //        data: null,
+    //        valueField: "Key",
+    //        textField: "Value"
+    //    }
+    //];
+
+
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

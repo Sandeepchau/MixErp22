@@ -1,0 +1,15 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.Inventory;
+    Layout = ViewBag.Layout;
+}
+
+<div class="inventory layout container">
+    @RenderBody()
+</div>
+
+<script>
+    window.loadDatepicker();
+    window.setRegionalFormat();
+</script>

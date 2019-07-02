@@ -1,0 +1,431 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.OpeningInventoryVerification;
+    Layout = ViewBag.InventoryLayoutPath;
+}
+<style>
+    .modal iframe {
+        width: 100%;
+        border: none;
+        height: 700px;
+    }
+</style>
+<div class="ui attached page segment" style="min-height: 100%; padding: 3em;">
+    <div class="ui huge header">@I18N.OpeningInventoryVerification</div>
+    <div class="ui divider"></div>
+    <div class="ui basic buttons">
+        <a id="AddNewButton" class="ui basic button" style="" href="/dashboard/inventory/setup/opening-inventories/new">
+            @I18N.AddNew
+        </a>
+        <a class="ui basic button" id="VerificationApproveButton">@I18N.Approve</a>
+        <a class="ui basic button" id="VerificationRejectButton">@I18N.Reject</a>
+
+        <div class="ui icon top left pointing dropdown basic button" id="ExportDropDown" tabindex="0">
+            <span>
+                @I18N.Export
+            </span>
+            <div class="menu" tabindex="-1">
+                <div class="header">
+                    @I18N.ExportDocument
+                </div>
+                <a class="item" href="javascript:void(0);" onclick="createDoc();">
+                    <i class="file word outline blue icon"></i> @I18N.ExportDoc
+                </a>
+                <a class="item" href="javascript:void(0);" onclick="createXls();">
+                    <i class="file excel outline green icon"></i> @I18N.ExportExcel
+                </a>
+                <a class="item" href="javascript:void(0);" onclick="createPDF();">
+                    <i class="file pdf outline red icon"></i> @I18N.ExportPdf
+                </a>
+            </div>
+        </div>
+        <a id="PrintButton" href="javascript:void(0);" onclick="print()" class="ui basic button">
+            @I18N.Print
+        </a>
+    </div>
+
+    <div class="ui stackable form segment" id="Annotation" style="">
+        <div class="eight fields">
+            <div class="field">
+                <input class="date" data-persist placeholder="@I18N.From" id="FromInputText" title="@I18N.From" type="text">
+            </div>
+            <div class="field">
+                <input class="date" data-persist placeholder="@I18N.To" id="ToInputText" title="@I18N.To" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.TranId" id="TranIdInputText" title="@I18N.TranId" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.TranCode" id="TranCodeInputText" title="@I18N.TranCode" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.ReferenceNumber" id="ReferenceNumberInputText" title="@I18N.ReferenceNumber" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.StatementReference" id="StatementReferenceInputText" title="@I18N.StatementReference" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.PostedBy" id="PostedByInputText" title="@I18N.PostedBy" type="text">
+            </div>
+        </div>
+        <div class="eight fields">
+            <div class="field">
+                <input placeholder="@I18N.Office" id="OfficeInputText" title="@I18N.Office" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.Status" id="StatusInputText" title="@I18N.Status" type="text" value="@I18N.Unverified">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.VerifiedBy" id="VerifiedByInputText" title="@I18N.VerifiedBy" type="text">
+            </div>
+            <div class="field">
+                <input placeholder="@I18N.Reason" id="ReasonInputText" title="@I18N.Reason" type="text">
+            </div>
+            <div class="field hidden">
+                <input placeholder="@I18N.UserId" id="UserIdInputText" title="@I18N.UserId" type="text">
+            </div>
+            <div class="field hidden">
+                <input placeholder="@I18N.OfficeId" id="OfficeIdInputText" title="@I18N.OfficeId" type="text">
+            </div>
+            <div class="field">
+                <div class="ui green button" id="ShowButton">@I18N.Show</div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="fluid width overflown section">
+        <table id="JournalView" class="ui nowrap table segment">
+            <thead>
+                <tr>
+                    <th>@I18N.Actions</th>
+                    <th>@I18N.Select</th>
+                    <th>@I18N.TranId</th>
+                    <th>@I18N.TranCode</th>
+                    <th>@I18N.Book</th>
+                    <th>@I18N.ValueDate</th>
+                    <th>@I18N.BookDate</th>
+                    <th>@I18N.ReferenceNumberAbbrebiated</th>
+                    <th>@I18N.StatementReference</th>
+                    <th>@I18N.PostedBy</th>
+                    <th>@I18N.Office</th>
+                    <th>@I18N.Status</th>
+                    <th>@I18N.VerifiedBy</th>
+                    <th>@I18N.VerifiedOn</th>
+                    <th>@I18N.Reason</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="ActionModal" class="ui modal">
+    <div class="ui massive red header"></div>
+    <div class="ui inverted red content">
+        <div class="ui form">
+            <div class="ui blue large dividing header"></div>
+            <div class="field">
+                <label for="ReasonTextArea">@I18N.VerificationReason</label>
+                <textarea id="ReasonTextArea"></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui buttons">
+            <input type="button" class="ui red cancel button" value="@I18N.Cancel"/>
+            <input type="button" id="VerifyButton" class="ui green ok button" value="@I18N.Verify" title="@I18N.CtrlPlusReturn"/>
+        </div>
+    </div>
+</div>
+
+<div class="ui large advice modal">
+    <i class="close icon"></i>
+    <iframe></iframe>
+</div>
+
+<script>
+    function displayTable(target, model) {
+        target.find("tbody").html("");
+
+        function getCell(text, isDate, hasTime) {
+            const cell = $("<td />");
+
+            cell.text(text);
+
+            if (isDate) {
+                const date = new Date(text);
+
+                if (hasTime) {
+                    if ((text || "").trim()) {
+                        cell.text(window.moment(date).fromNow() || "");
+                        cell.attr("title", date.toLocaleString());
+                    };
+                } else {
+                    cell.text(date.toLocaleDateString());
+                    cell.attr("title", text);
+                };
+            };
+
+            return cell;
+        };
+
+        function getActionCell(tranId) {
+            const cell = $("<td />");
+
+            const checklistAnchor = $(`<a title='${window.translate("ChecklistWindow")}'><i class='list icon'></i></a>`);
+            checklistAnchor.attr("href", `/dashboard/inventory/setup/opening-inventories/checklist/${tranId}`);
+
+            const inventoryAdviceAnchor = $(`<a title='${window.translate("ViewOpeningInventoryAdvice")}'><i class='zoom icon'></i></a>`);
+            inventoryAdviceAnchor.attr("href", "javascript:void(0);");
+            inventoryAdviceAnchor.attr("onclick", `showOpeningAdvice(${tranId});`);
+
+
+            cell.append(checklistAnchor);
+            cell.append(inventoryAdviceAnchor);
+            return cell;
+        };
+
+        function getSelectionCell() {
+            const cell = $("<td />");
+            const checkbox = $("<div class='ui toggle checkbox'/>");
+            const input = $("<input type='checkbox' />");
+            const label = $("<label />");
+
+            checkbox.append(input);
+            checkbox.append(label);
+
+            cell.append(checkbox);
+
+            return cell;
+        };
+
+        const sorted = window.Enumerable.From(model)
+            .OrderByDescending(function (x) {
+                return new Date(x.ValueDate);
+            }).ThenByDescending(function (x) {
+                return new Date(x.VerifiedOn);
+            }).ToArray();
+
+        $.each(sorted, function() {
+            const item = this;
+
+            const row = $("<tr />");
+
+            row.append(getActionCell(item.TransactionMasterId));
+            row.append(getSelectionCell());
+            row.append(getCell(item.TransactionMasterId));
+            row.append(getCell(item.TransactionCode));
+            row.append(getCell(item.Book));
+            row.append(getCell(item.ValueDate, true, false));
+            row.append(getCell(item.BookDate, true, false));
+            row.append(getCell(item.ReferenceNumber));
+            row.append(getCell(item.StatementReference));
+            row.append(getCell(item.PostedBy));
+            row.append(getCell(item.Office));
+            row.append(getCell(item.Status));
+            row.append(getCell(item.VerifiedBy));
+            row.append(getCell(item.VerifiedOn, true, true));
+            row.append(getCell(item.Reason));
+
+            target.find("tbody").append(row);
+        });
+    };
+
+    function processQuery() {
+        function getModel() {
+            const model = window.serializeForm($("#Annotation"));
+            model.Book = "Opening Inventory";
+
+            return model;
+        };
+
+        function displayGrid(target) {
+            function request(model) {
+                const url = "/dashboard/finance/tasks/journal/view";
+                const data = JSON.stringify(model);
+                return window.getAjaxRequest(url, "POST", data);
+            };
+
+            const model = getModel();
+
+            const ajax = request(model);
+
+            ajax.success(function(response) {
+                displayTable(target, response);
+                target.removeClass("loading");
+            });
+
+            ajax.fail(function(xhr) {
+                window.logAjaxErrorMessage(xhr);
+            });
+        };
+
+        const view = $("#JournalView").addClass("loading");
+
+        displayGrid(view);
+    };
+
+    $("#ShowButton")
+        .unbind("click")
+        .bind("click",
+            function() {
+                processQuery();
+            });
+
+    setTimeout(function () {
+        processQuery();
+    }, 1000);
+</script>
+
+<script>
+    var reasonTextArea = $("#ReasonTextArea");
+    var journalView = $("#JournalView");
+    var modal = $("#ActionModal");
+    var verifyButton = $("#VerifyButton");
+    var tranId;
+    var approve;
+
+    function getSelectedItem() {
+        const selected = journalView.find("input:checked").first();
+        
+        if (selected.length) {
+            const row = selected.parent().parent().parent();
+            const id = row.find("td:nth-child(3)").html();
+            return window.parseInt(id);
+        };
+
+        return 0;
+    };
+
+    function showModal() {
+        const header = modal.find(".ui.massive.header");
+        const subheader = modal.find(".ui.dividing.header");
+
+        header.html(window.translate("RejectTransaction"));
+        subheader.html(window.stringFormat(window.translate("TranId") + ": #{0}", tranId));
+        header.removeClass("green").addClass("red");
+
+        if (approve) {
+            header.html(window.translate("ApproveTransaction"));
+            header.removeClass("red").addClass("green");
+        };
+
+        modal.modal('setting', 'closable', false).modal('show');
+    };
+
+    $("#VerificationApproveButton").click(function () {
+        tranId = getSelectedItem();
+
+        if (tranId) {
+            approve = true;
+            showModal();
+        };
+    });
+
+    $("#VerificationRejectButton").click(function () {
+        tranId = getSelectedItem();
+
+        if (tranId) {
+            approve = false;
+            showModal();
+        };
+    });
+
+    function removeRow(index, callback) {
+        journalView.find("tr").eq(index + 1).addClass("negative").fadeOut(500, function () {
+            $(this).remove();
+
+            if (typeof (callback) === "function") {
+                callback();
+            };
+        });
+    };
+
+    function hideModal() {
+        modal.modal("hide");
+    };
+
+    verifyButton.click(function () {
+        function getModel() {
+            const reason = reasonTextArea.val();
+
+            return {
+                TranId: tranId,
+                Reason: reason
+            };
+        };
+
+        function request(model, type) {
+            const url = "/dashboard/inventory/setup/opening-inventories/verification/" + type;
+            const data = JSON.stringify(model);
+
+            return window.getAjaxRequest(url, "POST", data);
+        }
+
+        const model = getModel();
+        const type = approve ? "approve" : "reject";
+
+        const ajax = request(model, type);
+
+        ajax.success(function (response) {
+            var cascadingTranId = window.parseFloat(response);
+
+            if (cascadingTranId) {
+                journalView.find("tr td:nth-child(3)").each(function (i) {
+                    const tranId = window.parseFloat2($(this).text() || 0);
+
+                    if (cascadingTranId === tranId) {
+                        removeRow(i);
+                    };
+                });
+            };
+
+            journalView.find("input:checked").first().parent().parent().parent().remove();
+            hideModal();
+        });
+
+        ajax.fail(function (xhr) {
+            window.logAjaxErrorMessage(xhr);
+        });
+
+        return false;
+    });
+
+    $(document).keyup(function (e) {
+        if (e.ctrlKey) {
+            const rowNumber = e.keyCode - 47;
+
+            if (rowNumber < 10) {
+                journalView.find("tr").eq(rowNumber).find("input").trigger('click');
+            };
+        };
+    });
+
+    shortcut.add("CTRL+K", function () {
+        $("#ApproveButton").trigger("click");
+    });
+
+    shortcut.add("CTRL+RETURN", function () {
+        if (modal.is(":visible")) {
+            verifyButton.trigger("click");
+        };
+    });
+
+    shortcut.add("CTRL+SHIFT+K", function () {
+        $("#VerificationRejectButton").trigger("click");
+    });
+
+    function showPuchaseInvoice(tranId) {
+        $(".advice.modal iframe").attr("src", "/dashboard/reports/source/Areas/MixERP.Inventory/Reports/Opening.xml?transaction_master_id=" + tranId);
+
+        setTimeout(function () {
+            $(".advice.modal")
+                .modal('setting', 'transition', 'horizontal flip')
+                .modal("show");
+
+        }, 300);
+    };
+</script>

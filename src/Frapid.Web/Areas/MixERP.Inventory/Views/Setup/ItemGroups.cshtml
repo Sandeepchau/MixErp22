@@ -1,0 +1,116 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.ItemGroups;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("ItemGroups");
+
+    scrudFactory.viewAPI = "/api/forms/inventory/item-groups";
+    scrudFactory.viewTableName = "inventory.item_groups";
+
+    scrudFactory.formAPI = "/api/forms/inventory/item-groups";
+    scrudFactory.formTableName = "inventory.item_groups";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "ItemGroupName";
+
+    scrudFactory.card = {
+        header: "ItemGroupName",
+        meta: "ItemGroupCode",
+        description: "ParentItemGroupId"        
+    };
+
+    //scrudFactory.layout = [
+    //    {
+    //        tab: "",
+    //        fields: [
+    //            ["", ""],
+    //            ["", ""],
+    //        ]
+    //    }
+    //];
+
+    scrudFactory.keys = [
+        {
+            property: "SalesAccountId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "SalesDiscountAccountId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "SalesReturnAccountId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "PurchaseAccountId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "PurchaseDiscountAccountId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "InventoryAccountId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CostOfGoodsSoldAccountId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "ParentItemGroupId",
+            url: '/api/forms/finance/accounts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        }
+
+    ];
+
+
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

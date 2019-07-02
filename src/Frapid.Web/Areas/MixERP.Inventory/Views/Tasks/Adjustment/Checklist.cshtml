@@ -1,0 +1,22 @@
+﻿@using MixERP.Inventory.Extensions
+@model long
+
+@{
+    ViewBag.Title = I18N.Checklist;
+    Layout = ViewBag.InventoryLayoutPath;
+}
+@Html.FinancePartialView("Shared/Checklist.cshtml", TenantConvention.GetTenant())
+
+<script>
+    window.overridePath = "/dashboard/inventory/tasks/inventory-transfers";
+
+    window.prepareChecklist({
+        TranId: "@Model",
+        Title: window.translate("InventoryAdjustmentChecklist") + " #@Model",
+        ViewText: window.translate("ViewAdjustment"),
+        ViewUrl: "/dashboard/inventory/tasks/inventory-adjustments",
+        AddNewText: window.translate("AddNewAdjustment"),
+        AddNewUrl: "/dashboard/inventory/tasks/inventory-adjustments/new",
+        ReportPath: "/dashboard/reports/source/Areas/MixERP.Inventory/Reports/Adjustment.xml?transaction_master_id=@Model"
+    });
+</script>

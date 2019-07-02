@@ -1,0 +1,110 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.InventoryItems;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("InventoryItems");
+
+    scrudFactory.viewAPI = "/api/views/inventory/item-scrud_view";
+    scrudFactory.viewTableName = "inventory.item-scrud-view";
+
+    scrudFactory.formAPI = "/api/forms/inventory/items";
+    scrudFactory.formTableName = "inventory.items";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "ItemName";
+    scrudFactory.uploadHanlder = "/dashboard/inventory/services/attachments";
+
+    scrudFactory.card = {
+        image: "Photo",
+        header: "ItemName",
+        meta: "ItemCode",
+        description: "UnitName"        
+    };
+
+    scrudFactory.layout = [
+        {
+            tab: "",
+            fields: [
+                ["ItemId", ""],
+                ["Photo"],
+                ["ItemCode", "ItemName"],
+            ]
+        }
+    ];
+
+    scrudFactory.keys = [
+        {
+            property: "ItemGroupId",
+            url: '/api/forms/inventory/item-groups/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "ItemTypeId",
+            url: '/api/forms/inventory/item-types/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "BrandId",
+            url: '/api/forms/inventory/brands/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "PreferredSupplierId",
+            url: '/api/forms/inventory/suppliers/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "UnitId",
+            url: '/api/forms/inventory/units/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "IsVariantOf",
+            url: '/api/forms/inventory/items/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "ReorderUnitId",
+            url: '/api/forms/inventory/units/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        }
+    ];
+
+
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

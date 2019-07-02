@@ -1,0 +1,126 @@
+﻿@using Frapid.ApplicationState.Cache
+@model MixERP.Inventory.DTO.InventorySetup
+
+@{
+    ViewBag.Title = I18N.Counters;
+    Layout = ViewBag.Layout;
+    var meta = AppUsers.GetCurrent(TenantConvention.GetTenant());
+}
+
+
+<div class="ui attached very relaxed segment">
+    <div class="ui container">
+        <h1>@I18N.InventorySetup</h1>
+        <div class="danger">
+            <div class="ui red message">
+                <div class="header">@I18N.Warning</div>
+                <p>
+                    @I18N.InventorySetupWarning
+                </p>
+            </div>
+
+            <button class="ui negative button" onclick="$('.risky.container').fadeIn(1000); $(this).closest('.danger').remove();">@I18N.IUnderstandTheRisks</button>
+        </div>
+    </div>
+    <div class="ui risky container" style="display: none;">
+        <div class="ui divider"></div>
+        <div class="ui hidden divider"></div>
+        <div class="ui stackable grid">
+            <div class="twelve wide column">
+                <div class="ui form">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>@I18N.Office</label>
+                            <input readonly="" disabled="" value="@meta.OfficeName" />
+                        </div>
+                        <div class="field">
+                            <label for="InventorySystemSelect">@I18N.InventorySystem</label>
+                            <select id="InventorySystemSelect" data-selected="@Model.InventorySystem">
+                                <option value="Perpetual">@I18N.Perpetual</option>
+                                <option value="Periodic">@I18N.Periodic</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label for="CogsCalculationMethodSelect">@I18N.CogsCalculationMethod</label>
+                            <select id="CogsCalculationMethodSelect" data-selected="@Model.CogsCalculationMethod">
+                                <option value="FIFO">@I18N.FIFO</option>
+                                <option value="LIFO">@I18N.LIFO</option>
+                                <option value="MAVCO">@I18N.MAVCO</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="three fields">
+                        <div class="field">
+                            <label for="AllowMultipleOpeningInventorySelect">@I18N.AllowMultipleOpeningInventory</label>
+                            <select id="AllowMultipleOpeningInventorySelect" data-selected="@Model.AllowMultipleOpeningInventory">
+                                <option value="True">@I18N.Yes</option>
+                                <option value="False">@I18N.No</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="UsePosCheckoutScreenSelect">@I18N.UsePosCheckoutScreen</label>
+                            <select id="UsePosCheckoutScreenSelect" data-selected="@Model.UsePosCheckoutScreen">
+                                <option value="True">@I18N.Yes</option>
+                                <option value="False">@I18N.No</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="ValidateReturnsSelect">@I18N.ValidateReturns</label>
+                            <select id="ValidateReturnsSelect" data-selected="@Model.ValidateReturns">
+                                <option value="True">@I18N.Yes</option>
+                                <option value="False">@I18N.No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label for="DefaultDiscountAccountIdSelect">@I18N.DefaultDiscountAccountId</label>
+                        <select id="DefaultDiscountAccountIdSelect"
+                                data-api="/api/forms/finance/accounts/display-fields"
+                                data-api-value-field="Value"
+                                data-api-key-field="Key"
+                                data-api-selected-value="@Model.DefaultDiscountAccountId"></select>
+                    </div>
+
+                    <button class="ui basic save button">@I18N.Save</button>
+                    <a class="ui positive button" href="/dashboard">@I18N.GetMeOutOfHere</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    (function () {
+        window.initializeSelectApis();
+        $("[data-selected]").each(function () {
+            const el = $(this);
+            const selected = el.attr("data-selected");
+
+            el.val(selected).change();
+        });
+
+        $(".ui.basic.save.button").off("click").on("click", function () {
+            function request(model) {
+                const url = "/dashboard/inventory/setup/is";
+                const data = JSON.stringify(model);
+                return window.getAjaxRequest(url, "PUT", data);
+            };
+
+
+            const model = window.serializeForm($(".ui.form"));
+            const ajax = request(model);
+
+            ajax.success(function () {
+                window.location = window.location;
+            });
+
+            ajax.fail(function (xhr) {
+                window.logAjaxErrorMessage(xhr);
+            });
+        });
+    })();
+</script>

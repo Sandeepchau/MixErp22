@@ -1,0 +1,16 @@
+﻿@using MixERP.Inventory.Extensions
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.InventoryTransfers;
+    Layout = ViewBag.InventoryLayoutPath;
+}
+
+@Html.FinancePartialView("Shared/SearchView.cshtml", TenantConvention.GetTenant())
+<script src="/Areas/MixERP.Inventory/scripts/tasks/adjustment/index.js"></script>
+
+<script>
+	setTimeout(function(){
+	    prepareView(model);
+	}, 500);
+</script>

@@ -1,0 +1,487 @@
+﻿@using Frapid.ApplicationState.Cache
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.Inventory;
+    Layout = ViewBag.InventoryLayoutPath;
+}
+<div class="ui attached page segment" style="min-height: 100%;padding:3em;display:none;">
+    <div class="ui huge header">@I18N.InventoryTransfer</div>
+    <div class="ui divider"></div>
+
+    <div class="ui form">
+        <div class="six fields">
+            <div class="small field">
+                <label for="ValueDateTextBox">@I18N.ValueDate</label>
+                <input id="ValueDateTextBox" class="date" type="date">
+            </div>
+            <div class="small field">
+                <label for="BookDateTextBox">@I18N.BookDate</label>
+                <input id="BookDateTextBox" class="date" type="date">
+            </div>
+            <div class="small field">
+                <label for="ReferenceNumberInputText">@I18N.ReferenceNumberAbbrebiated </label>
+                <input id="ReferenceNumberInputText" maxlength="24" type="text">
+            </div>
+        </div>
+    </div>
+    <div>
+    <div class="fluid width overflown section">
+            <table id="TransferGridView" class="ui nowrap table segment">
+                <thead>
+                    <tr>
+                        <th style="width:150px">
+                            <label for="TransactionTypeSelect">@I18N.Type</label>
+                        </th>
+                        <th style="width:200px">
+                            <label for="StoreSelect">@I18N.Store</label>
+                        </th>
+                        <th style="width:200px">
+                            <label for="ItemCodeInputText">@I18N.ItemCode</label>
+                        </th>
+                        <th>
+                            <label for="ItemSelect">@I18N.ItemName</label>
+                        </th>
+                        <th style="width:100px" class="text-right">
+                            <label for="QuantityInputText">@I18N.Quantity</label>
+                        </th>
+                        <th style="width:200px;">
+                            <label for="UnitSelect">@I18N.Unit</label>
+                        </th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="footer-row ui form">
+                        <td>
+                            <select class="ui fluid dropdown" id="TransactionTypeSelect">
+                                <option value="Cr">@I18N.Out</option>
+                                <option value="Dr">@I18N.In</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select id="StoreSelect" class="ui fluid dropdown"></select>
+                        </td>
+                        <td>
+                            <input id="ItemCodeInputText" type="text">
+                        </td>
+                        <td>
+                            <select id="ItemSelect" class="ui fluid dropdown"></select>
+                        </td>
+                        <td>
+                            <input id="QuantityInputText" class="text-right decimal4" type="text">
+                        </td>
+                        <td>
+                            <select id="UnitSelect" class="ui fluid dropdown"></select>
+                        </td>
+                        <td>
+                            <input id="AddButton" value="@I18N.Add" class="ui small red button" type="button">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="ErrorLabel" class="big error vpad16"></div>
+    <div class="ui form" style="width:290px;">
+        <div class="small field">
+            <label for="StatementReferenceTextArea">@I18N.StatementReference</label>
+            <textarea id="StatementReferenceTextArea" rows="4"></textarea>
+        </div>
+        <div class="ui buttons">
+            <button id="SaveButton" class="ui green button" type="button">
+                @I18N.Save
+            </button>
+            <a href="/dashboard/inventory/tasks/inventory-transfers" class="ui blue button">@I18N.Back</a>            
+        </div>
+    </div>
+
+    <input id="ItemIdHidden" value="" type="hidden">
+</div>
+
+<script>
+    var addButton = $("#AddButton");
+    var dateTextBox = $("#DateTextBox");
+    var errorLabel = $("#ErrorLabel");
+    var itemIdHidden = $("#ItemIdHidden");
+    var itemCodeInputText = $("#ItemCodeInputText");
+    var itemSelect = $("#ItemSelect");
+    var quantityInputText = $("#QuantityInputText");
+    var saveButton = $("#SaveButton");
+    var storeSelect = $("#StoreSelect");
+    var transactionTypeSelect = $("#TransactionTypeSelect");
+    var transferGridView = $("#TransferGridView");
+    var unitSelect = $("#UnitSelect");
+    var storeServiceUrl = "/api/forms/inventory/stores/display-fields";
+
+    var url = "";
+    var data = "";
+
+    $(document).ready(function () {
+        loadStores();
+        loadItems();
+    });
+
+    addButton.click(function () {
+        addRow();
+    });
+
+    var addRow = function () {
+        itemCodeInputText.val(itemSelect.getSelectedValue());
+
+        const tranType = transactionTypeSelect.getSelectedValue();
+        const storeName = storeSelect.getSelectedText();
+        const itemCode = itemCodeInputText.val();
+        const itemName = itemSelect.getSelectedText();
+        const unitName = unitSelect.getSelectedText();
+        const quantity = window.parseFloat2(quantityInputText.val() || 0);
+
+        const storeId = storeSelect.val();
+        const itemId = itemSelect.val();
+        const unitId = unitSelect.val();
+
+        if (transactionTypeSelect.length) {
+            debugger;
+            if (window.isNullOrWhiteSpace(tranType) || tranType === "Select") {
+                window.makeDirty(transactionTypeSelect);
+                return;
+            };
+        };
+
+        if (window.isNullOrWhiteSpace(storeName) || storeName === "Select") {
+            window.makeDirty(storeSelect);
+            return;
+        };
+
+        if (window.isNullOrWhiteSpace(itemCode)) {
+            window.makeDirty(itemCodeInputText);
+            return;
+        };
+
+        if (window.isNullOrWhiteSpace(itemName) || itemName === "Select") {
+            window.makeDirty(itemSelect);
+            return;
+        };
+
+        if (window.isNullOrWhiteSpace(unitName) || unitName === "Select") {
+            window.makeDirty(unitSelect);
+            return;
+        };
+
+        if (quantity <= 0) {
+            window.makeDirty(quantityInputText);
+            return;
+        };
+
+        window.removeDirty(transactionTypeSelect);
+        window.removeDirty(storeSelect);
+        window.removeDirty(itemCodeInputText);
+        window.removeDirty(itemSelect);
+        window.removeDirty(unitSelect);
+        window.removeDirty(quantityInputText);
+
+        var isEdit = $("#TransferGridView tbody").find("tr.edit-active").length > 0;
+        if (isEdit) {
+            const row = $("#TransferGridView tbody").find("tr.edit-active");
+            row.find("td:eq(0)").html(tranType);
+            row.find("td:eq(1)").attr("val", storeId).html(storeName);
+            row.find("td:eq(2)").html(itemCode);
+            row.find("td:eq(3)").attr("val", itemId).html(itemName);
+            row.find("td:eq(4)").html(quantity);
+            row.find("td:eq(5)").attr("val", unitId).html(unitName);
+
+            row.removeClass('edit-active');
+            row.css("color", "");
+        } else {
+            appendToTable(tranType, storeName, itemCode, itemName, unitName, quantity, storeId, itemId, unitId);
+        }
+
+        itemCodeInputText.val("");
+        quantityInputText.val("");
+
+        if (transactionTypeSelect.length) {
+            transactionTypeSelect.focus();
+            return;
+        };
+
+        storeSelect.attr("disabled", "disabled");
+        itemCodeInputText.focus();
+    };
+
+    function appendToTable(tranType, storeName, itemCode, itemName, unitName, quantity, storeId, itemId, unitId) {
+        const rows = transferGridView.find("tbody tr:not(:last-child)");
+        var match = false;
+        var html;
+
+        if (transactionTypeSelect.length) {
+            rows.each(function () {
+                const row = $(this);
+                if (window.getColumnText(row, 0) !== tranType &&
+                    window.getColumnText(row, 1) === storeName &&
+                    window.getColumnText(row, 2) === itemCode) {
+                    window.displayMessage(window.translate("DuplicateEntry"));
+
+                    window.makeDirty(itemSelect);
+                    match = true;
+                };
+
+                if (window.getColumnText(row, 0) === tranType &&
+                    window.getColumnText(row, 1) === storeName &&
+                    window.getColumnText(row, 2) === itemCode &&
+                    window.getColumnText(row, 4) === unitName) {
+                    window.setColumnText(row, 5, window.getFormattedNumber(window.parseFloat2(window.getColumnText(row, 5)) + quantity));
+
+                    window.addDanger(row);
+                    match = true;
+                    return;
+                }
+            });
+
+            if (!match) {
+                html = "<tr class='grid2-row'><td>" + tranType + "</td><td val="+ storeId +">" + storeName + "</td><td>" + itemCode + "</td><td val="+ itemId +">" + itemName + "</td><td class='text-right'>" + getFormattedNumber(quantity) + "</td><td val="+ unitId +">" + unitName + "</td>"
+                    + "</td><td><a title=" + window.translate('Edit') +" class='edit-row'><i class='edit icon'/></a><a class='pointer' onclick='removeRow($(this));'><i class='ui delete icon'></i></a><a class='pointer' onclick='toggleDanger($(this));'><i class='ui pointer check mark icon'></a></i><a class='pointer' onclick='toggleSuccess($(this));'><i class='ui pointer thumbs up icon'></i></a></td></tr>";
+                    transferGridView.find("tr:last").before(html);
+            };
+
+            return;
+        };
+
+        rows.each(function () {
+            const row = $(this);
+            if (window.getColumnText(row, 0) === storeName &&
+                window.getColumnText(row, 1) === itemCode) {
+                window.displayMessage(window.translate("DuplicateEntry"));
+
+                window.makeDirty(itemSelect);
+                match = true;
+            };
+
+            if (window.getColumnText(row, 0) === storeName &&
+                window.getColumnText(row, 1) === itemCode &&
+                window.getColumnText(row, 3) === unitName) {
+                window.setColumnText(row, 4, window.getFormattedNumber(window.parseFloat2(window.getColumnText(row, 4)) + quantity));
+
+                window.addDanger(row);
+                match = true;
+                return;
+            }
+        });
+
+        if (!match) {
+            html = "<tr class='grid2-row'><td>" + storeName + "</td><td>" + itemCode + "</td><td>" + itemName + "</td><td class='text-right'>" + getFormattedNumber(quantity) + "</td><td>" + unitName + "</td>"
+                + "</td><td><a class='pointer' onclick='removeRow($(this));'><i class='ui delete icon'></i></a><a class='pointer' onclick='toggleDanger($(this));'><i class='ui pointer check mark icon'></a></i><a class='pointer' onclick='toggleSuccess($(this));'><i class='ui pointer thumbs up icon'></i></a></td></tr>";
+            transferGridView.find("tr:last").before(html);
+        };
+    };
+
+    saveButton.click(function () {
+        function request(model) {
+            const url = "/dashboard/inventory/tasks/inventory-transfers";
+            const data = JSON.stringify(model);
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        function getModel() {
+            function getDetails() {
+                var model = [];
+                const rows = $("#TransferGridView tbody tr:not(:last-child)");
+
+                $.each(rows, function() {
+                    const row = $(this);
+                    const transferType = row.find("td:nth-child(1)").html();
+                    const storeName = row.find("td:nth-child(2)").html();
+                    const itemCode = row.find("td:nth-child(3)").html();
+                    const itemName = row.find("td:nth-child(4)").html();
+                    const quantity = window.parseFloat2(row.find("td:nth-child(5)").html());
+                    const unitName = row.find("td:nth-child(6)").html();
+
+                    model.push({
+                        ItemCode: itemCode,
+                        ItemName: itemName,
+                        Quantity: quantity,
+                        StoreName: storeName,
+                        TransferTypeEnum: transferType,
+                        UnitName: unitName
+                    });
+                });
+
+                return model;
+            };
+
+            const valueDate = window.parseLocalizedDate($("#ValueDateTextBox").val());
+            const bookDate = window.parseLocalizedDate($("#BookDateTextBox").val());
+            const referenceNumber = $("#ReferenceNumberInputText").val();
+            const statementReference = $("#StatementReferenceTextArea").val();
+            const details = getDetails();
+
+            if (!window.isDate(valueDate)) {
+                window.makeDirty($("#ValueDateTextBox"));
+                errorLabel.html(window.translate("InvalidDate"));
+                return false;
+            };
+
+            if (!window.isDate(bookDate)) {
+                window.makeDirty($("#BookDateTextBox"));
+                errorLabel.html(window.translate("InvalidDate"));
+                return false;
+            };
+
+            if (!details || details.length === 0) {
+                errorLabel.html(window.translate("NothingToTransfer"));
+                return false;
+            };
+
+            return {
+                ValueDate: valueDate,
+                BookDate: bookDate,
+                ReferenceNumber: referenceNumber,
+                StatementReference: statementReference,
+                Details: details
+            };
+        };
+
+        
+
+        errorLabel.html("");
+
+        if (transferGridView.find("tr").length === 2) {
+            errorLabel.html(window.translate("GridviewEmpty"));
+            return false;
+        };
+
+        const model = getModel();
+
+        saveButton.addClass("loading").prop("disabled", true);
+        const ajax = request(model);
+
+        ajax.success(function(response) {
+            saveButton.removeClass("loading").prop("disabled", false);
+            const url = "/dashboard/inventory/tasks/transfers/checklist/" + response;
+            document.location = url;
+        });
+
+        ajax.fail(function (xhr) {
+            saveButton.removeClass("loading").prop("disabled", false);
+            window.logAjaxErrorMessage(xhr);
+        });
+    });
+
+    itemSelect.change(function () {
+        itemCodeInputText.val(itemSelect.getSelectedValue());
+        loadUnits();
+    });
+
+    itemSelect.blur(function () {
+        itemCodeInputText.val(itemSelect.getSelectedValue());
+        loadUnits();
+    });
+
+    itemCodeInputText.blur(function () {
+        if (!window.isNullOrWhiteSpace(itemCodeInputText.val())) {
+            itemSelect.val(itemCodeInputText.val());
+        };
+    });
+
+    function loadStores() {
+        window.displayFieldBinder(storeSelect, "/api/forms/inventory/stores/display-fields");
+    };
+
+
+    function loadItems() {
+        function request() {
+            const url = "/dashboard/inventory/items/stockable";
+            return window.getAjaxRequest(url);
+        };
+
+        const ajax = request();
+        ajax.success(function (response) {
+            var options = `<option>${window.translate("Select")}</option>`;
+
+            $.each(response, function () {
+                var option = "<option value='{key}'>{value}</option>";
+                option = option.replace("{key}", this.ItemCode);
+                option = option.replace("{value}", this.ItemName);
+
+                options += option;
+            });
+
+            itemSelect.html(options);
+        });
+    };
+
+    function loadUnits() {
+        function request(itemCode) {
+            var url = "/dashboard/inventory/get-associated-units/{*itemCode}";
+            url = url.replace("{*itemCode}", itemCode);
+
+            return window.getAjaxRequest(url);
+        };
+
+        const itemCode = itemCodeInputText.val();
+        const ajax = request(itemCode);
+        ajax.success(function (response) {
+            var options = `<option>${window.translate("Select")}</option>`;
+
+            $.each(response, function () {
+                var option = "<option value='{key}'>{value}</option>";
+                option = option.replace("{key}", this.UnitId);
+                option = option.replace("{value}", this.UnitName);
+
+                options += option;
+            });
+
+            unitSelect.html(options);
+        });
+    };
+
+    shortcut.add("CTRL+ENTER", function () {
+        addButton.trigger('click');
+    });
+
+    //$("select").dropdown({forceSelection: false});
+    window.overridePath = "/dashboard/inventory/tasks/inventory-transfers";
+
+    var visible = false;
+
+    $(document).ajaxStop(function () {
+        setTimeout(function () {
+            if (!visible) {
+                visible = true;
+
+                $(".page.segment").fadeIn(300);
+            };
+        }, 200);
+    });
+
+    function removeRow(el) {
+        if (!window.confirmAction()) {
+            return;
+        };
+
+        const row = $(el).closest("tr");
+        row.remove();
+    };
+
+    $(document).on("click", ".edit-row", function () {
+        const row = $(this).closest("tr");
+
+        row.closest("table").find("tr").css("color", "");
+        row.closest("table").find(".edit-active").removeClass("edit-active");
+        row.css("color", "red");
+        row.addClass("edit-active");
+
+        const type = row.find("td:eq(0)").html();
+        const storeId = row.find("td:eq(1)").attr("val");
+        const itemCode = row.find("td:eq(2)").html();
+        const itemId = row.find("td:eq(3)").attr("val");
+        const quantity = row.find("td:eq(4)").html();
+        const unitId = row.find("td:eq(5)").attr("val");
+
+        transactionTypeSelect.val(type);
+        storeSelect.val(storeId);
+        itemCodeInputText.val(itemCode);
+        itemSelect.val(itemId);
+        quantityInputText.val(quantity);
+        unitSelect.val(unitId);
+    })
+</script>
