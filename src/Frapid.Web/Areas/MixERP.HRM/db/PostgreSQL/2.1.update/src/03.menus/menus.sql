@@ -1,0 +1,3 @@
+﻿SELECT * FROM core.create_menu('MixERP.HRM', 'Departments', 'Departments', '/dashboard/hrm/setup/departments', 'smile', 'Setup & Configuration');
+SELECT * FROM core.create_menu('MixERP.HRM', 'HRMRoles', 'HRM Roles', '/dashboard/hrm/setup/roles', 'smile', 'Setup & Configuration');
+SELECT * FROM core.create_menu('MixERP.HRM', 'EmployemntStatusCodes', 'Employemnt Status Codes', '/dashboard/hrm/setup/employment-status-codes', 'smile', 'Setup & Configuration');
