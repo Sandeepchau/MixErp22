@@ -1,0 +1,105 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.SocialNetworks;
+    Layout = ViewBag.Layout;
+}
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("SocialNetworks");
+
+    scrudFactory.viewAPI = "/api/views/hrm/employee-social-network-detail-scrud-view";
+    scrudFactory.viewTableName = "hrm.employee_social_network_detail_scrud_view";
+
+    scrudFactory.formAPI = "/api/forms/hrm/employee-social-network-details";
+    scrudFactory.formTableName = "hrm.employee_social_network_details";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "Title";
+
+    scrudFactory.back = {
+        Title: "Return Back",
+        Url: "/dashboard/hrm/tasks/employee-info/" + getQueryStringByName("EmployeeId")
+    };
+
+    scrudFactory.layout = [
+        {
+            tab: "",
+            fields: [
+                ["EmployeeExperienceId", "EmployeeId"],
+                ["OrganizationName", "Title"],
+                ["StartedOn", "EndedOn"],
+                ["Details"]
+            ]
+        }
+    ];
+
+
+    scrudFactory.keys = [
+        {
+            property: "EmployeeId",
+            url: '/api/views/hrm/employee-view/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "SocialNetworkId",
+            url: '/api/views/hrm/social-networks/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+    ];
+
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+
+    $(document).on("formready", function () {
+        $("#social_network_id").change(function () {
+            function request(filters) {
+                const url = "/api/forms/hrm/social-networks/get-where/1";
+                const data = JSON.stringify(filters);
+                return window.getAjaxRequest(url, "POST", data, false);
+            };
+
+            const value = $("#social_network_id").getSelectedValue();
+
+            if (!value) {
+                return;
+            };
+
+            const filters = [];
+            filters.push(window.getAjaxColumnFilter("WHERE", "SocialNetworkId", "int", window.FilterConditions.IsEqualTo, value));
+
+            const ajax = request(filters);
+
+            ajax.success(function (msg) {
+                var baseUrl = msg[0].BaseUrl;
+                if (baseUrl.substr(baseUrl.length - 1) !== "/") {
+                    baseUrl += "/";
+                };
+
+                $("#profile_link").val(baseUrl);
+            });
+        });
+    });
+
+    window.overridePath = "/dashboard/hrm/tasks/employees";
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

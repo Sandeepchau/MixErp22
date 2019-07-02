@@ -1,0 +1,291 @@
+﻿@model IEnumerable<MixERP.HRM.DTO.EmployeeView>
+
+@{
+    ViewBag.Title = I18N.Attendance;
+    Layout = ViewBag.Layout;
+}
+
+<style>
+    th.mini {
+        width: 150px;
+    }
+</style>
+
+<div class="ui attached padded attendance segment" style="display: none;">
+    <div class="ui huge header">@I18N.UpdateAttendanceRecord</div>
+    <div class="ui divider"></div>
+
+    <div class="ui form bpad16" style="width: 440px;">
+        <div class="two fields">
+            <div class="ui field">
+                <label>@I18N.ForDate</label>
+                <input type="text" id="DateInputText" class="date">
+            </div>
+            <div class="ui field">
+                <label>&nbsp;</label>
+                <button id="ShowButton" class="ui green button">@I18N.Show</button>
+            </div>
+        </div>
+    </div>
+
+    <table class="ui attached form attendance table">
+        <thead>
+            <tr>
+                <th class="mini" data-localize="@I18N.EmployeeId"></th>
+                <th data-localize="@I18N.EmployeeName"></th>
+                <th class="mini">
+                    <div data-localize="@I18N.WasPresent"></div>
+                    <div class="ui was present checkbox" style="padding: 0.5em;">
+                        <input type="checkbox">
+                        <label data-localize="@I18N.Yes"></label>
+                    </div>
+                </th>
+                <th class="mini">
+                    <label data-localize="@I18N.CheckInTime"></label>
+                    <div class="ui action fluid input">
+                        <input type="time" class="check-in time">
+                        <button class="ui icon button" data-localized-title="@I18N.UpdateEmptyCheckIns" onclick="updateCheckIns()">
+                            <i class="chevron right icon"></i>
+                        </button>
+                    </div>
+                </th>
+                <th class="mini">
+                    <label data-localize="@I18N.CheckOutTime"></label>
+                    <div class="ui action fluid input">
+                        <input type="time" class="check-out time">
+                        <button class="ui icon button" data-localized-title="@I18N.UpdateEmptyCheckOuts" onclick="updateCheckOuts()">
+                            <i class="chevron right icon"></i>
+                        </button>
+                    </div>
+                </th>
+                <th class="mini" data-localize="@I18N.OvertimeHours"></th>
+                <th data-localize="@I18N.AbsenteeismReason"></th>
+                <th class="mini" data-localize="@I18N.Update"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var employee in Model)
+            {
+                <tr data-employee-id="@employee.EmployeeId" data-attendance-id="">
+                    <td>@employee.EmployeeId</td>
+                    <td>@employee.FirstName @employee.MiddleName @employee.LastName</td>
+                    <td>
+                        <div class="ui was present checkbox">
+                            <input type="checkbox">
+                            <label>Yes</label>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="time" class="check-in time">
+                    </td>
+                    <td>
+                        <input type="time" class="check-out time">
+                    </td>
+                    <td>
+                        <input type="text" class="decimal overtime-hours">
+                    </td>
+                    <td><input type="text" class="reason"></td>
+                    <td><button class="ui button">@I18N.Update</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="vpad8">
+        <button onclick="updateAll()" class="ui teal button">@I18N.UpdateAll</button>
+    </div>
+
+</div>
+
+<script>
+    loadUI();
+    $(".attendance.segment").fadeIn(1000);
+    $(".ui.checkbox").checkbox();
+
+    $("input.reason").on("blur", function() {
+        const el = $(this);
+
+        if (!el.val().trim()) {
+            return;
+        };
+
+        const row = el.closest("tr");
+        row.find("input.check-in").val("");
+        row.find("input.check-out").val("");
+        row.find(".was.present.checkbox input:checkbox").prop("checked", false);
+        row.find("input.overtime-hours").val("");
+    });
+
+    $("tr[data-employee-id] td button.ui.button").on("click", function () {
+        function request(attendnaces) {
+            const url = "/dashboard/hrm/tasks/attendance";
+            const data = JSON.stringify(attendnaces);
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        function getModel() {
+            const row = $(this).closest("tr");
+
+            const model = [];
+
+            const attendance = getAttendance(row);
+
+            model.push(attendance);
+
+            return model;
+        };
+
+        const model = getModel();
+        const ajax = request(model);
+
+        ajax.success(function () {
+            window.displayMessage("Saved", "success");
+        });
+    });
+
+    $("#ShowButton").off("click").on("click", function() {
+        function request(date) {
+            const url = "/api/forms/hrm/attendances/get-where/-1/";
+
+            const filters = [];
+            filters.push(window.getAjaxColumnFilter("WHERE", "AttendanceDate", "System.DateTime", window.FilterConditions.IsEqualTo, date));
+            filters.push(window.getAjaxColumnFilter("AND", "OfficeId", "int", window.FilterConditions.IsEqualTo, window.metaView.OfficeId));
+
+            const data = JSON.stringify(filters);
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        const date = $("#DateInputText").datepicker("getDate");
+		const target = $("tr[data-employee-id]");
+        target.attr("data-attendance-id", 0);
+        target.find("input.check-in").val("");
+        target.find("input.check-out").val("");
+        target.find(".was.present.checkbox input:checkbox").prop("checked", false);
+        target.find("input.overtime-hours").val("");
+        target.find("input.reason").val("");
+
+        const ajax = request(date);
+
+        ajax.success(function (attendance) {
+            $.each(attendance, function () {
+                const model = this;
+                const target = $("tr[data-employee-id='" + model.EmployeeId + "']");
+                target.attr("data-attendance-id", model.AttendanceId);
+                target.find("input.check-in").val(model.CheckInTime.substring(0, 5));
+                target.find("input.check-out").val(model.CheckOutTime.substring(0, 5));
+                target.find(".was.present.checkbox input:checkbox").prop("checked", model.WasPresent);
+                target.find("input.overtime-hours").val(model.OvertimeHours);
+                target.find("input.reason").val(model.ReasonForAbsenteeism);
+            });
+        });
+    });
+
+
+    function getAttendance(row) {
+        function getTimeSpan(el) {
+            const time = el.val();
+            const regex = /^\s*([01]?\d|2[0-3]):?([0-5]\d)\s*$/;
+
+            if (regex.test(time)) {
+                return window.moment(time, "HH:mm").format('HH:mm:00');
+            };
+
+            return null;
+        };
+
+        const attendanceDate = window.parseLocalizedDate($("#DateInputText").val());
+        const attendanceId = (row.attr("data-attendance-id") || null);
+        const employeeId = window.parseInt(row.attr("data-employee-id"));
+        const isPresent = row.find("input:checkbox").is(":checked");
+        const checkInTime = getTimeSpan(row.find("input.check-in"));
+        const checkOutTime = getTimeSpan(row.find("input.check-out"));
+        const overTimeHours = window.parseFloat2(row.find("input.overtime-hours").val()) || 0;
+        const reason = row.find("input.reason").val();
+
+        const attenance =
+        {
+            AttendanceId: attendanceId,
+            OfficeId: window.metaView.OfficeId,
+            EmployeeId: employeeId,
+            AttendanceDate: attendanceDate,
+            WasPresent: isPresent,
+            CheckInTime: isPresent ? checkInTime : null,
+            CheckOutTime: isPresent ? checkOutTime : null,
+            OvertimeHours: overTimeHours,
+            WasAbsent: !isPresent,
+            ReasonForAbsenteeism: !isPresent ? reason : null,
+            AuditUserId: window.userId,
+            AuditTs: new Date()
+        };
+
+        return attenance;
+    };
+
+    function updateAll() {
+        function request(attendnaces) {
+            const url = "/dashboard/hrm/tasks/attendance";
+            const data = JSON.stringify(attendnaces);
+
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        function getModel() {
+            const candidates = $("table.attendance tbody tr");
+            const model = [];
+
+
+            $.each(candidates, function() {
+                const row = $(this);
+
+                const attendance = getAttendance(row);
+                model.push(attendance);
+            });
+
+
+            return model;
+        };
+
+        const model = getModel();
+        const ajax = request(model);
+
+        ajax.success(function() {
+            window.location = window.location.pathname;
+        });
+    };
+
+    $(".attendance.table thead input[type='checkbox']").off("change").on("change", function() {
+        const el = $(this);
+        const state = el.is(":checked");
+
+        $(".attendance.table tbody input[type='checkbox']").prop("checked", state);
+    });
+
+    function updateCheckIns() {
+        var value = $(".attendance.table thead input.check-in.time").val();
+
+
+        $(".attendance.table tbody input.check-in.time").each(function() {
+            const el = $(this);
+            if (!el.val().trim()) {
+                el.val(value);
+            };
+        });
+    };
+
+
+    function updateCheckOuts() {
+        var value = $(".attendance.table thead input.check-out.time").val();
+
+
+        $(".attendance.table tbody input.check-out.time").each(function() {
+            const el = $(this);
+            if (!el.val().trim()) {
+                el.val(value);
+            };
+        });
+    };
+
+    setTimeout(function() {
+        $("#ShowButton").trigger("click");
+    }, 1000);
+</script>

@@ -1,0 +1,154 @@
+﻿@*@model MixERP.HRM.ViewModels.TimesheetModel*@
+@{
+    ViewBag.Title = I18N.Timesheet;
+    Layout = ViewBag.Layout;
+}
+@*<script>
+        var scrudFactory = new Object();
+         //var scrudFactory = new Object();
+        scrudFactory.title = window.translate("Timesheet");
+
+        scrudFactory.viewAPI = "/api/views/hrm/contract-scrud-view";
+        scrudFactory.viewTableName = "hrm.contract_scrud_view";
+
+        scrudFactory.formAPI = "/api/forms/hrm/timesheet";
+        scrudFactory.formTableName = "hrm.timesheet";
+
+        scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
+
+        scrudFactory.allowDelete = true;
+        scrudFactory.allowEdit = true;
+
+
+        scrudFactory.live = "EmployeeId";
+
+
+        scrudFactory.readonlyColumns = ["EndedOn"];
+        scrudFactory.hiddenColumns = ["VerificationStatusId", "VerifiedByUserId", "VerifiedOn", "VerificationReason"];
+
+
+
+
+        $.get('/ScrudFactory/View.html', function (view) {
+            $.get('/ScrudFactory/Form.html', function (form) {
+                $("#ScrudFactoryView").html(view);
+                $("#ScrudFactoryForm").html(form);
+                $.cachedScript("/assets/js/scrudfactory-view.js");
+                $.cachedScript("/assets/js/scrudfactory-form.js");
+            });
+        });
+    </script>
+
+    <div id="ScrudFactoryForm"></div>
+    <div id="ScrudFactoryView"></div>*@
+
+<div class="ui card" style="width:100%">
+    <div class="content">
+        <div class="header">@ViewBag.Title</div>
+    </div>
+    <div class="content">
+        <form class="ui form">
+            <div class="three fields">
+                <div class="field">
+                    <label>First name</label>
+                    <input id="FirstName" type="text" placeholder="First Name" required >
+                </div>
+                <div class="field">
+                    <label>Middle name</label>
+                    <input id="MiddleName" type="text" placeholder="Middle Name" required  >
+                </div>
+                <div class="field">
+                    <label>Last name</label>
+                    <input id="LastName" type="text" placeholder="Last Name">
+                </div>
+            </div>
+        </form>
+        <div style="overflow-x: scroll">
+            <table class="ui celled structured table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Project</th>
+                        <th rowspan="2">Task</th>
+                        <th rowspan="2">Avail hrs</th>
+                        <th colspan="2">Saturday</th>
+                        <th colspan="2">Sunday</th>
+                        <th colspan="2">Monday</th>
+                        <th colspan="2">Tuesday</th>
+                        <th colspan="2">Wednessday</th>
+                        <th colspan="2">Thursday</th>
+                        <th colspan="2">Friday</th>
+                    </tr>
+                    <tr>
+                        <th>NT</th>
+                        <th>OT</th>
+                        <th>NT</th>
+                        <th>OT</th>
+                        <th>NT</th>
+                        <th>OT</th>
+                        <th>NT</th>
+                        <th>OT</th>
+                        <th>NT</th>
+                        <th>OT</th>
+                        <th>NT</th>
+                        <th>OT</th>
+                        <th>NT</th>
+                        <th>OT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Alpha Team</td>
+                        <td>Project 1</td>
+                        <td class="right aligned">2</td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                        <td class="center aligned">
+                            <input type="number" />
+                        </td>
+                    </tr>                  
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="extra content">
+        <button id="SaveButton" class="ui green button">Submit</button>
+    </div>
+</div>
+<script src="/Areas/MixERP.HRM/script/timesheet/index.js"></script>

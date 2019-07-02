@@ -1,0 +1,134 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Attendances";
+    Layout = ViewBag.Layout;
+}
+
+<style>
+    .red.vis-box {
+        background-color: #F6D5E7;
+        color: #8A0F88;
+        border-color: #8A0F88;
+    }
+
+    .centered.segment {
+        text-align: center;
+    }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.8.2/vis.min.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.8.2/vis.min.css">
+
+
+<div class="ui attached padded segment">
+    <div class="ui huge grey header">
+        <span data-localize="@I18N.Attendances"></span>
+    </div>
+    <div class="ui active large inline loader"></div>
+
+    <div id="visualization" class="vpad8" style="display: none;"></div>
+</div>
+<script>
+    function getAttendance() {
+        const url = "/api/views/hrm/attendance-view/all";
+
+        return window.getAjaxRequest(url);
+    };
+
+    function show() {
+    };
+    var employeeId = $("#EmployeeSelect").val();
+
+    var getAttendanceAjax = getAttendance(employeeId);
+
+    getAttendanceAjax.success(function (msg) {
+        if (msg.length) {
+            createTimeLine(msg);
+        };
+    });
+
+</script>
+<script>
+    function createTimeLine(data) {
+        const employeeGroup = window.Enumerable.From(data).GroupBy(function (x) { return x.EmployeeId; }).ToArray();
+        const min = window.Enumerable.From(data).MinBy(function (x) { return x.AttendanceDate; }).AttendanceDate;
+        const max = window.Enumerable.From(data).MaxBy(function (x) { return x.AttendanceDate; }).AttendanceDate;
+
+
+        const groups = new window.vis.DataSet();
+
+        for (let g = 0; g < employeeGroup.length; g++) {
+            groups.add(
+                {
+                    id: employeeGroup[g].source[0].EmployeeId,
+                    content: employeeGroup[g].source[0].Employee,
+                    title: employeeGroup[g].source[0].Photo
+                });
+        };
+
+        // create a dataset with items
+        const items = new window.vis.DataSet();
+
+        for (let i = 0; i < data.length / employeeGroup.length; i++) {
+            const content = data[i].WasPresent ? "P" : "A";
+            const className = data[i].WasPresent ? "" : "red";
+
+            items.add({
+                id: i,
+                group: data[i].EmployeeId,
+                content: content,
+                start: data[i].AttendanceDate,
+                type: 'box',
+                className: className
+            });
+        };
+
+        // create visualization
+        const container = document.getElementById('visualization');
+        $(container).html("");
+
+        const options = {
+            groupOrder: 'content',  // groupOrder can be a property name or a sorting function
+            orientation: {
+                axis: 'both',
+                item: 'top'
+            },
+            min: min,
+            max: max,
+            zoomMin: 1000 * 60 * 60 * 24,             // one day in milliseconds
+            zoomMax: 1000 * 60 * 60 * 24 * 31 * 3     // about three months in milliseconds
+        };
+
+        const timeline = new window.vis.Timeline(container);
+        timeline.setOptions(options);
+        timeline.setGroups(groups);
+        timeline.setItems(items);
+
+        const labels = $(".vis-label");
+        labels.each(function () {
+            const el = $(this);
+            const inner = el.find(".vis-inner");
+            inner.addClass("centered");
+
+            const photo = el.attr("title");
+            el.removeAttr("title");
+
+            const header = $("<div class='ui big grey header' />");
+            header.html(inner.html());
+
+            const img = $("<img />");
+
+            img.attr("class", "ui centered rounded circular bordered image");
+            img.attr("title", inner.html());
+            img.attr("src", photo + "?Width=100&Height=100");
+
+            inner.addClass("ui attached secondary segment");
+            inner.prepend(img);
+        });
+
+        $(".loader").removeClass("active");
+        $(container).fadeIn(1000);
+    };
+
+    window.localize();
+</script>

@@ -1,0 +1,30 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.VerifyLeaveApplications;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("VerifyLeaveApplications");
+
+    scrudFactory.viewAPI = "/api/views/hrm/leave-application-verification-scrud-view";
+    scrudFactory.viewTableName = "hrm.leave_application_verification_scrud_view";
+
+    scrudFactory.formAPI = "/api/forms/hrm/leave-applications";
+    scrudFactory.formTableName = "hrm.leave_applications";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
+
+    scrudFactory.hasVerification = true;
+    scrudFactory.verificationApi = "/dashboard/hrm/verification/leave-applications";
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $("#ScrudFactoryView").html(view);
+        $.cachedScript("/assets/js/scrudfactory-view.js");
+    });
+</script>
+
+<div id="ScrudFactoryView"></div>

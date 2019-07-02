@@ -1,0 +1,88 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.Exits;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("Exits");
+
+    scrudFactory.viewAPI = "/api/views/hrm/exit-scrud-view";
+    scrudFactory.viewTableName = "hrm.exit_scrud_view";
+
+    scrudFactory.formAPI = "/api/forms/hrm/exits";
+    scrudFactory.formTableName = "hrm.exits";
+
+    scrudFactory.hiddenColumns = ["VerificationStatusId", "VerifiedByUserId", "VerifiedOn", "VerificationReason"];
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "EmployeeId";
+
+    scrudFactory.layout = [
+            {
+            tab: "",
+            fields: [
+                ["ExitId"],
+                ["EmployeeId", "Reason"],
+                ["ChangeStatusTo", "ExitTypeId"],
+                ["ForwardTo", "ServiceEndDate"],
+                ["Details"],
+                ["ExitInterviewDetails"]
+            ]
+        }
+    ];
+
+    scrudFactory.keys = [
+        {
+            property: "EmployeeId",
+            url: '/api/views/hrm/employee-view/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "ExitTypeId",
+            url: '/api/forms/hrm/exit-types/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "ChangeStatusTo",
+            url: '/api/forms/hrm/employment-statuses/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "ForwardTo",
+            url: '/api/views/hrm/employee-view/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        }
+    ];
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>
+
+<script>
+    $(document).on("formready", function() {
+        $("#verification_status_id").val("0");
+    });
+</script>

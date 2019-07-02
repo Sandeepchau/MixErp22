@@ -1,0 +1,38 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.EducationLevels;
+    Layout = ViewBag.Layout;
+}
+
+<script>
+	var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("EducationLevels");
+
+    scrudFactory.viewAPI = "/api/forms/hrm/education-levels";
+    scrudFactory.viewTableName = "hrm.education_levels";
+
+    scrudFactory.formAPI = "/api/forms/hrm/education-levels";
+    scrudFactory.formTableName = "hrm.education_levels";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+
+    scrudFactory.live = "EducationLevelName";
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>

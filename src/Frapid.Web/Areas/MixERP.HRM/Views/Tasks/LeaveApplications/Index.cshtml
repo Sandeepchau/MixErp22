@@ -1,0 +1,69 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.LeaveApplications;
+    Layout = ViewBag.Layout;
+}
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("LeaveApplications");
+
+    scrudFactory.viewAPI = "/api/views/hrm/leave-application-scrud-view";
+    scrudFactory.viewTableName = "hrm.leave_application_scrud_view";
+
+    scrudFactory.formAPI = "/api/forms/hrm/leave-applications";
+    scrudFactory.formTableName = "hrm.leave_applications";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
+    scrudFactory.hiddenColumns = ["EnteredBy", "AppliedOn", "VerificationStatusId", "VerifiedByUserId", "VerifiedOn", "VerificationReason"];
+
+    scrudFactory.live = "EmployeeId";
+
+    scrudFactory.layout = [
+        {
+            tab: "",
+            fields: [
+                ["LeaveApplicationId", ""],
+                ["EmployeeId", "LeaveTypeId"],
+                ["StartDate", "EndDate"],
+                ["Reason"]
+            ]
+        }
+    ];
+
+    scrudFactory.keys = [
+        {
+            property: "LeaveTypeId",
+            url: '/api/forms/hrm/leave-types/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "EmployeeId",
+            url: '/api/views/hrm/employee-view/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        }
+    ];
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>
+<script>
+    $(document).on("formready", function() {
+        $("#applied_on").val(window.today);
+        $("#entered_by").val(window.userId);
+        $("#verification_status_id").val("0");
+    });
+</script>

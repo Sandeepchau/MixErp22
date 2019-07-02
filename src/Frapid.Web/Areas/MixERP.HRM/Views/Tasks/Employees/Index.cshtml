@@ -1,0 +1,298 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.Employees;
+    Layout = ViewBag.Layout;
+}
+<script>
+    var scrudFactory = new Object();
+
+    scrudFactory.title = window.translate("Employees");
+
+    scrudFactory.viewAPI = "/api/views/hrm/employee-view";
+    scrudFactory.viewTableName = "hrm.employee_view";
+
+    scrudFactory.formAPI = "/api/forms/hrm/employees";
+    scrudFactory.formTableName = "hrm.employees";
+
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Deleted"];
+
+    scrudFactory.readonlyColumns = ["EmployeeName"];
+    scrudFactory.hiddenColumns = ["Status", "ServiceEndedOn"];
+
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
+    scrudFactory.viewUrl = "/dashboard/hrm/tasks/employee-info/{Id}";
+
+    scrudFactory.customActions = [
+        {
+            title: "View Employee",
+            href: "/dashboard/hrm/tasks/employee-info/{Id}",
+            icon: "list icon",
+            position: "before"
+        }
+    ];
+
+    scrudFactory.live = "EmployeeName";
+    scrudFactory.layout = [
+        {
+            tab: "personal",
+            fields: [
+                ["Photo"],
+                ["EmployeeId"],
+                ["EmployeeName", "EmployeeCode"],
+                ["FirstName", "MiddleName", "LastName", "GenderCode"],
+                ["MaritalStatusId", "NationalityId"],
+                ["DateOfBirth", ""]
+            ]
+        },
+        {
+            tab: "employment",
+            fields: [
+                ["UserId", "OfficeId"],
+                ["JoinedOn", "EmployeeTypeId"],
+                ["CurrentDepartmentId", "CurrentRoleId"],
+                ["CurrentEmploymentStatusId", "CurrentJobTitleId"],
+                ["CurrentPayGradeId", "CurrentShiftId"]
+            ]
+        },
+        {
+            tab: "bank",
+            fields: [
+                ["BankAccountNumber", "BankName"],
+                ["BankBranchName", "BankReferenceNumber"]
+            ]
+        },
+        {
+            tab: "address",
+            fields: [
+                ["ZipCode", "", "", ""],
+                ["AddressLine1"],
+                ["AddressLine2"],
+                ["Street", "City"],
+                ["CountryCode", "State"],
+                ["Phone", "Fax"],
+                ["Cell", "Email"],
+                ["Url", ""]
+            ]
+        },
+        {
+            tab: "contact",
+            fields: [
+                ["PhoneHome", "PhoneCell"],
+                ["PhoneOfficeExtension", ""],
+                ["PhoneEmergency", "PhoneEmergency2"],
+                ["EmailAddress", "Website"],
+                ["Blog", ""]
+            ]
+        },
+        {
+            tab: "other",
+            fields: [
+                ["IsSmoker", "IsAlcoholic"],
+                ["WithDisabilities", "LowVision"],
+                ["UsesWheelchair", "HardOfHearing"],
+                ["IsAphonic", "IsCognitivelyDisabled"],
+                ["IsAutistic", ""]
+            ]
+        }
+    ];
+
+    scrudFactory.tabs = [
+        {
+            sort: 0,
+            id: "personal",
+            name: window.translate("PeronsalInformation"),
+            active: true
+        },
+        {
+            sort: 1,
+            id: "employment",
+            name: window.translate("EmploymentInformation")
+        },
+        {
+            sort: 2,
+            id: "bank",
+            name: window.translate("BankDetails")
+        },
+        {
+            sort: 3,
+            id: "address",
+            name: window.translate("AddressInformation")
+        },
+        {
+            sort: 4,
+            id: "contact",
+            name: window.translate("ContactInformation")
+        },
+        {
+            sort: 5,
+            id: "other",
+            name: window.translate("OtherDetails")
+        }
+    ];
+
+    scrudFactory.returnUrl = "../Employees.mix";
+    scrudFactory.queryStringKey = "EmployeeId";
+    scrudFactory.uploadHanlder = "/dashboard/hrm/services/attachments";
+
+    scrudFactory.keys = [
+        {
+            property: "GenderCode",
+            url: '/api/forms/core/genders/lookup-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "MaritalStatusId",
+            url: '/api/forms/core/marital-statuses/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "OfficeId",
+            url: '/api/forms/core/offices/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "UserId",
+            url: '/api/views/account/user-selector-view/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "EmployeeTypeId",
+            url: '/api/forms/hrm/employee-types/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CurrentDepartmentId",
+            url: '/api/forms/hrm/departments/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CurrentRoleId",
+            url: '/api/forms/hrm/roles/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CurrentEmploymentStatusId",
+            url: '/api/forms/hrm/employment-statuses/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CurrentJobTitleId",
+            url: '/api/forms/hrm/job-titles/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CurrentPayGradeId",
+            url: '/api/forms/hrm/pay-grades/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CurrentShiftId",
+            url: '/api/forms/hrm/shifts/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "NationalityId",
+            url: '/api/forms/hrm/nationalities/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "CountryCode",
+            url: '/api/forms/core/countries/lookup-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        },
+        {
+            property: "StateId",
+            url: '/api/forms/core/states/display-fields',
+            data: null,
+            valueField: "Key",
+            textField: "Value"
+        }
+    ];
+
+
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
+        });
+    });
+</script>
+
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>
+
+<script>
+    $(document).on("formready", function() {
+        initialize();
+    });
+
+
+    function initialize() {
+        //Todo: Remove Semantic UI Dropdown dependency 
+        //$("#status").dropdown("set selected", "yes");
+        $("#status").val("yes");
+
+        var firstName = $("#first_name");
+        var middleName = $("#middle_name");
+        var lastName = $("#last_name");
+        var employeeName = $("#employee_name");
+
+        function displayEmployeeName() {
+            const f = (firstName.val() || "");
+            const m = (middleName.val() || "");
+            const l = (lastName.val() || "");
+
+            var name = f + " " + m;
+            if (l) {
+                name = l.trim() + ", " + f + " " + m;
+            };
+
+
+            employeeName.val(name.trim());
+
+            employeeName.trigger("keyup");
+        };
+
+
+        firstName.keyup(function () { displayEmployeeName(); });
+        middleName.keyup(function () { displayEmployeeName(); });
+        lastName.keyup(function () { displayEmployeeName(); });
+
+    };
+
+
+    $(document).on("formready", function() {
+        $("#service_ended_on").val("");
+    });
+</script>
+
