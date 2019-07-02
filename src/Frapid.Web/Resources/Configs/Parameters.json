@@ -1,0 +1,9 @@
+﻿{
+	"Cultures": "ar,de,en,es,fr,ne,ru",
+	"ApplicationLogDirectory": "C:\\frapid-logs",
+	"MinimumLogLevel": "Information",
+	"BackupScheduleUTC": "8, 0",
+	"DefaultCacheType": "InProc",
+	"EodScheduleUTC": "8, 0",
+	"IsDevelopment": "true"
+}

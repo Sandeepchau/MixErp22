@@ -1,0 +1,14 @@
+{
+  "Scope": "Sales",
+  "Name": "Dashboard",
+  "Me": 1,
+  "IsDefault": true,
+  "Widgets": [
+    {
+      "Scope": "Sales",
+      "AreaName": "MixERP.Sales",
+      "WidgetName": "top-items",
+      "Order": 0
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+﻿{
+	"InstalledApplications": "Frapid, Frapid.Account, Frapid.Authorization, Frapid.Config, Frapid.Core, Frapid.Dashboard, Frapid.WebsiteBuilder, MixERP.Finance, MixERP.Inventory, MixERP.Sales, MixERP.Purchases, MixERP.HRM, MixERP.Production",
+	"RemovedApplications": "",
+	"IgnoredApplications": "",
+}

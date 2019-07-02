@@ -1,0 +1,6 @@
+﻿{
+    "PrivateKey": "18b4bebb-8dd7-4b97-ac2c-16ceca5647f2",
+    "HashAlgorithm": "HS512",
+    "TokenIssuerName": "Frapid",
+    "TokenValidHours": 24
+}

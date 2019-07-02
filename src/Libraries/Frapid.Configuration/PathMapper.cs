@@ -21,6 +21,7 @@ namespace Frapid.Configuration
                 PathToRootDirectory = HostingEnvironment.MapPath("~/");
             }
 
+
             if (string.IsNullOrWhiteSpace(PathToRootDirectory))
             {
                 return path;

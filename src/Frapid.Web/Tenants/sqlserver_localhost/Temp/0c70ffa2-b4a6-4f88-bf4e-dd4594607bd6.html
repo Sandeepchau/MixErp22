@@ -1,0 +1,174 @@
+<!DOCTYPE html><html><head>
+        <title>Cannot open database "sqlserver_localhost" requested by the login. The login failed.&lt;br&gt;Login failed for user 'report_user'.</title>
+        <meta name="viewport" content="width=device-width">
+        
+    </head>
+
+    <body bgcolor="white" style="font-family: &quot;Verdana&quot;;font-weight: normal;font-size: .7em;color: black">
+
+            <span><h1 style="font-family: &quot;Verdana&quot;;font-weight: normal;font-size: 18pt;color: red">Server Error in '/' Application.<hr width="100%" size="1" color="silver"></h1>
+
+            <h2 style="font-family: &quot;Verdana&quot;;font-weight: normal;font-size: 14pt;color: maroon"> <i>Cannot open database "sqlserver_localhost" requested by the login. The login failed.<br>Login failed for user 'report_user'.</i> </h2></span>
+
+            <font face="Arial, Helvetica, Geneva, SunSans-Regular, sans-serif ">
+
+            <b style="font-family: &quot;Verdana&quot;;font-weight: bold;color: black;margin-top: -5px"> Description: </b>An unhandled exception occurred during the execution of the current web request. Please review the stack trace for more information about the error and where it originated in the code.
+
+            <br><br>
+
+            <b style="font-family: &quot;Verdana&quot;;font-weight: bold;color: black;margin-top: -5px"> Exception Details: </b>System.Data.SqlClient.SqlException: Cannot open database "sqlserver_localhost" requested by the login. The login failed.<br>Login failed for user 'report_user'.<br><br>
+
+            <b style="font-family: &quot;Verdana&quot;;font-weight: bold;color: black;margin-top: -5px">Source Error:</b> <br><br>
+
+            <table width="100%" bgcolor="#ffffcc">
+               <tbody><tr>
+                  <td>
+                      <code><pre style="font-family: &quot;Consolas&quot;,&quot;Lucida Console&quot;,Monospace;font-size: 11pt;margin: 0;padding: 0.5em;line-height: 14pt">Line 119:                    }
+Line 120:
+<font color="red">Line 121:                    connection.Open();
+</font>Line 122:
+Line 123:                    using (var table = new DataTable())</pre></code>
+
+                  </td>
+               </tr>
+            </tbody></table>
+
+            <br>
+
+            <b style="font-family: &quot;Verdana&quot;;font-weight: bold;color: black;margin-top: -5px"> Source File: </b> C:\inetpub\wwwroot\init\frapid\src\Frapid.Web\Areas\Frapid.Reports\DAL\DataSourceHelper.cs<b style="font-family: &quot;Verdana&quot;;font-weight: bold;color: black;margin-top: -5px"> &nbsp;&nbsp; Line: </b> 121
+            <br><br>
+
+            <b style="font-family: &quot;Verdana&quot;;font-weight: bold;color: black;margin-top: -5px">Stack Trace:</b> <br><br>
+
+            <table width="100%" bgcolor="#ffffcc">
+               <tbody><tr>
+                  <td>
+                      <code><pre style="font-family: &quot;Consolas&quot;,&quot;Lucida Console&quot;,Monospace;font-size: 11pt;margin: 0;padding: 0.5em;line-height: 14pt">[SqlException (0x80131904): Cannot open database "sqlserver_localhost" requested by the login. The login failed.
+Login failed for user 'report_user'.]
+   System.Data.SqlClient.SqlInternalConnectionTds..ctor(DbConnectionPoolIdentity identity, SqlConnectionString connectionOptions, SqlCredential credential, Object providerInfo, String newPassword, SecureString newSecurePassword, Boolean redirectedUserInstance, SqlConnectionString userConnectionOptions, SessionData reconnectSessionData, DbConnectionPool pool, String accessToken, Boolean applyTransientFaultHandling, SqlAuthenticationProviderManager sqlAuthProviderManager) +907
+   System.Data.SqlClient.SqlConnectionFactory.CreateConnection(DbConnectionOptions options, DbConnectionPoolKey poolKey, Object poolGroupProviderInfo, DbConnectionPool pool, DbConnection owningConnection, DbConnectionOptions userOptions) +334
+   System.Data.ProviderBase.DbConnectionFactory.CreatePooledConnection(DbConnectionPool pool, DbConnection owningObject, DbConnectionOptions options, DbConnectionPoolKey poolKey, DbConnectionOptions userOptions) +38
+   System.Data.ProviderBase.DbConnectionPool.CreateObject(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection) +699
+   System.Data.ProviderBase.DbConnectionPool.UserCreateRequest(DbConnection owningObject, DbConnectionOptions userOptions, DbConnectionInternal oldConnection) +89
+   System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, UInt32 waitForMultipleObjectsTimeout, Boolean allowCreate, Boolean onlyOneCheckConnection, DbConnectionOptions userOptions, DbConnectionInternal&amp; connection) +426
+   System.Data.ProviderBase.DbConnectionPool.TryGetConnection(DbConnection owningObject, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal&amp; connection) +78
+   System.Data.ProviderBase.DbConnectionFactory.TryGetConnection(DbConnection owningConnection, TaskCompletionSource`1 retry, DbConnectionOptions userOptions, DbConnectionInternal oldConnection, DbConnectionInternal&amp; connection) +191
+   System.Data.ProviderBase.DbConnectionInternal.TryOpenConnectionInternal(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions) +154
+   System.Data.ProviderBase.DbConnectionClosed.TryOpenConnection(DbConnection outerConnection, DbConnectionFactory connectionFactory, TaskCompletionSource`1 retry, DbConnectionOptions userOptions) +21
+   System.Data.SqlClient.SqlConnection.TryOpenInner(TaskCompletionSource`1 retry) +90
+   System.Data.SqlClient.SqlConnection.TryOpen(TaskCompletionSource`1 retry) +443
+   System.Data.SqlClient.SqlConnection.Open() +96
+   Frapid.Reports.DAL.DataSourceHelper.GetSqlServerDataTable(String connectionString, String sql, ParameterInfo info) in C:\inetpub\wwwroot\init\frapid\src\Frapid.Web\Areas\Frapid.Reports\DAL\DataSourceHelper.cs:121
+   Frapid.Reports.DAL.DataSourceHelper.GetDataTable(String tenant, String sql, ParameterInfo parameters) in C:\inetpub\wwwroot\init\frapid\src\Frapid.Web\Areas\Frapid.Reports\DAL\DataSourceHelper.cs:54
+   Frapid.Reports.Engine.Generator.GetDataSource(Report report, DataSource dataSource) in C:\inetpub\wwwroot\init\frapid\src\Frapid.Web\Areas\Frapid.Reports\Engine\Generator.cs:92
+   Frapid.Reports.Engine.Generator..ctor(String tenant, String path, List`1 parameters) in C:\inetpub\wwwroot\init\frapid\src\Frapid.Web\Areas\Frapid.Reports\Engine\Generator.cs:34
+   Frapid.Reports.Controllers.Backend.SourceController.Markup(String path) in C:\inetpub\wwwroot\init\frapid\src\Frapid.Web\Areas\Frapid.Reports\Controllers\Backend\SourceController.cs:46
+   lambda_method(Closure , ControllerBase , Object[] ) +103
+   System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters) +14
+   System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters) +166
+   System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters) +27
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.&lt;BeginInvokeSynchronousActionMethod&gt;b__39(IAsyncResult asyncResult, ActionInvocation innerInvokeState) +22
+   System.Web.Mvc.Async.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult) +29
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult) +32
+   System.Web.Mvc.Async.AsyncInvocationWithFilters.&lt;InvokeActionMethodFilterAsynchronouslyRecursive&gt;b__3d() +50
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass46.&lt;InvokeActionMethodFilterAsynchronouslyRecursive&gt;b__3f() +228
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass33.&lt;BeginInvokeActionMethodWithFilters&gt;b__32(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult) +34
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass2b.&lt;BeginInvokeAction&gt;b__1c() +26
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass21.&lt;BeginInvokeAction&gt;b__1e(IAsyncResult asyncResult) +100
+   System.Web.Mvc.Async.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeAction(IAsyncResult asyncResult) +27
+   System.Web.Mvc.Controller.&lt;BeginExecuteCore&gt;b__1d(IAsyncResult asyncResult, ExecuteCoreState innerState) +13
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +29
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Controller.EndExecuteCore(IAsyncResult asyncResult) +36
+   System.Web.Mvc.Controller.&lt;BeginExecute&gt;b__15(IAsyncResult asyncResult, Controller controller) +12
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +22
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Controller.EndExecute(IAsyncResult asyncResult) +26
+   System.Web.Mvc.Controller.System.Web.Mvc.Async.IAsyncController.EndExecute(IAsyncResult asyncResult) +10
+   System.Web.Mvc.MvcHandler.&lt;BeginProcessRequest&gt;b__5(IAsyncResult asyncResult, ProcessRequestState innerState) +21
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +29
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.MvcHandler.EndProcessRequest(IAsyncResult asyncResult) +28
+   System.Web.Mvc.MvcHandler.System.Web.IHttpAsyncHandler.EndProcessRequest(IAsyncResult result) +9
+   System.Web.Mvc.&lt;&gt;c__DisplayClassa.&lt;EndProcessRequest&gt;b__9() +22
+   System.Web.Mvc.&lt;&gt;c__DisplayClass4.&lt;Wrap&gt;b__3() +10
+   System.Web.Mvc.ServerExecuteHttpHandlerWrapper.Wrap(Func`1 func) +27
+   System.Web.Mvc.ServerExecuteHttpHandlerWrapper.Wrap(Action action) +64
+   System.Web.Mvc.ServerExecuteHttpHandlerAsyncWrapper.EndProcessRequest(IAsyncResult result) +71
+   System.Web.HttpServerUtility.ExecuteInternal(IHttpHandler handler, TextWriter writer, Boolean preserveForm, Boolean setPreviousPage, VirtualPath path, VirtualPath filePath, String physPath, Exception error, String queryStringOverride) +1436
+
+[HttpException (0x80004005): Error executing child request for handler 'System.Web.Mvc.HttpHandlerUtil+ServerExecuteHttpHandlerAsyncWrapper'.]
+   System.Web.HttpServerUtility.ExecuteInternal(IHttpHandler handler, TextWriter writer, Boolean preserveForm, Boolean setPreviousPage, VirtualPath path, VirtualPath filePath, String physPath, Exception error, String queryStringOverride) +3464244
+   System.Web.HttpServerUtility.Execute(IHttpHandler handler, TextWriter writer, Boolean preserveForm, Boolean setPreviousPage) +76
+   System.Web.HttpServerUtility.Execute(IHttpHandler handler, TextWriter writer, Boolean preserveForm) +29
+   System.Web.HttpServerUtilityWrapper.Execute(IHttpHandler handler, TextWriter writer, Boolean preserveForm) +24
+   System.Web.Mvc.Html.ChildActionExtensions.ActionHelper(HtmlHelper htmlHelper, String actionName, String controllerName, RouteValueDictionary routeValues, TextWriter textWriter) +462
+   System.Web.Mvc.Html.ChildActionExtensions.Action(HtmlHelper htmlHelper, String actionName, String controllerName, RouteValueDictionary routeValues) +83
+   System.Web.Mvc.Html.ChildActionExtensions.Action(HtmlHelper htmlHelper, String actionName, Object routeValues) +30
+   ASP._Page_Areas_Frapid_Reports_Views_Source_cshtml.Execute() in C:\inetpub\wwwroot\init\frapid\src\Frapid.Web\Areas\Frapid.Reports\Views\Source.cshtml:99
+   System.Web.WebPages.WebPageBase.ExecutePageHierarchy() +198
+   System.Web.Mvc.WebViewPage.ExecutePageHierarchy() +105
+   System.Web.WebPages.WebPageBase.ExecutePageHierarchy(WebPageContext pageContext, TextWriter writer, WebPageRenderingBase startPage) +78
+   System.Web.Mvc.RazorView.RenderView(ViewContext viewContext, TextWriter writer, Object instance) +256
+   System.Web.Mvc.BuildManagerCompiledView.Render(ViewContext viewContext, TextWriter writer) +107
+   Frapid.Areas.BaseController.View(String viewName, Object model) in C:\Users\Rupesh Verma\Desktop\Dev\frapid\src\Libraries\Frapid.Areas\BaseController.cs:70
+   Frapid.Reports.Controllers.Backend.SourceController.Index(String path) in C:\inetpub\wwwroot\init\frapid\src\Frapid.Web\Areas\Frapid.Reports\Controllers\Backend\SourceController.cs:37
+   lambda_method(Closure , ControllerBase , Object[] ) +103
+   System.Web.Mvc.ActionMethodDispatcher.Execute(ControllerBase controller, Object[] parameters) +14
+   System.Web.Mvc.ReflectedActionDescriptor.Execute(ControllerContext controllerContext, IDictionary`2 parameters) +166
+   System.Web.Mvc.ControllerActionInvoker.InvokeActionMethod(ControllerContext controllerContext, ActionDescriptor actionDescriptor, IDictionary`2 parameters) +27
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.&lt;BeginInvokeSynchronousActionMethod&gt;b__39(IAsyncResult asyncResult, ActionInvocation innerInvokeState) +22
+   System.Web.Mvc.Async.WrappedAsyncResult`2.CallEndDelegate(IAsyncResult asyncResult) +29
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethod(IAsyncResult asyncResult) +32
+   System.Web.Mvc.Async.AsyncInvocationWithFilters.&lt;InvokeActionMethodFilterAsynchronouslyRecursive&gt;b__3d() +50
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass46.&lt;InvokeActionMethodFilterAsynchronouslyRecursive&gt;b__3f() +228
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass33.&lt;BeginInvokeActionMethodWithFilters&gt;b__32(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeActionMethodWithFilters(IAsyncResult asyncResult) +34
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass2b.&lt;BeginInvokeAction&gt;b__1c() +26
+   System.Web.Mvc.Async.&lt;&gt;c__DisplayClass21.&lt;BeginInvokeAction&gt;b__1e(IAsyncResult asyncResult) +100
+   System.Web.Mvc.Async.WrappedAsyncResult`1.CallEndDelegate(IAsyncResult asyncResult) +10
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Async.AsyncControllerActionInvoker.EndInvokeAction(IAsyncResult asyncResult) +27
+   System.Web.Mvc.Controller.&lt;BeginExecuteCore&gt;b__1d(IAsyncResult asyncResult, ExecuteCoreState innerState) +13
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +29
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Controller.EndExecuteCore(IAsyncResult asyncResult) +36
+   System.Web.Mvc.Controller.&lt;BeginExecute&gt;b__15(IAsyncResult asyncResult, Controller controller) +12
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +22
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.Controller.EndExecute(IAsyncResult asyncResult) +26
+   System.Web.Mvc.Controller.System.Web.Mvc.Async.IAsyncController.EndExecute(IAsyncResult asyncResult) +10
+   System.Web.Mvc.MvcHandler.&lt;BeginProcessRequest&gt;b__5(IAsyncResult asyncResult, ProcessRequestState innerState) +21
+   System.Web.Mvc.Async.WrappedAsyncVoid`1.CallEndDelegate(IAsyncResult asyncResult) +29
+   System.Web.Mvc.Async.WrappedAsyncResultBase`1.End() +48
+   System.Web.Mvc.MvcHandler.EndProcessRequest(IAsyncResult asyncResult) +28
+   System.Web.Mvc.MvcHandler.System.Web.IHttpAsyncHandler.EndProcessRequest(IAsyncResult result) +9
+   System.Web.CallHandlerExecutionStep.System.Web.HttpApplication.IExecutionStep.Execute() +9874041
+   System.Web.HttpApplication.ExecuteStepImpl(IExecutionStep step) +48
+   System.Web.HttpApplication.ExecuteStep(IExecutionStep step, Boolean&amp; completedSynchronously) +159
+</pre></code>
+
+                  </td>
+               </tr>
+            </tbody></table>
+
+            <br>
+
+            <hr width="100%" size="1" color="silver">
+
+            <b style="font-family: &quot;Verdana&quot;;font-weight: bold;color: black;margin-top: -5px">Version Information:</b>&nbsp;Microsoft .NET Framework Version:4.0.30319; ASP.NET Version:4.7.3282.0
+
+            </font>
+
+    
+
+</body></html>

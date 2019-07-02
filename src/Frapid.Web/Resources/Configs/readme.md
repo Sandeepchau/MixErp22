@@ -1,0 +1,2 @@
+- The files under this folder will not be tracked in git
+- You can keep configuration files here which will be copied to ~/Resources/Configs

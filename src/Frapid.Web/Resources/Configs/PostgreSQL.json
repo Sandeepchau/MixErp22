@@ -1,0 +1,17 @@
+﻿{
+	"Server": "localhost",
+	"Port": "5432",
+	"MetaDatabase": "postgres",
+	"EnablePooling": "true",
+	"MinPoolSize": "0",
+	"MaxPoolSize": "100",
+	"SuperUserId": "postgres",
+	"SuperUserPassword": "sa123",
+	"TrustedSuperUserConnection": "false",
+	"UserId": "frapid_db_user",
+	"Password": "change-on-deployment@123",
+	"ReportUserId": "report_user",
+	"ReportUserPassword": "change-on-deployment@123",
+	"PostgreSQLBinDirectory": "C:\\Program Files\\PostgreSQL\\9.5\\bin\\",
+	"DatabaseBackupDirectory": "/Backups/"
+}
