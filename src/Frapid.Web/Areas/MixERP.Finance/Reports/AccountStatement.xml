@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Account Statement</Title>
+  <TopSection>
+	<h1>{DataSource[0].account_number} ({DataSource[0].account_name})</h1>
+    <table class="table horizontal">
+      <tr>
+        <td>{i18n.AccountNumber}</td>
+        <td>
+          {DataSource[0].account_number} <br />
+        </td>
+      </tr>
+      <tr>
+        <td>{i18n.AccountName}</td>
+        <td>
+          {DataSource[0].account_name} <br />
+        </td>
+      </tr>
+      <tr>
+        <td>{i18n.BaseCurrency}</td>
+        <td>{DataSource[0].currency_code}</td>
+      </tr>
+    </table>
+
+	</TopSection>
+  <Body>
+    <Content>
+      <div class='center aligned'>As of {Query.From} and {Query.To}</div>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="1" Style="white-space:nowrap;">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT
+        account_number,
+        core.get_office_name_by_office_id(@OfficeId) as office_name,
+        account_name,
+        currency_code
+        FROM finance.accounts
+        WHERE account_number= @Account;
+      </Query>
+      <Parameters>
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+        <Parameter Name="@Account" FieldLabel="Account" Type="string" PopulateFrom="/api/views/finance/account-selector-view/lookup-fields" KeyField="Key" ValueField="Value" />
+      </Parameters>
+    </DataSource>
+    <DataSource>
+      <Query>
+        SELECT
+        statement_reference,
+        reference_number,
+        value_date,
+        book_date,
+        debit,
+        credit,
+        balance,
+        office,
+        book,
+        account_number,
+        account,
+        tran_code
+        FROM finance.get_account_statement
+        (@From::date, @To::date, @UserId::integer, finance.get_account_id_by_account_number(@Account), @OfficeId::integer, NOT @IncludeChildren::bool)
+        ORDER BY id;
+      </Query>
+      <Parameters>
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+        <Parameter Name="@UserId" FieldLabel="User Id" Type="int" DefaultValue="{Meta.UserId}" />
+        <Parameter Name="@Account" FieldLabel="Account" Type="string" PopulateFrom="/api/views/finance/account-selector-view/lookup-fields" KeyField="Key" ValueField="Value" />
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+        <Parameter Name="@IncludeChildren" Type="bool" DefaultValue="true" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>3</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>4, 5</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+    <Header />
+    <Title>Trial Balance</Title>
+    <TopSection>
+
+    </TopSection>
+
+    <Body>
+        <GridViews>
+        </GridViews>
+
+        <Content>
+            <link href="https://cdn.jsdelivr.net/npm/jquery.fancytree@2.30.0/dist/skin-lion/ui.fancytree.min.css" rel="stylesheet" />
+            <script src="https://cdn.jsdelivr.net/npm/jquery.fancytree@2.30.0/dist/modules/jquery.fancytree.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/jquery.fancytree@2.30.0/dist/modules/jquery.fancytree.table.js"></script>
+
+            <style type="text/css">
+                .alignCenter {
+                    text-align: center;
+                }
+
+                .alignRight {
+                    text-align: right;
+                }
+
+                td,
+                th {
+                    border: 1px solid black;
+                }
+
+				table tbody tr.fancytree-active {
+					background-color: #d0d0d0!important;
+				}
+            </style>
+
+            <table id="treegrid" style="width:100%;">
+                <colgroup>
+                    <col width="30px">
+                    </col>
+                    <col width="*">
+                    </col>
+                    <col width="100px">
+                    </col>
+                    <col width="100px">
+                    </col>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Account</th>
+                        <th class="alignRight">Debit</th>
+                        <th class="alignRight">Credit</th>
+                    </tr>
+                </thead>
+                <!-- Otionally define a row that serves as template, when new nodes are created: -->
+                <tbody>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td class="alignRight"></td>
+                        <td class="alignRight"></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th class="alignRight" colspan="2">Grand Totals</th>
+                        <th class="alignRight"></th>
+                        <th class="alignRight"></th>
+                    </tr>
+                </tfoot>
+            </table>
+
+            <script type="text/javascript">
+                function loadTree(data) {
+                    function updateFooter() {
+                        function getGrandTotals() {
+                            const allParents = window.Enumerable.From(data).Where(function(x) {
+                                return (x.ParentAccountId || 0) === 0;
+                            }).ToArray();
+
+                            const debitTotal = window.Enumerable.From(allParents).Sum(function(x) {
+                                return x.sumClosingDebit;
+                            });
+
+                            const creditTotal = window.Enumerable.From(allParents).Sum(function(x) {
+                                return x.sumClosingCredit;
+                            });
+
+                            return {
+                                Debit: debitTotal,
+                                Credit: creditTotal
+                            };
+                        };
+
+                        var totals = getGrandTotals();
+                        const footer = $("#treegrid tfoot");
+
+                        footer.find("th:nth-child(2)").text(window.getFormattedNumber(totals.Debit));
+                        footer.find("th:nth-child(3)").text(window.getFormattedNumber(totals.Credit));
+                    };
+
+                    $("#treegrid").fancytree({
+                        extensions: ["table"],
+                        table: {
+                            indentation: 20, // indent 20px per node level
+                            nodeColumnIdx: 1 // render the node title into the 2nd column
+                        },
+                        source: data,
+                        renderColumns: function(event, data) {
+                            var node = data.node;
+                            var $tdList = $(node.tr).find("td");
+							
+							$tdList.on("dblclick", function() {
+								let url = "%2Fdashboard%2Freports%2Fview%2FAreas%2FMixERP.Finance%2FReports%2FAccountStatement.xml%3FFrom%3D%7BFrom%7D%26To%3D%7BTo%7D%26Account%3D%7BAccountNumber%7D%26IncludeChildren%3Dtrue";
+								
+								url = window.decodeURIComponent(url);
+								
+								url = url.replace("{From}", getUrlParameter('From'));
+								url = url.replace("{To}", getUrlParameter('To'));
+								url = url.replace("{AccountNumber}", node.data.account_number);
+								
+								window.open(url, "_blank");
+							});
+
+                            var debit = node.data.sumClosingDebit === 0 ? "" : window.getFormattedNumber(node.data.sumClosingDebit);
+                            var credit = node.data.sumClosingCredit === 0 ? "" : window.getFormattedNumber(node.data.sumClosingCredit);
+
+                            $tdList.eq(0).text(node.data.account_number);
+                            $tdList.eq(2).text(debit);
+                            $tdList.eq(3).text(credit);
+                        }
+                    });
+
+                    updateFooter();
+                };
+
+                function getUrlParameter(sParam) {
+                    var amp = '&amp;';
+                    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                        sURLVariables = sPageURL.split(amp.substr(0, 1)),
+                        sParameterName,
+                        i;
+
+                    for (i = 0; i != sURLVariables.length; i++) {
+                        sParameterName = sURLVariables[i].split('=');
+                        if (sParameterName[0] === sParam) {
+                            return sParameterName[1] === undefined ? true : sParameterName[1];
+                        }
+                    }
+                };
+
+                function getData(from, to, factor, changeSide, callback) {
+					function request(model) {
+						const url = "/dashboard/finance/task/trial-balance-tree";
+						const data = JSON.stringify(model);
+						return window.getAjaxRequest(url, "PUT", data);
+					};
+
+                    function getNestedChildren(arr, parent) {
+                        var out = [];
+
+                        for (let i in arr) {
+							//arr[i].expanded = true;
+
+                            if (arr[i].parent_account_id == parent) {
+                                var children = getNestedChildren(arr, arr[i].account_id)
+
+                                if (children.length) {
+                                    arr[i].children = children
+                                };
+
+                                out.push(arr[i])
+                            };
+                        };
+
+                        return out;
+                    };
+					
+					function removeEmpty(nodes) {
+						let candidates = window.Enumerable.From(nodes).Where(function(x){
+							return (x.sumClosingDebit || 0) + (x.sumClosingCredit || 0) != 0;
+						}).ToArray();
+
+						for(let i in candidates) {
+							const node = candidates[i];
+
+							if(node.children) {
+								node.children = removeEmpty(node.children);
+							};
+						};
+						
+						return candidates;
+					};
+					
+					function removeEmpty2(nodes) {
+						for(let i in nodes) {
+							const node = nodes[i];
+
+							if((node.sumDebit || 0) + (node.sumCredit || 0) === 0) {
+								node.deleted = true;
+								node.title = node.title + " Deleted";
+								nodes.slice(0, i-1).concat(nodes.slice(i, nodes.length))
+							};
+							
+							if(node.children) {
+								node.children = removeEmpty(node.children);
+							};
+						};
+												
+						return nodes;
+					};
+
+                    function processSums(nodes) {
+                        function summate(node, prop, target) {
+                            var sum = node[prop] || 0;
+
+                            (node.children || []).forEach(function(child) {
+                                sum += summate(child, prop, target);
+                            });
+
+                            node[target] = sum;
+                            return sum;
+                        };
+
+                        nodes.forEach(function(node) {
+                            summate(node, "debit", "sumDebit");
+                            summate(node, "credit", "sumCredit");
+                            summate(node, "previous_debit", "sumPreviousDebit");
+                            summate(node, "previous_credit", "sumPreviousCredit");
+                            summate(node, "closing_debit", "sumClosingDebit");
+                            summate(node, "closing_credit", "sumClosingCredit");
+                        });
+                    };
+					
+					function toUnderScoreCase(model) {
+						var string = JSON.stringify(model);
+						string = string.replace(new RegExp('AccountId', 'g'), 'account_id');
+						string = string.replace(new RegExp('AccountNumber', 'g'), 'account_number');
+						string = string.replace(new RegExp('Title', 'g'), 'title');
+						string = string.replace(new RegExp('PreviousDebit', 'g'), 'previous_debit');
+						string = string.replace(new RegExp('PreviousCredit', 'g'), 'previous_credit');
+						string = string.replace(new RegExp('Debit', 'g'), 'debit');
+						string = string.replace(new RegExp('Credit', 'g'), 'credit');
+						string = string.replace(new RegExp('Closingdebit', 'g'), 'closing_debit');
+						string = string.replace(new RegExp('Closingcredit', 'g'), 'closing_credit');
+						string = string.replace(new RegExp('Parentaccount_id', 'g'), 'parent_account_id');
+						return JSON.parse(string);
+					}
+					
+					const model = {
+						From: from,
+						To: to,
+						Factor: factor,
+						ChangeSide: changeSide
+					};
+					
+					const ajax = request(model);
+
+					ajax.success(function(response) {
+						const parsed = toUnderScoreCase(response);
+						
+						if (typeof(callback) === "function") {
+							var result = getNestedChildren(parsed);
+							processSums(result);
+							const data = removeEmpty(result);
+
+							callback(data);
+						};
+					});
+
+					ajax.fail(function(xhr) {
+						const error = JSON.stringify(xhr);
+						alert(error);
+					});
+                };
+
+				(function(){
+					if ((getUrlParameter('From') || 0) === 0) {
+						return;
+					};
+					
+					const from = new Date(parseInt(getUrlParameter('From') || 0));
+					const to = new Date(parseInt(getUrlParameter('To') || 0));
+					const factor = parseInt(getUrlParameter('Factor') || 0);
+					const changeSide = getUrlParameter('ChangeSideWhenNegative');
+					getData(from, to, factor, changeSide, function(result) {
+						console.log(result);
+						loadTree(result);
+					});
+				})();
+            </script>
+
+        </Content>
+    </Body>
+    <BottomSection>
+    </BottomSection>
+    <DataSources>
+        <DataSource>
+            <Parameters>
+                <Parameter Name="@From" Type="System.DateTime" />
+                <Parameter Name="@To" Type="System.DateTime" />
+                <Parameter Name="@UserId" FieldLabel="User Id" Type="int" DefaultValue="{Meta.UserId}" />
+                <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int" DefaultValue="{Meta.OfficeId}" />
+                <Parameter Name="@Factor" Type="int" DefaultValue="100" />
+                <Parameter Name="@ChangeSideWhenNegative" Type="bool" />
+            </Parameters>
+        </DataSource>
+    </DataSources>
+</FrapidReport>	
