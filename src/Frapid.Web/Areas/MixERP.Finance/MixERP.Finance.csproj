@@ -1,0 +1,355 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props" Condition="Exists('packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7A5D03B8-72EB-4CD3-A606-BD81FAB083F5}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MixERP.Finance</RootNamespace>
+    <AssemblyName>MixERP.Finance</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>12.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Frapid.ApplicationState, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.ApplicationState.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Areas, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Areas.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Dashboard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Dashboard.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.DataAccess, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.DbPolicy">
+      <HintPath>..\..\bin\Frapid.DbPolicy.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Framework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.i18n, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.i18n.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Mapper">
+      <HintPath>..\..\bin\Frapid.Mapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Messaging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Messaging.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.TokenManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.TokenManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.WebsiteBuilder, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.WebsiteBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.SignalR.Core.2.2.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Security.3.0.1\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MixERP.Social">
+      <HintPath>..\..\bin\MixERP.Social.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Npgsql, Version=3.1.9.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>packages\Npgsql.3.1.9\lib\net451\Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>packages\Serilog.2.3.0\lib\net46\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Webpages">
+      <HintPath>packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Razor">
+      <HintPath>packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AreaRegistration.cs" />
+    <Compile Include="Cache\Dates.cs" />
+    <Compile Include="Controllers\Backend\HomeController.cs" />
+    <Compile Include="Controllers\Backend\Reports\CashFlowController.cs" />
+    <Compile Include="Controllers\Backend\Reports\PlAccountController.cs" />
+    <Compile Include="Controllers\Backend\Services\AccountController.cs" />
+    <Compile Include="Controllers\Backend\Services\CashRepositoryController.cs" />
+    <Compile Include="Controllers\Backend\Services\CurrencyController.cs" />
+    <Compile Include="Controllers\Backend\Setup\BankAccountController.cs" />
+    <Compile Include="Controllers\Backend\Setup\CashFlowHeadingController.cs" />
+    <Compile Include="Controllers\Backend\Setup\CashFlowSetupController.cs" />
+    <Compile Include="Controllers\Backend\Setup\CashRepositoryController.cs" />
+    <Compile Include="Controllers\Backend\Setup\ChartOfAccountController.cs" />
+    <Compile Include="Controllers\Backend\Setup\CostCenterController.cs" />
+    <Compile Include="Controllers\Backend\Setup\CurrencyController.cs" />
+    <Compile Include="Controllers\Backend\Setup\FiscalYearController.cs" />
+    <Compile Include="Controllers\Backend\Setup\FrequencySetupController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\ConsoleController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\AccountReconciliationController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\AutoVerificationPolicyController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\BaseVerificationController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\EodProcessingController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\ExchangeRateController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\ImportTransactionsController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\JournalEntryController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\JournalVerificationController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\RefreshMaterializedViewsController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\TrialBalanceController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\VerificationPolicyController.cs" />
+    <Compile Include="DAL\CashFlowStatement.cs" />
+    <Compile Include="DAL\CashFlow\IProfitLoss.cs" />
+    <Compile Include="DAL\CashFlow\PostgreSQL.cs" />
+    <Compile Include="DAL\CashFlow\SqlServer.cs" />
+    <Compile Include="DAL\ProfitLoss\IProfitLoss.cs" />
+    <Compile Include="DAL\RefreshMaterializedViews.cs" />
+    <Compile Include="DAL\TrialBalanceTree.cs" />
+    <Compile Include="I18N.cs" />
+    <Compile Include="Models\JournalEntries.cs" />
+    <Compile Include="PartialViewModels\Document.cs" />
+    <Compile Include="QueryModels\CashFlowStatementQueryModel.cs" />
+    <Compile Include="QueryModels\PlAccountQueryModel.cs" />
+    <Compile Include="DAL\ProfitLoss\PostgreSQL.cs" />
+    <Compile Include="DAL\ProfitLoss\SqlServer.cs" />
+    <Compile Include="DAL\ProfitLossStatement.cs" />
+    <Compile Include="DAL\Reconciliations.cs" />
+    <Compile Include="DAL\Verifications.cs" />
+    <Compile Include="DTO\TransactionVerificationStatusView.cs" />
+    <Compile Include="Models\JournalWithadrawals.cs" />
+    <Compile Include="Controllers\Backend\Tasks\JournalWithdrawalController.cs" />
+    <Compile Include="Controllers\FinanceDashboardController.cs" />
+    <Compile Include="CustomJavascriptVariable.cs" />
+    <Compile Include="DAL\Accounts.cs" />
+    <Compile Include="DAL\CashRepositories.cs" />
+    <Compile Include="DAL\Currencies.cs" />
+    <Compile Include="DAL\DayEnd.cs" />
+    <Compile Include="DAL\EodPerformer.cs" />
+    <Compile Include="DAL\Eod\PostgreSQLEodPerformer.cs" />
+    <Compile Include="DAL\Eod\SqlServerEodPerformer.cs" />
+    <Compile Include="DAL\Eod\IEodPerformer.cs" />
+    <Compile Include="DAL\ExchangeRates.cs" />
+    <Compile Include="DAL\FiscalYears.cs" />
+    <Compile Include="DAL\Journals.cs" />
+    <Compile Include="DAL\Logins.cs" />
+    <Compile Include="DAL\TransactionPostings.cs" />
+    <Compile Include="DTO\Account.cs" />
+    <Compile Include="DTO\Currency.cs" />
+    <Compile Include="DTO\ExchangeRateDetails.cs" />
+    <Compile Include="DTO\ExchangeRate.cs" />
+    <Compile Include="DTO\JournalView.cs" />
+    <Compile Include="DTO\TransactionDocument.cs" />
+    <Compile Include="DTO\TransactionMaster.cs" />
+    <Compile Include="DTO\TransactionDetail.cs" />
+    <Compile Include="Extensions\PartialViewExtensions.cs" />
+    <Compile Include="Hubs\BaseHub.cs" />
+    <Compile Include="Hubs\DayOperationHub.cs" />
+    <Compile Include="Models\EodProcessing.cs" />
+    <Compile Include="AppModels\EodStatus.cs" />
+    <Compile Include="DTO\FrequencyDates.cs" />
+    <Compile Include="AppModels\EodEventArgs.cs" />
+    <Compile Include="Models\JournalWithdrawalException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryModels\AccountStatementQueryModel.cs" />
+    <Compile Include="QueryModels\JournalViewQuery.cs" />
+    <Compile Include="QueryModels\TrialBalanceQuery.cs" />
+    <Compile Include="Routines\DayEndRoutine.cs" />
+    <Compile Include="Routines\IDayEndRoutine.cs" />
+    <Compile Include="ViewModels\Document.cs" />
+    <Compile Include="ViewModels\ExchangeRate.cs" />
+    <Compile Include="ViewModels\JournalDetail.cs" />
+    <Compile Include="ViewModels\ReconciliationViewModel.cs" />
+    <Compile Include="ViewModels\TransactionPosting.cs" />
+    <Compile Include="ViewModels\TrialBalanceTreeViewModel.cs" />
+    <Compile Include="ViewModels\Verification.cs" />
+    <Compile Include="ViewModels\WithdrawalViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="JavaScript.js" />
+    <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Reports\AccountStatement.SqlServer.xml" />
+    <Content Include="Reports\AccountStatement.xml" />
+    <Content Include="Reports\BalanceSheet.SqlServer.xml" />
+    <Content Include="Reports\BalanceSheet.xml" />
+    <Content Include="Reports\ExchangeRates.SqlServer.xml" />
+    <Content Include="Reports\ExchangeRates.xml" />
+    <Content Include="Reports\JournalEntry.SqlServer.xml" />
+    <Content Include="Reports\JournalEntry.xml" />
+    <Content Include="Reports\RetainedEarnings.SqlServer.xml" />
+    <Content Include="Reports\RetainedEarnings.xml" />
+    <Content Include="Reports\TransactionSummary.SqlServer.xml" />
+    <Content Include="Reports\TransactionSummary.xml" />
+    <Content Include="Reports\TrialBalance.SqlServer.xml" />
+    <Content Include="Reports\TrialBalance.xml" />
+    <Content Include="scripts\jquery.signalR-2.2.1.js" />
+    <Content Include="scripts\jquery.signalR-2.2.1.min.js" />
+    <Content Include="Views\web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="web.config" />
+    <Content Include="Views\Setup\ChartOfAccounts.cshtml" />
+    <Content Include="Views\Setup\BankAccounts.cshtml" />
+    <Content Include="Views\Setup\Currencies.cshtml" />
+    <Content Include="Views\Setup\CostCenters.cshtml" />
+    <Content Include="Views\Setup\CashFlowHeadings.cshtml" />
+    <Content Include="Views\Setup\CashFlowSetups.cshtml" />
+    <Content Include="Views\Home.cshtml" />
+    <Content Include="Views\Tasks\JournalEntry\Index.cshtml" />
+    <Content Include="Views\Tasks\JournalEntry\New.cshtml" />
+    <Content Include="Views\Setup\CashRepositories.cshtml" />
+    <Content Include="Views\Layout.cshtml" />
+    <Content Include="Views\Tasks\JournalVerification\Index.cshtml" />
+    <Content Include="Views\Tasks\VerificationPolicy\Index.cshtml" />
+    <Content Include="Views\Tasks\VerificationPolicy\Auto.cshtml" />
+    <Content Include="Views\Tasks\JournalEntry\Checklist.cshtml" />
+    <Content Include="Views\Tasks\ExchangeRates\Index.cshtml" />
+    <Content Include="Views\Tasks\EOD\Index.cshtml" />
+    <Content Include="Views\Shared\Checklist.cshtml" />
+    <Content Include="Views\Shared\JournalView.cshtml" />
+    <Content Include="Views\Shared\Verification.cshtml" />
+    <Content Include="Views\Tasks\AccountReconciliation\Index.cshtml" />
+    <Content Include="Views\Setup\FiscalYears.cshtml" />
+    <Content Include="Views\Setup\FrequencySetups.cshtml" />
+    <Content Include="Views\Reports\PlAccount.cshtml" />
+    <Content Include="Views\Reports\CashFlow.cshtml" />
+    <Content Include="Views\Tasks\RefreshMaterializedViews\Index.cshtml" />
+    <Content Include="Views\Tasks\ImportTransactions\Index.cshtml" />
+    <Content Include="Views\Shared\Documents.cshtml" />
+    <Content Include="Views\Shared\SearchView.cshtml" />
+    <Content Include="Views\Tasks\Console\Index.cshtml" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>58594</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:58594/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>https://localhost</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
