@@ -1,0 +1,194 @@
+﻿@using Frapid.ApplicationState.Cache
+@using MixERP.Purchases.Extensions
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.Purchase;
+    Layout = ViewBag.PurchaseLayoutPath;
+    var meta = AppUsers.GetCurrent(TenantConvention.GetTenant());
+    var setup = MixERP.Inventory.Cache.Setup.Get(TenantConvention.GetTenant(), meta.OfficeId);
+}
+
+@if (setup.UsePosCheckoutScreen)
+{
+    @Html.PartialView("Shared/ItemList.cshtml", TenantConvention.GetTenant())
+    <script>
+    function initializeUI() {
+        const template = `<div class="one summary items">
+                            <div class="terms item">
+                                <div class="description">@I18N.TermsConditions</div>
+                                <div class="control">
+                                    <textarea id="TermsTextArea" type="text"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="one summary items">
+                            <div class="terms item">
+                                <div class="description">@I18N.InternalMemo</div>
+                                <div class="control">
+                                    <textarea id="InternalMemoTextArea" type="text"></textarea>
+                                </div>
+                            </div>
+                        </div>`;
+
+        $(".page.title").html(window.translate("PurchaseOrder"));
+
+        const expectedDeliveryDate =
+            $("<input type='text' class='date' value='7d' id='ExpectedDeliveryDateInputText' />");
+        $("#BookDateInputDate").after(expectedDeliveryDate).remove();
+        expectedDeliveryDate.parent().parent().find(".description").html(window.translate("ExpectedDeliveryDate"));
+
+        $("#StatementReferenceInputText").closest(".two.summary.items").attr("class", "one summary items")
+            .after(template);
+
+        $(".memo.item").remove();
+        $("#CostCenterSelect").closest(".two.summary.items").attr("class", "one summary items");
+        $(".cost.center.item").remove();
+        $(".store.item").remove();
+
+        //window.loadDatepicker();
+    };
+
+    initializeUI();
+
+    $("#CheckoutButton").off("click").on("click", function () {
+        function request(model) {
+            const url = "/dashboard/purchase/tasks/order/new";
+            const data = JSON.stringify(model);
+
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        function getModel() {
+            function getDetails() {
+                const items = $("#PurchaseItems .item");
+                var model = [];
+
+                $.each(items, function () {
+                    const el = $(this);
+                    const itemId = window.parseInt(el.attr("data-item-id"));
+                    const quantity = window.parseFloat2(el.find("input.quantity").val());
+                    const unitId = window.parseInt(el.find("select.unit").val());
+                    const price = window.parseFloat2(el.find("input.price").val()) || 0;
+                    const discountRate = window.parseFloat2(el.find("input.discount").val()) || 0;
+                    const isTaxableItem = el.attr("data-is-taxable-item") === "true";
+                    const amount = price * quantity;
+                    const discount = window.round(amount * discountRate / 100, 2);
+
+                    model.push({
+                        ValueDate: $("#ValueDateInputDate").datepicker("getDate"),
+                        ItemId: itemId,
+                        Quantity: quantity,
+                        UnitId: unitId,
+                        Price: price,
+                        DiscountRate: discountRate,
+                        Discount: discount,
+                        IsTaxed: isTaxableItem
+                    });
+                });
+
+                return model;
+            };
+
+            const valueDate = $("#ValueDateInputDate").datepicker("getDate");
+            const expectedDeliveryDate = $("#ExpectedDeliveryDateInputText").datepicker("getDate");
+            const referenceNumber = $("#ReferenceNumberInputText").val();
+            const terms = $("#TermsTextArea").val();
+            const internalMemo = $("#InternalMemoTextArea").val();
+            const supplierId = $("#SupplierSelect").val();
+            const priceTypeId = $("#PriceTypeSelect").val();
+            const shipperId = $("#ShipperSelect").val();
+            const details = getDetails();
+            const discount = window.parseFloat2($("#DiscountInputText").val());
+            var taxRate = window.parseFloat($("#SalesTaxRateHidden").val()) || 0;
+
+            var totalPrice = 0;
+            var taxableTotal = 0;
+            var nonTaxableTotal = 0;
+            var totalBeforeDiscount = 0;
+            var tax = 0;
+
+            (function () {
+                const items = $("#PurchaseItems .item");
+
+                $.each(items, function () {
+                    const el = $(this);
+                    const itemId = window.parseInt(el.attr("data-item-id"));
+                    const quantity = window.parseFloat2(el.find("input.quantity").val());
+                    const unitId = window.parseInt(el.find("select.unit").val());
+                    const price = window.parseFloat2(el.find("input.price").val()) || 0;
+                    const discountRate = window.parseFloat2(el.find("input.discount").val()) || 0;
+                    const isTaxableItem = el.attr("data-is-taxable-item") === "true";
+                    const amount = price * quantity;
+                    const discountedAmount = amount * ((100 - discountRate) / 100);
+
+                    if (isTaxableItem) {
+                        taxableTotal += discountedAmount;
+                    } else {
+                        nonTaxableTotal += discountedAmount;
+                    };
+                });
+
+                totalBeforeDiscount = taxableTotal;
+                //Discount applies before tax
+                taxableTotal -= discount;
+
+                tax = taxableTotal * (taxRate / 100);
+
+                totalPrice = taxableTotal + tax + nonTaxableTotal;
+                totalPrice = window.round(totalPrice, 2);
+            })();
+
+            return {
+                ValueDate: valueDate,
+                ExpectedDeliveryDate: expectedDeliveryDate,
+                ReferenceNumber: referenceNumber,
+                Terms: terms,
+                InternalMemo: internalMemo,
+                SupplierId: supplierId,
+                PriceTypeId: priceTypeId,
+                ShipperId: shipperId,
+                Details: details,
+                TaxableTotal: totalBeforeDiscount,
+                Discount: discount,
+                NonTaxableTotal: nonTaxableTotal,
+                TaxRate: taxRate,
+                Tax: tax
+            };
+        };
+
+        const model = getModel();
+
+        if (!model.Details.length) {
+            alert(window.translate("PleaseSelectItem"));
+            return;
+        };
+
+        const confirmed = confirm(window.translate("AreYouSure"));
+
+        if (!confirmed) {
+            return;
+        };
+
+
+        $("#CheckoutButton").addClass("loading").prop("disabled", true);
+
+        const ajax = request(model);
+
+        ajax.success(function (response) {
+            const id = response;
+            document.location = `/dashboard/purchase/tasks/order/checklist/${id}`;
+        });
+
+        ajax.fail(function (xhr) {
+            $("#CheckoutButton").removeClass("loading").prop("disabled", false);
+            window.logAjaxErrorMessage(xhr);
+        });
+    });
+    window.overridePath = "/dashboard/purchase/tasks/order";
+    </script>
+}
+else
+{
+    @Html.PartialView("Tasks/Order/ClassicCheckout.cshtml", TenantConvention.GetTenant())
+}

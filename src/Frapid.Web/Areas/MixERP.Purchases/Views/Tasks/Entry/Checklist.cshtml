@@ -1,0 +1,27 @@
+﻿@using MixERP.Purchases.Extensions
+@model long
+
+@{
+    ViewBag.Title = I18N.Checklist;
+    Layout = ViewBag.PurchaseLayoutPath;
+}
+
+@Html.FinancePartialView("Shared/Checklist.cshtml", TenantConvention.GetTenant())
+
+<script>
+    window.overridePath = "/dashboard/purchase/tasks/entry";
+
+    window.prepareChecklist({
+        TranId: "@Model",
+        Title: window.translate("PurchaseChecklist") + " #@Model",
+        ViewText: window.translate("ViewPurchases"),
+        ViewUrl: "/dashboard/purchase/tasks/entry",
+        AddNewText: window.translate("AddNewPurchaseEntry"),
+        AddNewUrl: "/dashboard/purchase/tasks/entry/new",
+        ReportPath: "/dashboard/reports/source/Areas/MixERP.Purchases/Reports/Invoice.xml?transaction_master_id=@Model"
+    });
+
+    var el = $(".basic.buttons");
+    el.append(`<a class="ui basic button" href="/dashboard/purchase/entry/serial/@Model">${window.translate("UpdateSerialNumbers")}</a>`);
+</script>
+

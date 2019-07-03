@@ -1,0 +1,21 @@
+﻿@using MixERP.Purchases.Extensions
+@model long
+
+@{
+    ViewBag.Title = I18N.Checklist;
+    Layout = ViewBag.PurchaseLayoutPath;
+}
+
+@Html.FinancePartialView("Shared/Checklist.cshtml", TenantConvention.GetTenant())
+
+<script>
+    window.overridePath = "/dashboard/purchase/tasks/return";
+
+    window.prepareChecklist({
+        TranId: "@Model",
+        Title: window.translate("PurchaseReturnChecklist") + " #@Model",
+        ViewText: window.translate("ViewPurchaseReturns"),
+        ViewUrl: "/dashboard/purchase/tasks/return",
+        ReportPath: "/dashboard/reports/source/Areas/MixERP.Purchases/Reports/Return.xml?transaction_master_id=@Model"
+    });
+</script>
