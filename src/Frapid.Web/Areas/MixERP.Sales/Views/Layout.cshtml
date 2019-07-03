@@ -1,0 +1,14 @@
+﻿@model dynamic
+
+@{
+    Layout = ViewBag.Layout;
+}
+
+<div class="sales layout container">
+    @RenderBody()
+</div>
+
+<script>
+    window.loadDatepicker();
+	window.setRegionalFormat();	
+</script>

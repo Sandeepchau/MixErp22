@@ -1,0 +1,250 @@
+﻿@using Frapid.ApplicationState.Cache
+@using Frapid.Framework.Extensions
+@model MixERP.Sales.ViewModels.TicketViewModel
+
+@{
+    ViewBag.Title = @I18N.SalesReceipt;
+    string logo = AppUsers.GetCurrent().Logo.Or("/Static/images/logo.png");
+    var appUser = AppUsers.GetCurrent();
+    string currenySymbol = appUser.CurrencySymbol;
+    decimal taxableTotal = Model.Details.Where(x => x.IsTaxableItem).Sum(x => x.Amount);
+    decimal taxTotal = Model.View.Tax;
+}
+@{
+    var taxableTotalValue = Model.View.TaxableTotal == 0 ? 1 : Model.View.TaxableTotal;
+    decimal discountRate = Math.Round(Model.View.Discount * 100 / taxableTotalValue, 1);
+}
+
+<link rel="stylesheet" type="text/css" href="/Areas/MixERP.Sales/styles/ticket/index.css" />
+<script src="/scripts/jquery-2.2.4.min.js"></script>
+<script src="/scripts/jquery-qrcode/jquery.qrcode.min.js"></script>
+<div class="ticket">
+    <div class="header">
+        <div class="logo">
+            <img src="@logo" />
+        </div>
+        <div class="company name">@appUser.OfficeName</div>
+        <div class="address">
+            @if (!string.IsNullOrWhiteSpace(appUser.AddressLine1))
+            {
+                @appUser.AddressLine1
+            }
+            @if (!string.IsNullOrWhiteSpace(appUser.AddressLine2))
+            {
+                @appUser.AddressLine2
+            }
+
+            @appUser.Street, @appUser.City @appUser.State
+            <br />
+        </div>
+
+        <div class="coupon header">@I18N.SalesReceipt</div>
+
+        <div class="transaction items">
+            <div class="info">
+                <div class="name">@I18N.InvoiceNumber</div>
+                <div class="value">#@Model.View.InvoiceNumber</div>
+            </div>
+            <div class="info">
+                <div class="name">@I18N.TranCode</div>
+                <div class="value">#@Model.View.TransactionMasterId/@Model.View.TransactionCode</div>
+            </div>
+            <div class="info">
+                <div class="name">@I18N.TranDate</div>
+                <div class="value">@Model.View.ValueDate.ToString("d") (@Model.View.TransactionTs)</div>
+            </div>
+            <div class="info">
+                <div class="name">@I18N.Customer</div>
+                <div class="value">#@Model.View.CustomerId, @Model.View.CustomerName</div>
+            </div>
+            <div class="info">
+                <div class="name">@I18N.PostedBy</div>
+                <div class="value">@Model.View.PostedBy (@Model.View.CounterName/@Model.View.StoreName)</div>
+            </div>
+            @if (Model.View.PaymentTermId > 0)
+            {
+                <div class="info">
+                    <div class="name">@I18N.PaymentTerm</div>
+                    <div class="value">@Model.View.PaymentTermName</div>
+                </div>
+            }
+            @if (Model.View.CheckAmount > 0)
+            {
+                if (Model.View.CheckDate != null)
+                {
+                    <div class="info">
+                        <div class="name">@I18N.Check</div>
+                        <div class="value">Check #@Model.View.CheckNumber dated @Model.View.CheckDate.Value.ToString("D") (@Model.View.CheckBankName) </div>
+                    </div>
+                }
+                <div class="info">
+                    <div class="name">@I18N.CheckAmount</div>
+                    <div class="value">Check #@Model.View.CheckAmount </div>
+                </div>
+            }
+            @if (Model.View.GiftCardId > 0)
+            {
+                <div class="info">
+                    <div class="name">@I18N.GiftCardNumber</div>
+                    <div class="value">@Model.View.GiftCardNumber</div>
+                </div>
+            }
+            @if (Model.View.RewardPoints > 0)
+            {
+                <div class="info">
+                    <div class="name">@I18N.RewardPoints</div>
+                    <div class="value">@Model.View.RewardPoints.ToString("N2")</div>
+                </div>
+            }
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>@I18N.Description</th>
+                    <th class="right">@I18N.Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Details)
+                {
+                    <tr>
+                        <td>
+                            <div class="item info">
+                                @item.ItemName
+
+                                @item.Quantity.ToString("N")@item.UnitCode x @item.Price.ToString("N2") = @currenySymbol@((item.Quantity * item.Price).ToString("N2"))
+                            </div>
+                            @if (item.Discount > 0)
+                {
+                                <div class="discount info">
+                                    Less @currenySymbol@item.Discount.ToString("N2") (@((item.Discount * 100 / (item.Amount + item.Discount)).ToString("N2"))%)
+                                </div>
+                            }
+                        </td>
+                        <td class="right">
+                            @currenySymbol@(item.Amount.ToString("N2"))
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                @if (taxableTotal > 0)
+                {
+                    <tr>
+                        <th class="right">@I18N.TaxableTotal</th>
+                        <th class="right">@currenySymbol@taxableTotal.ToString("N2")</th>
+                    </tr>
+                }
+                @if (Model.View.Discount > 0)
+                {
+                    <tr>
+                        <th class="right">
+                            Discount
+                            (@(discountRate.ToString("N2"))%)
+                        </th>
+                        <th class="right">@currenySymbol@Model.View.Discount.ToString("N2")</th>
+                    </tr>
+                    <tr>
+                        <th class="right">@I18N.Total</th>
+                        <th class="right">@currenySymbol@((Model.View.TaxableTotal - Model.View.Discount).ToString("N2"))</th>
+                    </tr>
+                }
+                @if (taxTotal > 0)
+                {
+                    <tr>
+                        <th class="right">Tax (@Model.View.TaxRate.ToString("N2")%)</th>
+                        <th class="right">@currenySymbol@taxTotal.ToString("N2")</th>
+                    </tr>
+                }
+
+                @if (Model.View.NontaxableTotal > 0)
+                {
+                    <tr>
+                        <th class="right">@I18N.NonTaxableSales</th>
+                        <th class="right">@currenySymbol@Model.View.NontaxableTotal.ToString("N2")</th>
+                    </tr>
+                }
+
+
+
+                <tr>
+                    <th class="right">@I18N.GrandTotal</th>
+                    <th class="right">@currenySymbol@((Model.View.TaxableTotal + Model.View.Tax + Model.View.NontaxableTotal - Model.View.Discount).ToString("N2"))</th>
+                </tr>
+                @if (Model.View.Tender > 0)
+                {
+                    <tr>
+                        <th class="right">@I18N.Tender</th>
+                        <th class="right">@currenySymbol@Model.View.Tender.ToString("N2")</th>
+                    </tr>
+                    <tr>
+                        <th class="right">@I18N.Change</th>
+                        <th class="right">@currenySymbol@Model.View.Change.ToString("N2")</th>
+                    </tr>
+                }
+            </tfoot>
+        </table>
+
+        @if (Model.DiscountCoupons.Any())
+        {
+            <div class="discount coupons">
+                @foreach (var coupon in Model.DiscountCoupons)
+                {
+                    <div class="coupon">
+                        <div class="qrcode" data-coupon="@coupon.CouponCode"></div>
+                        <div class="description">
+                            <div class="title">@coupon.CouponName</div>
+                            <div class="sub title">@coupon.DiscountRate@(coupon.IsPercentage ? "%" : "") off</div>
+
+                            @if (coupon.MinimumPurchaseAmount > 0)
+                    {
+                                <div class="info">
+                                    <div class="name">@I18N.MinimumPurchaseAmount</div>
+                                    <div class="value">@coupon.MinimumPurchaseAmount</div>
+                                </div>
+                            }
+                            @if (coupon.MaximumPurchaseAmount > 0)
+                    {
+                                <div class="info">
+                                    <div class="name">@I18N.MaximumPurchaseAmount</div>
+                                    <div class="value">@coupon.MaximumPurchaseAmount</div>
+                                </div>
+                            }
+                            @if (coupon.BeginsFrom != null)
+                    {
+                                <div class="info">
+                                    <div class="name">@I18N.EffectiveFrom</div>
+                                    <div class="value">@coupon.BeginsFrom.Value.ToString("d")</div>
+                                </div>
+                            }
+                            @if (coupon.ExpiresOn != null)
+                    {
+                                <div class="info">
+                                    <div class="name">@I18N.EffectiveFrom</div>
+                                    <div class="value">@coupon.ExpiresOn.Value.ToString("d")</div>
+                                </div>
+                            }
+                            @if (coupon.MaximumUsage != null)
+                    {
+                                <div class="info">
+                                    <div class="name">@I18N.TotalUsage</div>
+                                    <div class="value">@coupon.MaximumUsage.Value</div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    $(".qrcode").each(function () {
+        const el = $(this);
+        const coupon = el.attr("data-coupon");
+
+        el.qrcode({ width: 80, height: 80, text: coupon });
+    });
+</script>

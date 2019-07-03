@@ -1,0 +1,18 @@
+﻿@using MixERP.Sales.Extensions
+@model long
+
+@{
+    ViewBag.Title = I18N.Checklist;
+    Layout = ViewBag.SalesLayoutPath;
+}
+@Html.FinancePartialView("Shared/Checklist.cshtml", TenantConvention.GetTenant())
+
+
+<script>
+    window.overridePath = "/dashboard/sales/tasks/entry";
+    window.tranId = "@Model";
+
+    var el = $(".basic.buttons");
+    el.append(`<a class="ui basic button" href="/dashboard/sales/entry/serial/@Model">${window.translate("UpdateSerialNumbers")}</a>`);
+</script>
+<script src="/Areas/MixERP.Sales/scripts/tasks/entry/checklist.js"></script>

@@ -1,0 +1,14 @@
+﻿@model dynamic
+
+<div class="category list">
+    <div class="cat filter" style="display: none;">
+        @I18N.Clear
+        <i class="delete icon"></i>
+    </div>
+</div>
+<div class="search panel">
+    <input type="search" placeholder="@I18N.Search" />
+</div>
+<div class="item list" id="POSItemList">
+</div>
+<script src="/Areas/MixERP.Sales/scripts/shared/pos-item-list.js"></script>

@@ -1,0 +1,71 @@
+﻿@model dynamic
+
+<div class="ui large find gift card modal">
+    <i class="close icon"></i>
+    <div class="header">@I18N.SearchGiftCard</div>
+    <div class="content" style="padding:3em">
+        <div class="ui search form">
+            <div class="two fields">
+                <div class="field">
+                    <label>@I18N.Phone</label>
+                    <input type="tel" name="PhoneInputText" />
+                </div>
+                <div class="field">
+                    <label>@I18N.Name</label>
+                    <input type="text" name="NameInputText" />
+                </div>
+            </div>
+            <div class="field">
+                <label>@I18N.Address</label>
+                <input type="text" name="AddressInputText" />
+            </div>
+            <div class="three fields">
+                <div class="field">
+                    <label>@I18N.City</label>
+                    <input type="text" name="CityInputText" />
+                </div>
+                <div class="field">
+                    <label>@I18N.State</label>
+                    <input type="text" name="StateInputText" />
+                </div>
+                <div class="field">
+                    <label>@I18N.Country</label>
+                    <input type="text" name="CountryInputText" />
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>@I18N.ZipCode</label>
+                    <input type="text" name="ZipCodeInputText" />
+                </div>
+                <div class="field">
+                    <label>@I18N.PoBox</label>
+                    <input type="text" name="PoBoxInputText" />
+                </div>
+            </div>
+
+            <div id="SearchButton" class="ui positive circular button">@I18N.Search</div>
+        </div>
+
+        <table class="ui results table">
+            <thead>
+            <tr>
+                <th>@I18N.Select</th>
+                <th>@I18N.GiftCardNumber</th>
+                <th>@I18N.Name</th>
+                <th>@I18N.Phone</th>
+                <th>@I18N.Address</th>
+                <th>@I18N.City</th>
+                <th>@I18N.State</th>
+                <th>@I18N.Country</th>
+                <th>@I18N.ZipCode</th>
+                <th>@I18N.PoBox</th>
+            </tr>
+            </thead>
+            <tbody>
+            
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="/Areas/MixERP.Sales/scripts/shared/gift-card-search.js"></script>

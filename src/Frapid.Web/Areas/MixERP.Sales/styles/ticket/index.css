@@ -1,0 +1,80 @@
+﻿html, body, table {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 12px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+table {
+    border-collapse: collapse;
+    text-align: left;
+    width: 100%;
+}
+
+    table th, table td {
+        border-bottom: 1px solid #ddd;
+        padding: 0.2em;
+    }
+
+
+.right {
+    text-align: right;
+}
+
+.logo img {
+    height: 40px;
+}
+
+.coupon.header {
+    font-size: 1.4em;
+    padding: 1em;
+}
+
+.transaction.items {
+    padding-bottom: 1em;
+}
+
+    .transaction.items .info, .coupon .info {
+        display: flex;
+    }
+
+        .transaction.items .info .name {
+            font-weight: bold;
+            text-align: left;
+            width: 120px;
+        }
+
+            .transaction.items .info .name:after {
+                content: ":";
+            }
+
+.coupons .coupon {
+    display: flex;
+    margin: 0 auto;
+    padding: 1em;
+}
+
+    .coupons .coupon .qrcode {
+        width: 80px;
+    }
+
+    .coupons .coupon .description {
+        padding-left: 1em;
+        text-align: left;
+    }
+
+        .coupons .coupon .description .title:not(.sub) {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .coupons .coupon .description .sub.title {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .coupons .coupon .description .info .name {
+            font-size: 0.87em;
+            font-weight: bold;
+            padding-right: 1em;
+        }

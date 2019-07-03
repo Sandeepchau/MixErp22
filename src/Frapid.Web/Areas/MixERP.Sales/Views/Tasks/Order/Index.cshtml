@@ -1,0 +1,11 @@
+﻿@using MixERP.Sales.Extensions
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.SalesOrders;
+    Layout = ViewBag.SalesLayoutPath;
+}
+
+@Html.FinancePartialView("Shared/SearchView.cshtml", TenantConvention.GetTenant())
+
+<script src="/Areas/MixERP.Sales/scripts/tasks/order/index.js"></script>

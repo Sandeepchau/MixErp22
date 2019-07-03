@@ -1,0 +1,265 @@
+﻿@using MixERP.Sales.ViewModels
+@using Newtonsoft.Json
+@model SerialNumber
+
+@{
+    ViewBag.Title = "";
+    Layout = ViewBag.SerialLayoutPath;
+}
+
+@{
+    var inventoryInfo = Model.CheckoutInfos.ToList();
+    string serializedInfo = JsonConvert.SerializeObject(inventoryInfo);
+
+    var serials = JsonConvert.SerializeObject(Model.SerialNumberViews);
+}
+<style>
+    .paged.segment {
+        padding: 3em 2em;
+    }
+
+    .ui.table {
+        width: 85%
+    }
+
+    #ItemDetailDiv {
+        border: 1px solid #e0e0e0;
+        border-radius: 0.3em;
+        padding-right: 10em;
+        padding-left: 2em;
+        margin-top: 1.7em;
+    }
+
+    a.remove-row {
+        cursor: pointer;
+    }
+</style>
+
+<div class="ui paged segment">
+    <div class="ui huge grey header">Update Serial Number(s)</div>
+    <div class="ui divider"></div>
+    <br />
+
+    <div class="ui form">
+        <div class="fields">
+            <input type="hidden" id="CheckoutInfoHidden" value="@serializedInfo" />
+            <input type="hidden" id="SerialsInfoHidden" value="@serials" />
+            <div class="three wide field">
+                <div class="field">
+                    <label>Item</label>
+                    <select id="ItemIdSelect">
+                        @foreach (var item in inventoryInfo)
+                        {
+                            <option value="@item.ItemId">@item.ItemName</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div id="ItemDetailDiv">
+            </div>
+        </div>
+
+    </div>
+
+    <table class="ui selectable stripped table">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Item</th>
+            <th>Unit</th>
+            <th>Store</th>
+            <th>Batch Number</th>
+            <th>Serial Number</th>
+            <th>Expiry Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <br />
+
+    <button id="SaveButton" class="ui violet button">Save</button>
+</div>
+
+
+<script>
+    window.overridePath = "/dashboard/sales/tasks/entry";
+    window.loadDatepicker();
+
+    var checkoutInfo;
+    var serials;
+
+    function setItemDetails(data) {
+        const container = $("#ItemDetailDiv");
+        container.html("");
+
+        const ul = $("<ul/>");
+        ul.append($(`<li><strong>Total Quantity: </strong> ${data.Quantity} ${data.UnitName}</li>`));
+        ul.append($(`<li><strong>Store: </strong> ${data.StoreName}</li>`));
+        ul.append($(`<li><strong>Tran Type: </strong> ${data.TransactionType}</li>`));
+
+        container.append(ul);
+    }
+
+    function addRow(model) {
+        function getCell(text, val) {
+            const cell = $("<td/>");
+            if (text) {
+                if (typeof (text) === "number") {
+                    cell.addClass("right aligned");
+                }
+
+                cell.append(text);
+            };
+
+            if (val) {
+                cell.attr("data-val", val);
+            }
+
+            return cell;
+        }
+
+        const table = $("table.ui.table tbody");
+
+        const row = $(`<tr item-id="${model.ItemId}"/>`);
+        row.append(getCell(`<input type="checkbox"/>`));
+        row.append(getCell(model.ItemName, model.ItemId));
+        row.append(getCell(model.UnitName, model.UnitId));
+        row.append(getCell(model.StoreName, model.StoreId));
+        row.append(getCell(model.BatchNumber, model.BatchNumber));
+        row.append(getCell(model.SerialNumber, model.SerialNumber));
+        row.append(getCell(window.moment(model.ExpiryDate).fromNow() || '', model.ExpiryDate));
+
+        table.append(row);
+    };
+
+    $("#ItemIdSelect").off("change").on("change", function () {
+        const itemId = parseInt($("#ItemIdSelect").val() || 0);
+
+        const checkout = window.Enumerable.From(checkoutInfo)
+            .Where(function (x) {
+                return x.ItemId === itemId;
+            }).First();
+
+        const serialNumbers = window.Enumerable.From(serials)
+            .Where(function (x) {
+                return x.ItemId === itemId;
+            }).ToArray();
+
+        if (!checkout) {
+            return;
+        }
+
+        setItemDetails(checkout);
+        getSerialNumbers(checkout);
+    });
+
+    function getSerialNumbers(data) {
+        var url = "/dashboard/sales/items/serial-numbers/{itemId}/{unitId}/{storeId}";
+        url = url.replace("{itemId}", data.ItemId);
+        url = url.replace("{unitId}", data.UnitId);
+        url = url.replace("{storeId}", data.StoreId);
+
+        const table = $("table.ui.table tbody");
+        table.html("");
+
+        const ajax = window.getAjaxRequest(url);
+        ajax.success(function (response) {
+            $.each(response, function (index, item) {
+                const row = $(`<tr/>`);
+                row.append($(`<td/>`).append($(`<input type="checkbox" data-id="${item.SerialNumberId}"/>`)));
+                row.append($(`<td/>`).append(item.ItemName));
+                row.append($(`<td/>`).append(item.UnitCode));
+                row.append($(`<td/>`).append(data.StoreName));
+                row.append($(`<td/>`).append(item.BatchNumber));
+                row.append($(`<td/>`).append(item.SerialNumber));
+                row.append($(`<td/>`).append(window.moment(item.ExpiryDate).fromNow() || ''));
+
+                table.append(row);
+            });
+        });
+    }
+
+    $(document).on("click", "input[type=checkbox]", function() {
+        const itemId = parseInt($("#ItemIdSelect").val() || 0);
+        const el = $(this);
+
+        const checkout = window.Enumerable.From(checkoutInfo)
+            .Where(function(x) {
+                return x.ItemId === itemId;
+            }).First();
+
+        var ids = [];
+        const items = $("table tbody tr input[type=checkbox]");
+        $.each(items, function() {
+            const item = $(this);
+
+            if (item.is(":checked")) {
+                ids.push(item.attr("data-id"));
+            }
+        });
+
+        if (checkout.Quantity < ids.length) {
+            el.attr("checked", false);
+            window.displayMessage(`Total ${checkout.Quantity} ${checkout.UnitName}(s) of ${checkout.ItemName} is already added.`);
+            return;
+        }
+    });
+
+    $("#SaveButton").off("click").on("click", function() {
+        const items = $("table.ui.table tbody tr input[type=checkbox]");
+        if (items.length === 0) {
+            return;
+        };
+
+        var ids = [];
+        $.each(items, function (index, item) {
+            const el = $(item);
+
+            if (el.is(":checked")) {
+                const id = window.parseInt(el.attr("data-id") || 0);
+                ids.push(id);
+            }
+        });
+
+        const itemId = parseInt($("#ItemIdSelect").val() || 0);
+        const checkout = window.Enumerable.From(checkoutInfo)
+            .Where(function (x) {
+                return x.ItemId === itemId;
+            }).First();
+
+        const model = {
+            CheckoutId: checkout.CheckoutId,
+            TransactionMasterId: checkout.TransactionMasterId,
+            SerialNumbers: ids
+        };
+
+        const url = "/dashboard/sales/serial/post";
+        const ajax = window.getAjaxRequest(url, "POST", JSON.stringify(model));
+
+        ajax.success(function(response) {
+            if (response) {
+                window.displaySuccess();
+            };
+        });
+
+        ajax.fail(function (xhr) {
+            window.logAjaxErrorMessage(xhr);
+        });
+    });
+
+    $(document).ready(function () {
+        checkoutInfo = JSON.parse($("#CheckoutInfoHidden").val());
+        serials = JSON.parse($("#SerialsInfoHidden").val());
+
+        const rows = $("table.ui.table tbody tr");
+        $.each(rows, function (index, item) {
+            const td = $(item).find("td:eq(5)");
+
+            td.html(window.moment(td.attr("data-val")).fromNow() || '');
+        });
+
+        $("#ItemIdSelect").trigger("change");
+    });
+
+</script>
