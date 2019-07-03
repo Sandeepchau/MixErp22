@@ -1,0 +1,20 @@
+﻿@using Frapid.ApplicationState.Cache
+@using MixERP.Sales.Extensions
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.SalesEntries;
+    Layout = ViewBag.SalesLayoutPath;
+    var meta = AppUsers.GetCurrent(TenantConvention.GetTenant());
+    var setup = MixERP.Inventory.Cache.Setup.Get(TenantConvention.GetTenant(), meta.OfficeId);
+}
+
+@if (setup.UsePosCheckoutScreen)
+{
+    @Html.PartialView("Shared/POSScreen.cshtml", TenantConvention.GetTenant())
+    <script src="/Areas/MixERP.Sales/scripts/tasks/entry/new.js"></script>
+}
+else
+{
+    @Html.PartialView("Tasks/Entry/ClassicCheckout.cshtml", TenantConvention.GetTenant())
+}

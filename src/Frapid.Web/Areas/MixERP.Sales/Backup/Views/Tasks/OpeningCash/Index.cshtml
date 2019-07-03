@@ -1,0 +1,49 @@
+﻿@using Frapid.ApplicationState.Cache
+@model MixERP.Sales.ViewModels.OpeningCash
+
+@{
+    ViewBag.Title = I18N.BODCash;
+    Layout = ViewBag.Layout;
+}
+
+
+<style>
+    .very.relaxed.segment {
+        padding: 4em;
+    }
+</style>
+<div class="ui attached very relaxed segment">
+    <div class="ui container">
+        <div class="ui huge header">
+            @I18N.BODCash
+            <div class="ui teal label">@DateTime.Now.ToLongDateString()</div>
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui positive message">
+            @AppUsers.GetCurrent().Name, @I18N.YouMayAlsoEditBeginningCashLater <a href="eod">@I18N.ThisEvening</a>.
+        </div>
+        <div class="ui form">
+            <div class="four fields">
+                <div class="field">
+                    <label>@I18N.TodayBeginningCash</label>
+                    <input type="text" id="AmountInputText" class="decimal" required="" value="@Model.Amount" 
+                           disabled="disabled" data-allow-edit="@(!Model.Closed)" />
+                </div>
+                <div class="field">
+                    <label>@I18N.ProvidedBy</label>
+                    <input type="text" id="ProvidedByInputText" required="" value="@Model.ProvidedBy" 
+                           disabled="disabled" data-allow-edit="@(!Model.Closed)" />
+                </div>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <label>@I18N.Memo</label>
+                    <textarea id="MemoTextArea" disabled="disabled" data-allow-edit="@(!Model.Closed)">@Model.Memo</textarea>
+                </div>
+            </div>
+            <button id="SaveButton" class="ui green button" disabled="disabled" data-allow-edit="@(!Model.Closed)">@I18N.Save</button>
+        </div>
+    </div>
+</div>
+
+<script src="/Areas/MixERP.Sales/scripts/tasks/opening-cash/index.js"></script>

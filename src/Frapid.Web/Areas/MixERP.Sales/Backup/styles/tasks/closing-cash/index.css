@@ -1,0 +1,55 @@
+﻿.very.relaxed.segment {
+    padding: 4em;
+}
+
+@media print {
+    .no.print {
+        display: none !important;
+    }
+
+    table {
+        page-break-inside: auto !important;
+    }
+
+    tr {
+        page-break-after: auto !important;
+        page-break-inside: avoid !important;
+    }
+
+    thead {
+        display: table-header-group !important;
+    }
+
+    tfoot {
+        display: table-footer-group !important;
+    }
+
+    .page.break {
+        page-break-before: always;
+    }
+}
+
+@media screen {
+    .no.screen {
+        display: none !important;
+    }
+}
+
+#SubmittedCashInputText.selected {
+    border: 1px solid #BD6711;
+    color: #BD6711;
+}
+
+.denomination .field,
+.denomination .multiply,
+.denomination .text,
+.denomination .equals {
+    display: inline-block;
+    padding: 0.2em 0.5em;
+}
+
+
+.denomination .text {
+    text-align: right;
+    width: 40px;
+}

@@ -1,0 +1,525 @@
+﻿@using Frapid.ApplicationState.Cache
+@using MixERP.Sales.Extensions
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.SalesEntries;
+    Layout = ViewBag.SalesLayoutPath;
+}
+
+<style>
+    .ticket.panel {
+        padding: 2em 0.2em;
+    }
+
+    #TicketIframe {
+        background-color: white;
+        width: 450px;
+        height: 500px;
+        border: none;
+        margin: 1em 0.2em;
+        padding: 0.5em;
+        box-shadow: 2px 2px 10px #ddd;
+        display: block;
+    }
+</style>
+@Html.InventoryPartialView("Shared/ClassicCheckout.cshtml", TenantConvention.GetTenant())
+
+<div class="ui attached segment" style="padding:2em">
+    <div class="ui flat form">
+        <div class="ui big header">@I18N.PaymentType</div>
+        <div class="field">
+            <div class="ui form">
+                <div class="inline fields">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input name="payment-type" data-payment-type="cash" checked="checked" type="radio">
+                            <label>@I18N.ByCash</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input name="payment-type" data-payment-type="check" type="radio">
+                            <label>@I18N.ViaCheck</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input name="payment-type" data-payment-type="credit" type="radio">
+                            <label>@I18N.OnCredit</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input name="payment-type" data-payment-type="gift card" type="radio">
+                            <label>@I18N.UsingGiftCard</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div data-payment-type="cash" class="fields">
+            <div class="four wide field">
+                <label>@I18N.CashTender</label>
+                <input type="text" class="decimal" id="TenderInputText" />
+            </div>
+            <div class="four wide field">
+                <label>@I18N.CashChange</label>
+                <input class="decimal" type="text" readonly="readonly" id="ChangeInputText" />
+            </div>
+        </div>
+        <div data-payment-type="credit" class="fields" style="display: none">
+            <div class="eight wide field">
+                <label>@I18N.PaymentTerm</label>
+                <select class="ui fluid dropdown" id="PaymentTermSelect"></select>
+            </div>
+        </div>
+        <div data-payment-type="check" class="fields" style="display: none">
+            <div class="two wide field">
+                <label>@I18N.CheckAmount</label>
+                <input class="decimal" type="text" id="CheckAmountInputText" />
+            </div>
+            <div class="two wide field">
+                <label>@I18N.BankName</label>
+                <input type="text" id="BankNameInputText" />
+            </div>
+            <div class="two wide field">
+                <label>@I18N.CheckNumber</label>
+                <input type="text" id="CheckNumberInputText" />
+            </div>
+            <div class="two wide field">
+                <label>@I18N.CheckDate</label>
+                <input type="text" class="date" id="CheckDateInputText" />
+            </div>
+        </div>
+        <div data-payment-type="gift card" class="fields" style="display: none">
+            <div class="four wide field">
+                <label>@I18N.GiftCardNumber</label>
+                <div class="ui action fluid input">
+                    <input id="GiftCardNumberInputText" required="" type="text">
+                    <button class="ui icon blue button" onclick='$(".ui.gift.card.modal").modal("show");'>
+                        <i class="search icon"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="four wide field">
+                <label>@I18N.GiftCardBalance</label>
+                <input class="decimal" type="text" readonly="readonly" id="GiftCardBalanceInputText" />
+            </div>
+        </div>
+        <button class="ui big green button" onclick="postSalesCheckout(this)">@I18N.Checkout</button>
+        <button class="ui big basic button" onclick="$('.reprint.ticket.modal').modal('show');">@I18N.ReprintTicket</button>
+        <div class="ticket panel">
+            <div class="ui big header">@I18N.SalesTicket</div>
+            <iframe id="TicketIframe"></iframe>
+            <button class="ui blue circular button" onclick="$('#TicketIframe').get(0).contentWindow.print();" id="PrintButton">@I18N.Print</button>
+            <button class="ui red  circular button" onclick="$('.ticket.panel').hide();">Hide</button>
+        </div>
+    </div>
+</div>
+
+@Html.PartialView("Shared/ReprintTicketModal.cshtml", TenantConvention.GetTenant())
+@Html.PartialView("Shared/GiftCardSerachModal.cshtml", TenantConvention.GetTenant());
+
+<script>
+	window.isSales = true;
+    $(document).ready(function () {
+        const orderId = window.getQueryStringByName("OrderId");
+
+        if (orderId) {
+            function request() {
+                const url = `/dashboard/sales/tasks/order/merge-model/${orderId}`;
+                return window.getAjaxRequest(url);
+            };
+
+            const ajax = request();
+
+            ajax.success(function (response) {
+                const order = response.Order;
+
+                setTimeout(function () {
+                    if (response.Order) {
+                        $("#StoreSelect").val(order.StoreId);
+                        $("#PriceTypeSelect").val(order.PriceTypeId);
+                        $("#CustomerSelect").val(order.CustomerId);
+                        $("#ShipperSelect").val(order.ShipperId);
+                        $("#ReferenceNumberInputText").val(order.ReferenceNumber);
+                        $("#DiscountInputText").val(order.Discount);
+                        $("#TaxableTotalInputText").val(order.TaxableTotal);
+                        $("#TaxInputText").val(order.Tax);
+                        $("#NonTaxableTotalInputText").val(order.NontaxableTotal);
+                    }
+
+                    $.each(response.Details, function() {
+                        const el = $("#CheckoutGrid tbody");
+                        const item = $(this)[0];
+
+                        //const candidate = "<tr />";
+                        //el.append(candidate);
+
+                        const add = $("#CheckoutGrid tfoot tr:eq(1)");
+                        add.find("#ItemSelect").val(item.ItemId);
+                        add.find("#QuantityInputText").val(item.Quantity);
+                        add.find("#UnitSelect").val(item.UnitId);
+                        add.find("#PriceInputText").val(item.Price);
+                        add.find("#ShippingChargeInputText").val(item.ShippingCharge);
+                        add.find("#LineDiscountInputText").val(item.Discount);
+
+                        add.find("#AddButton").trigger("click");
+
+                        el.find("tr:last").attr("data-unit-id", item.UnitId);
+                        el.find("tr:last").attr("data-is-taxable-item", item.IsTaxed);
+                        getUnits(el.find("tr:last td:eq(2)"), item.UnitId);
+                    });
+                }, 3000);
+            });
+
+            ajax.fail(function (xhr) {
+                ajax.logAjaxErrorMessage(xhr);
+            });
+        };
+    });
+
+    $(document).ready(function () {
+        const quotationId = window.getQueryStringByName("QuotationId");
+
+        if (quotationId) {
+            function request() {
+                const url = `/dashboard/sales/tasks/quotation/merge-model/${quotationId}`;
+                return window.getAjaxRequest(url);
+            };
+
+            const ajax = request();
+
+            ajax.success(function (response) {
+                const quotation = response.Quotation;
+
+                setTimeout(function () {
+                    if (response.Quotation) {
+                        $("#PriceTypeSelect").val(quotation.PriceTypeId);
+                        $("#CustomerSelect").val(quotation.CustomerId);
+                        $("#ShipperSelect").val(quotation.ShipperId);
+                        $("#ReferenceNumberInputText").val(quotation.ReferenceNumber);
+                        $("#DiscountInputText").val(quotation.Discount);
+                        $("#TaxableTotalInputText").val(quotation.TaxableTotal);
+                        $("#TaxInputText").val(quotation.Tax);
+                        $("#NonTaxableTotalInputText").val(quotation.NontaxableTotal);
+                    };
+
+                    $.each(response.Details, function () {
+                        const el = $("#CheckoutGrid tbody");
+                        const item = $(this)[0];
+
+                        //const candidate = "<tr />";
+                        //el.append(candidate);
+
+                        const add = $("#CheckoutGrid tfoot tr:eq(1)");
+                        add.find("#ItemSelect").val(item.ItemId);
+                        add.find("#QuantityInputText").val(item.Quantity);
+                        add.find("#UnitSelect").val(item.UnitId);
+                        add.find("#PriceInputText").val(item.Price);
+                        add.find("#ShippingChargeInputText").val(item.ShippingCharge);
+                        add.find("#LineDiscountInputText").val(item.Discount);
+
+                        add.find("#AddButton").trigger("click");
+
+                        el.find("tr:last").attr("data-unit-id", item.UnitId);
+                        el.find("tr:last").attr("data-is-taxable-item", item.IsTaxed);
+                        getUnits(el.find("tr:last td:eq(2)"), item.UnitId);
+                    });
+                }, 3000);
+            });
+
+            ajax.fail(function (xhr) {
+                ajax.logAjaxErrorMessage(xhr);
+            });
+        };
+    });
+
+    function getUnits(el, unitId) {
+        function request() {
+            const url = "/api/forms/inventory/units/get-where/-1";
+            const filters = [];
+
+            filters.push(window.getAjaxColumnFilter("WHERE", "UnitId", "int", window.FilterConditions.IsEqualTo, unitId));
+
+            const data = JSON.stringify(filters);
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        const ajax = request();
+        ajax.success(function (response) {
+            const model = response[0];
+            el.html(model.UnitName);
+        });
+
+        ajax.fail(function (xhr) {
+            window.logAjaxErrorMessage(xhr);
+        });
+    };
+
+    $("#GiftCardNumberInputText").on("change", function () {
+        function request(giftCardNumber) {
+            var url = "/dashboard/loyalty/tasks/gift-cards/get-balance/{giftCardNumber}";
+            url = url.replace("{giftCardNumber}", giftCardNumber);
+
+            return window.getAjaxRequest(url, "POST");
+        };
+
+        const el = $(this);
+        const giftCardNumber = el.val();
+
+        if (!giftCardNumber) {
+            return;
+        };
+
+        const ajax = request(giftCardNumber);
+
+        ajax.success(function (response) {
+            $("#GiftCardBalanceInputText").val(response);
+        });
+    });
+
+    $("#TenderInputText").off("keyup").on("keyup", function () {
+        const tender = window.parseFloat2($(this).val());
+        const invoiceTotal = window.parseFloat2($("#InvoiceTotalInputText").val());
+        const change = window.round(tender - invoiceTotal, 2);
+
+        $("#ChangeInputText").val(window.getFormattedNumber(change));
+    });
+
+
+    window.displayFieldBinder($("#PaymentTermSelect"), "/api/forms/sales/payment-terms/display-fields", false);
+
+    $("input[name='payment-type']").off("change").on("change", function () {
+        $("div[data-payment-type]").hide();
+        const paymentType = $(this).attr("data-payment-type");
+
+        $("div[data-payment-type='" + paymentType + "']").fadeIn(1000);
+    });
+
+
+    function showTicket(id) {
+        const url = "/dashboard/sales/ticket/" + id;
+
+        $("#TicketIframe").attr("src", url);
+        $(".ticket.panel").show();
+    };
+
+    function postSalesCheckout(el) {
+        function request(model) {
+            const url = "/dashboard/sales/tasks/entry/new";
+            const data = JSON.stringify(model);
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        function getCheckoutModel() {
+            const model = window.getModel();
+
+            var serialNumberIds = [];
+            const rows = $("#CheckoutGrid tbody tr");
+            $.each(rows, function () {
+                const row = $(this);
+                const serial = row.find("td:eq(1)").attr("data-serials");
+
+                if (serial) {
+                    serialNumberIds.push(serial);
+                };
+            });
+            model.SerialNumberIds = serialNumberIds.toString();
+
+            const tender = window.parseFloat2($("#TenderInputText").val()) || 0;
+            const change = window.parseFloat2($("#ChangeInputText").val()) || 0;
+            const paymentTermId = window.parseInt($("#PaymentTermSelect").val()) || null;
+
+            const checkAmount = window.parseFloat2($("#CheckAmountInputText").val()) || null;
+            const bankName = $("#BankNameInputText").val();
+            const checkNumber = $("#CheckNumberInputText").val();
+            const checkDate = $("#CheckDateInputText").datepicker("getDate");
+
+            const giftCardNumber = $("#GiftCardNumberInputText").val();
+
+            const couponCode = $("#CouponCodeInputText").val();
+
+
+            model.Tender = tender;
+            model.Change = change;
+            model.PaymentTermId = paymentTermId;
+            model.CheckAmount = checkAmount;
+            model.CheckBankName = bankName;
+            model.CheckNumber = checkNumber;
+            model.CheckDate = checkDate;
+            model.GiftCardNumber = giftCardNumber;
+            model.CouponCode = couponCode;
+
+            return model;
+        };
+
+        function validate(model) {
+            if ($("#TenderInputText").is(":visible")) {
+                if (model.Tender <= 0) {
+                    window.displayMessage("Please enter tender amount.");
+                    return false;
+                };
+            };
+
+            if (model.Tender >= model.InvoiceTotal) {
+                //Cash Transaction
+
+                $("#CheckAmountInputText").val("");
+                $("#BankNameInputText").val("");
+                $("#CheckDateInputText").val("");
+                $("#CheckNumberInputText").val("");
+
+                $("#PaymentTermSelect").val("Select");
+                $("#GiftCardNumberInputText").val("");
+                $("#GiftCardBalanceInputText").val("");
+                return true;
+            };
+
+            if (model.CheckAmount >= model.InvoiceTotal) {
+                //Paid via Check/Cheque
+                if (!model.BankName) {
+                    window.displayMessage(window.translate("PleaseEnterBankName"));
+                    return false;
+                };
+
+                if (!model.CheckNumber) {
+                    window.displayMessage(window.translate("PleaseEnterCheckNumber"));
+                    return false;
+                };
+
+                if (!model.CheckDate) {
+                    window.displayMessage(window.translate("PleaseEnterCheckDate"));
+                    return false;
+                };
+
+                $("#TenderInputText").val("");
+                $("#ChangeInputText").val("");
+
+                $("#PaymentTermSelect").val("Select");
+                $("#GiftCardNumberInputText").val("");
+                $("#GiftCardBalanceInputText").val("");
+
+
+                return true;
+            };
+
+            var giftCardBalance = window.parseFloat2($("#GiftCardBalanceInputText").val());
+
+            if (giftCardBalance >= model.InvoiceTotal) {
+                //Paid via Gift Card
+
+                if (!model.GiftCardNumber) {
+                    window.displayMessage(window.translate("PleaseEnterGiftCardNumber"));
+                    return false;
+                };
+
+                $("#TenderInputText").val("");
+                $("#ChangeInputText").val("");
+                $("#CheckAmountInputText").val("");
+                $("#BankNameInputText").val("");
+                $("#CheckDateInputText").val("");
+                $("#CheckNumberInputText").val("");
+
+                $("#PaymentTermSelect").val("Select");
+
+                return true;
+            };
+
+            //Credit transaction
+            $("#TenderInputText").val("");
+            $("#ChangeInputText").val("");
+            $("#CheckAmountInputText").val("");
+            $("#BankNameInputText").val("");
+            $("#CheckDateInputText").val("");
+            $("#CheckNumberInputText").val("");
+            $("#GiftCardNumberInputText").val("");
+            $("#GiftCardBalanceInputText").val("");
+
+            if (!model.PaymentTermId) {
+                window.displayMessage(window.translate("PleaseSelectPaymentTerm"));
+                return false;
+            };
+
+            return true;
+        };
+
+        const model = getCheckoutModel();
+        const isValid = validate(model);
+
+        if (!isValid) {
+            return;
+        };
+
+        const button = $(el);
+        button.addClass("loading").prop("disabled", true);
+
+        const ajax = request(model);
+
+        ajax.success(function (response) {
+            button.removeClass("loading").prop("disabled", false);
+            const id = response;
+            $("#CheckoutGrid tbody").html("");
+            $("#PriceInputText").trigger("change");
+
+            window.showTicket(id);
+        });
+
+        ajax.fail(function (xhr) {
+            button.removeClass("loading").prop("disabled", false);
+            window.displayMessage(xhr.responseText);
+        });
+    };
+
+    $(".supplier.field").remove();
+    $("#SaveButton").remove();
+
+    var model = {
+        Title: window.translate("Sales"),
+        ProductApi: "/dashboard/sales/tasks/items",
+        PriceTypeApi: "/api/forms/sales/price-types/display-fields",
+        ShowCouponCode: true,
+        UpdatePrice: function () {
+            function request(itemId, customerId, priceTypeId, unitId) {
+                var url = "/dashboard/sales/tasks/selling-price/{itemId}/{customerId}/{priceTypeId}/{unitId}";
+                url = url.replace("{itemId}", itemId);
+                url = url.replace("{customerId}", customerId);
+                url = url.replace("{priceTypeId}", priceTypeId);
+                url = url.replace("{unitId}", unitId);
+
+                return window.getAjaxRequest(url);
+            };
+
+            const itemId = $("#ItemSelect").val();
+            const customerId = window.parseInt($("#CustomerSelect").val()) || 0;
+            const priceTypeId = window.parseInt($("#PriceTypeSelect").val()) || 0;
+            const unitId = $("#UnitSelect").val();
+
+
+            $(".checkout.segment").addClass("loading");
+
+            const ajax = request(itemId, customerId, priceTypeId, unitId);
+
+            ajax.success(function (response) {
+                var sellingPrice = window.parseFloat(response);
+                sellingPrice = window.round(sellingPrice, 2);
+
+                $(".checkout.segment").removeClass("loading");
+
+                const priceInput = $("#PriceInputText");
+                priceInput.val(sellingPrice).trigger("keyup").trigger("change");
+            });
+
+            ajax.fail(function (xhr) {
+                $(".checkout.segment").removeClass("loading");
+                window.logAjaxErrorMessage(window.getAjaxErrorMessage(xhr));
+            });
+
+        }
+    };
+
+    window.initializeCheckout(model);
+
+    window.overridePath = "/dashboard/sales/tasks/entry";
+</script>

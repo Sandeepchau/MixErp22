@@ -1,0 +1,30 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = I18N.Customers;
+    Layout = ViewBag.SalesLayoutPath;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>@I18N.Customers</title>
+    <meta charset="utf-8" />
+    <script src="/i18n/resources.js?cultureCode=@CultureManager.GetCurrentUiCulture().Name"></script>
+    <script src="/assets/js/backend.js"></script>
+    <script src="/scripts/inflection-js/inflection.js"></script>
+    <link rel="stylesheet" type="text/css" href="/scripts/semantic-ui/semantic.min.css" />
+    <link rel="stylesheet" type="text/css" href="/dashboard/my/template/contents/dashboard.css" />
+    <script src="~/dashboard/my/template/contents/dashboard.js"></script>
+    <style>
+        html, body {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="ScrudFactoryForm"></div>
+    <div id="ScrudFactoryView"></div>
+    <script src="/Areas/MixERP.Sales/scripts/setup/customer-search.js"></script>
+</body>
+</html>

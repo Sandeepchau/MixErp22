@@ -1,0 +1,37 @@
+﻿@model long
+
+@{
+    ViewBag.Title = @I18N.Checklist;
+    Layout = ViewBag.SalesLayoutPath;
+}
+<style>
+    iframe {
+        display: block;
+        margin-top: 1em;
+        width: 800px;
+        height: 800px;
+        border: 1px solid #ccc;
+    }
+</style>
+<div class="ui attached page segment" style="min-height: 100%; padding: 3em;">
+    <div class="ui huge header">@I18N.GiftCardFundSales</div>
+    <div class="ui divider"></div>
+
+    <div class="ui positive message">@I18N.TransactionPostedSuccessfully </div>
+
+    <a href="/dashboard/loyalty/tasks/gift-cards/add-fund" class="ui green button">
+        @I18N.ViewSales
+    </a>
+    <a href="/dashboard/loyalty/tasks/gift-cards/add-fund/entry" class="ui red button">
+        @I18N.AddNewSalesEntry
+    </a>
+    <iframe src="/dashboard/reports/source/Areas/MixERP.Sales/Reports/GiftCardTransaction.xml?transaction_master_id=@Model"></iframe>
+</div>
+
+<script src="/Areas/MixERP.Sales/scripts/loyalty/gift-cards/add-fund/checklist.js"></script>
+
+
+
+<script>
+    window.overridePath = "/dashboard/sales/tasks/entry";
+</script>

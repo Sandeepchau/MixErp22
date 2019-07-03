@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Customer Receipts</Title>
+  <TopSection>
+  </TopSection>
+  <Body>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Query>
+		SELECT
+			finance.transaction_master.book,
+			CASE WHEN COALESCE(sales.customer_receipts.check_number, '') = '' THEN 'Cash' ELSE 'Check' END AS type,
+			finance.transaction_master.transaction_master_id AS tran_id,
+			finance.transaction_master.value_date,
+			finance.transaction_master.book_date,
+			sales.customer_receipts.customer_id,
+			inventory.get_customer_name_by_customer_id(sales.customer_receipts.customer_id) AS customer_name,
+			CASE WHEN COALESCE(sales.customer_receipts.check_number, '') = '' THEN 
+				(tender - change)
+			ELSE 
+				check_amount
+			END AS amount,
+			finance.transaction_master.reference_number,
+			finance.transaction_master.statement_reference
+		FROM sales.customer_receipts
+		INNER JOIN finance.transaction_master
+		ON finance.transaction_master.transaction_master_id = sales.customer_receipts.transaction_master_id
+		WHERE finance.transaction_master.verification_status_id > 0
+		AND finance.transaction_master.value_date BETWEEN @From::date AND @To::date
+		AND finance.transaction_master.office_id = @OfficeId;
+      </Query>
+      <Parameters>
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>6</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>7</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

@@ -1,0 +1,64 @@
+<div class="eight wide column">
+    <div class="ui widget segment">
+        <div class="header">
+            <span data-localize="TopSellingItems"></span>
+            <span class="sub header"></span>
+        </div>
+        <div class="controls">
+            <span class="collapse button">
+                <i class="chevron up icon"></i>
+            </span>
+            <span class="close button">
+                <i class="delete icon"></i>
+            </span>
+        </div>
+        <div class="body">
+            <canvas class="top items canvas" height="300"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        function prepareChart(model) {
+            const labels = window.Enumerable.From(model).Select(function(x) { return x.ItemName; }).ToArray();
+            const data = window.Enumerable.From(model).Select(function(x) { return x.TotalSales; }).ToArray();
+
+            const canvas = $(".top.items.canvas");
+
+            canvas.closest(".segment").find(".sub.header").text(meta.Office);
+
+            const context = canvas.get(0).getContext('2d');
+            const topItemsChart = new window.Chart(context, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            type: 'bar',
+                            label: window.translate("ThisOffice"),
+                            data: data,
+                            backgroundColor: window.chartColors,
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true
+                }
+            });
+        };
+
+        function request() {
+            const url = "/dashboard/sales/widgets/top-selling-items";
+            return window.getAjaxRequest(url);
+        };
+
+        const ajax = request();
+
+        ajax.success(function(response) {
+            prepareChart(response);
+        });
+    })();
+</script>

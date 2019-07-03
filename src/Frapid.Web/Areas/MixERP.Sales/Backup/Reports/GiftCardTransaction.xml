@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Gift Card Sales</Title>
+  <TopSection>
+    <table class="table horizontal">
+      <tr>
+        <td>{i18n.TranId}</td>
+        <td>
+          {DataSource[0].transaction_master_id}
+        </td>
+      </tr>
+      <tr>
+        <td>{i18n.TranCode}</td>
+        <td>
+          {DataSource[0].transaction_code}          
+        </td>
+      </tr>
+      <tr>
+        <td>{i18n.TransactionDate}</td>
+        <td>{DataSource[0].transaction_ts}</td>
+      </tr>
+      <tr>
+        <td>{i18n.ValueDate}</td>
+        <td>{DataSource[0].value_date}</td>
+      </tr>
+      <tr>
+        <td>{i18n.EnteredBy}</td>
+        <td> {DataSource[0].entered_by}</td>
+      </tr>
+      <tr>
+        <td>{i18n.CustomerName}</td>
+        <td>{DataSource[0].customer_name}</td>
+      </tr>
+      <tr>
+        <td>{i18n.Amount}</td>
+        <td>{DataSource[0].amount}</td>
+      </tr>
+      <tr>
+        <td>{i18n.TransactionStatus}</td>
+        <td> {DataSource[0].status}</td>
+      </tr>
+      <tr>
+        <td>{i18n.VerifiedBy}</td>
+        <td> {DataSource[0].verified_by}</td>
+      </tr>
+      <tr>
+        <td>{i18n.VerificationReason}</td>
+        <td> {DataSource[0].verification_reason}</td>
+      </tr>
+      <tr>
+        <td>{i18n.TranCode}</td>
+        <td>{DataSource[0].transaction_code}</td>
+      </tr>
+      <tr>
+        <td>{i18n.Office}</td>
+        <td>{DataSource[0].office_name}</td>
+      </tr>
+		<tr>
+		  <td>{i18n.CostCenter}</td>
+		  <td>{DataSource[0].cost_center_name}</td>
+		</tr>
+		<tr>
+		  <td>{i18n.StatementReference}</td>
+		  <td>{DataSource[0].statement_reference}</td>
+		</tr>
+    </table>
+    <br />
+  </TopSection>
+  <Body>
+    <Content>
+
+    </Content>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT
+        finance.transaction_master.transaction_master_id,
+        finance.transaction_master.transaction_ts,
+        finance.transaction_master.value_date,
+        account.users.name AS entered_by,
+        sales.gift_cards.first_name || ' ' || sales.gift_cards.middle_name || ' ' || sales.gift_cards.last_name AS customer_name,
+        sales.gift_card_transactions.amount,
+        core.verification_statuses.verification_status_name AS status,
+        verified_by_user.name AS verified_by,
+        finance.transaction_master.verification_reason,
+        finance.transaction_master.transaction_code,
+        core.offices.office_name,
+        finance.cost_centers.cost_center_name,
+        finance.transaction_master.statement_reference
+        FROM finance.transaction_master
+        INNER JOIN core.offices
+        ON finance.transaction_master.office_id = core.offices.office_id
+        INNER JOIN finance.cost_centers
+        ON finance.transaction_master.cost_center_id = finance.cost_centers.cost_center_id
+        INNER JOIN sales.gift_card_transactions
+        ON sales.gift_card_transactions.transaction_master_id = finance.transaction_master.transaction_master_id
+        INNER JOIN account.users
+        ON finance.transaction_master.user_id = account.users.user_id
+        LEFT JOIN sales.gift_cards
+        ON sales.gift_card_transactions.gift_card_id = sales.gift_cards.gift_card_id
+        INNER JOIN core.verification_statuses
+        ON finance.transaction_master.verification_status_id = core.verification_statuses.verification_status_id
+        LEFT JOIN account.users AS verified_by_user
+        ON finance.transaction_master.verified_by_user_id = verified_by_user.user_id
+        WHERE finance.transaction_master.transaction_master_id=@transaction_master_id;
+      </Query>
+      <Parameters>
+        <Parameter Name="@transaction_master_id" Type="long" />
+      </Parameters>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

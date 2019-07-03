@@ -1,0 +1,148 @@
+﻿@using Frapid.ApplicationState.Cache
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.Sales;
+    Layout = ViewBag.SalesLayoutPath;
+    var meta = AppUsers.GetCurrent();
+}
+
+<link rel="stylesheet" href="/Areas/MixERP.Sales/styles/shared/checkout.css"/>
+
+<div class="ui attached inverted pos sales segment">
+    <div class="ui active inverted dimmer" id="POSDimmer">
+        <div class="ui large text loader">@I18N.LoadingItems</div>
+    </div>
+    <div class="ui grid">
+        <div class="eleven wide column">
+            <div class="status head">
+                <div class="left">
+                    <strong class="title info">
+                        @I18N.Sales
+                    </strong>
+                    <span class="office info" title="@I18N.CurrentBranchOffice">
+                        @meta.OfficeName
+                    </span>
+                    <span class="user info" title="@I18N.You">
+                        @meta.Name
+                    </span>
+                    <span class="area info" title="@I18N.CurrentArea">
+                        @meta.OfficeCode
+                    </span>
+                </div>
+
+                <div class="right">
+                    <div class="inline blocks">
+                        <div class="item">
+                            <select class="ui search inverted fluid dropdown" id="PriceTypeSelect"></select>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="category list">
+                <div class="cat filter" style="display: none;">
+                    @I18N.Clear
+                    <i class="delete icon"></i>
+                </div>
+            </div>
+            <div class="search panel">
+                <input type="search" placeholder="@I18N.Search"/>
+
+            </div>
+            <div class="item list" id="POSItemList">
+            </div>
+        </div>
+        <div class="five wide column">
+            <div id="SalesItems" class="sales items">
+            </div>
+            <div class="tender info">
+                <div class="page title">@I18N.Sales</div>
+                <div id="SummaryItems" class="two summary items">
+                    <div class="amount item">
+                        <div class="description">@I18N.Amount</div>
+                        <div class="money">
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="store item">
+                        <div class="description">@I18N.Store</div>
+                        <div class="control">
+                            <select id="StoreSelect"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="one summary items">
+                    <div class="customer item">
+                        <div class="description">@I18N.Customer</div>
+                        <div class="control">
+                            <select id="CustomerSelect"></select>
+                        </div>
+                    </div>
+                </div>
+                <div class="two summary items">
+                    <div class="value date item">
+                        <div class="description">@I18N.ValueDate</div>
+                        <div class="control">
+                            <input type="text" class="date" value="d" id="ValueDateInputDate"/>
+                        </div>
+                    </div>
+                    <div class="book date item">
+                        <div class="description">@I18N.BookDate</div>
+                        <div class="control">
+                            <input type="text" class="date" value="d" id="BookDateInputDate"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="two summary items">
+                    <div class="cost center item">
+                        <div class="description">@I18N.CostCenter</div>
+                        <div class="control">
+                            <select id="CostCenterSelect"></select>
+                        </div>
+                    </div>
+                    <div class="shipping company item">
+                        <div class="description">@I18N.Shipper</div>
+                        <div class="control">
+                            <select id="ShipperSelect"></select>
+                        </div>
+                    </div>
+                    <div class="discount item">
+                        <div class="description">@I18N.Discount</div>
+                        <div class="control">
+                            <input type="text" id="DiscountInputText" />
+                        </div>
+                    </div>
+                </div>
+                <div class="two summary items">
+                    <div class="reference number item">
+                        <div class="description">@I18N.ReferenceNumberAbbreviated</div>
+                        <div class="control">
+                            <input type="text" id="ReferenceNumberInputText"/>
+                        </div>
+                    </div>
+                    <div class="memo item">
+                        <div class="description">@I18N.Memo</div>
+                        <div class="control">
+                            <input type="text" id="StatementReferenceInputText"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="ui one column padded grid">
+                    <div class="column">
+                        <button id="CheckoutButton" class="ui green icon big button">
+                            @I18N.Checkout
+                        </button>
+                        <button id="ClearScreenButton" class="ui red icon big button">
+                            @I18N.Cls
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="SalesTaxRateHidden"/>
+<script src="/Areas/MixERP.Sales/scripts/shared/item-list.js"></script>

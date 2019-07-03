@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Gift Cards Summary</Title>
+  <Body>
+    <Content>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT 
+          ROW_NUMBER() OVER(ORDER BY gift_cards.gift_card_number) sn,
+          gift_cards.gift_card_number, 
+          gift_cards.first_name +' '+ gift_cards.middle_name +' '+ gift_cards.last_name AS customer_name,
+          SUM(transactions.credit) - SUM(transactions.debit) AS balance
+        FROM sales.gift_cards
+        LEFT JOIN 
+        (
+          SELECT 
+            gift_card_id,
+            value_date,
+            CASE WHEN transaction_type = 'Dr' THEN amount ELSE 0 END AS debit,
+            CASE WHEN transaction_type = 'Cr' THEN amount ELSE 0 END AS credit
+          FROM sales.gift_card_transactions
+          WHERE transaction_master_id NOT IN 
+          (
+            SELECT transaction_master_id FROM finance.transaction_master
+            WHERE verification_status_id &lt;= 0
+          )
+        ) transactions ON gift_cards.gift_card_id = transactions.gift_card_id
+        GROUP BY gift_cards.gift_card_number,
+                 gift_cards.first_name, 
+                 gift_cards.middle_name, 
+                 gift_cards.last_name;
+      </Query>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

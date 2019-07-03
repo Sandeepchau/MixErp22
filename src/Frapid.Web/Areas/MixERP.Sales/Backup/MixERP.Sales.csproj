@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props" Condition="Exists('packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7A5D03B8-72EB-4CD3-A606-BD81FAB083F5}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MixERP.Sales</RootNamespace>
+    <AssemblyName>MixERP.Sales</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <UseGlobalApplicationHostFile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>12.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DevTrends.MvcDonutCaching, Version=1.3.0.0, Culture=neutral, PublicKeyToken=73c58d802958a09f, processorArchitecture=MSIL">
+      <HintPath>packages\MvcDonutCaching.1.3.0\lib\net40\DevTrends.MvcDonutCaching.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Frapid.ApplicationState, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.ApplicationState.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Areas, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Areas.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Configuration.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Dashboard, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Dashboard.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.DataAccess, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.DbPolicy">
+      <HintPath>..\..\bin\Frapid.DbPolicy.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Framework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.i18n, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.i18n.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Mapper">
+      <HintPath>..\..\bin\Frapid.Mapper.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.Messaging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.Messaging.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.TokenManager, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.TokenManager.dll</HintPath>
+    </Reference>
+    <Reference Include="Frapid.WebsiteBuilder, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\Frapid.WebsiteBuilder.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="MixERP.Finance, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin\MixERP.Finance.dll</HintPath>
+    </Reference>
+    <Reference Include="MixERP.Inventory">
+      <HintPath>..\..\bin\MixERP.Inventory.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Npgsql, Version=3.1.9.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>packages\Npgsql.3.1.9\lib\net451\Npgsql.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
+      <HintPath>packages\Serilog.2.3.0\lib\net46\Serilog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Web.Razor">
+      <HintPath>packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages">
+      <HintPath>packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Deployment">
+      <HintPath>packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Webpages.Razor">
+      <HintPath>packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Webpages.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Helpers">
+      <HintPath>packages\Microsoft.AspNet.Webpages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Mvc">
+      <HintPath>packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AreaRegistration.cs" />
+    <Compile Include="Controllers\Backend\Loyalty\GiftCardFundVerificationController.cs" />
+    <Compile Include="Controllers\Backend\Loyalty\LoyalPointController.cs" />
+    <Compile Include="Controllers\Backend\Loyalty\SalesCouponController.cs" />
+    <Compile Include="Controllers\Backend\Setups\CustomerController.cs" />
+    <Compile Include="Controllers\Backend\Setups\CustomerTypeController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\ClosingCashController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\CustomerSearchController.cs" />
+    <Compile Include="Controllers\Backend\Loyalty\GiftCardController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\ConsoleController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\OpeningCashController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\OrderController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\QuotationController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\ReceiptController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\SalesTicketController.cs" />
+    <Compile Include="Controllers\Backend\Widgets\AccountReceivableController.cs" />
+    <Compile Include="Controllers\Backend\Widgets\TopCustomersController.cs" />
+    <Compile Include="Controllers\Backend\Widgets\TopSellingItemsController.cs" />
+    <Compile Include="Controllers\SalesDashboardController.cs" />
+    <Compile Include="Controllers\Backend\Setups\CashierController.cs" />
+    <Compile Include="Controllers\Backend\Setups\LateFeeController.cs" />
+    <Compile Include="Controllers\Backend\Setups\PaymentTermController.cs" />
+    <Compile Include="Controllers\Backend\Setups\PriceTypeController.cs" />
+    <Compile Include="Controllers\Backend\Setups\SellingPriceController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\EntryController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\ItemController.cs" />
+    <Compile Include="Controllers\Backend\Tasks\ReturnController.cs" />
+    <Compile Include="DAL\Backend\Setup\SellingPrices.cs" />
+    <Compile Include="DAL\Backend\Service\GiftCards.cs" />
+    <Compile Include="DAL\Backend\Service\SearchCustomer.cs" />
+    <Compile Include="DAL\Backend\Tasks\ClosingCashTransactions.cs" />
+    <Compile Include="DAL\Backend\Tasks\OpeningCashTransaction.cs" />
+    <Compile Include="DAL\Backend\Tasks\GiftCardFunds.cs" />
+    <Compile Include="DAL\Backend\Tasks\Orders.cs" />
+    <Compile Include="DAL\Backend\Tasks\Quotations.cs" />
+    <Compile Include="DAL\Backend\Tasks\ReceiptEntry\IReceiptEntry.cs" />
+    <Compile Include="DAL\Backend\Tasks\ReceiptEntry\PostgreSQL.cs" />
+    <Compile Include="DAL\Backend\Tasks\ReceiptEntry\SqlServer.cs" />
+    <Compile Include="DAL\Backend\Tasks\Receipts.cs" />
+    <Compile Include="DAL\Backend\Tasks\ReturnEntry\IReturnEntry.cs" />
+    <Compile Include="DAL\Backend\Tasks\ReturnEntry\PostgreSQL.cs" />
+    <Compile Include="DAL\Backend\Tasks\ReturnEntry\SqlServer.cs" />
+    <Compile Include="DAL\Backend\Tasks\SalesEntries.cs" />
+    <Compile Include="DAL\Backend\Service\Items.cs" />
+    <Compile Include="DAL\Backend\Tasks\SalesEntry\ISalesEntry.cs" />
+    <Compile Include="DAL\Backend\Tasks\SalesEntry\PostgreSQL.cs" />
+    <Compile Include="DAL\Backend\Tasks\SalesEntry\SqlServer.cs" />
+    <Compile Include="DAL\Backend\Tasks\SalesReturnEntries.cs" />
+    <Compile Include="DAL\Backend\Tasks\SerialNumbers.cs" />
+    <Compile Include="DAL\Backend\Tasks\Ticket.cs" />
+    <Compile Include="DAL\Backend\Widgets\AccountReceivables.cs" />
+    <Compile Include="DAL\Backend\Widgets\TopCustomers.cs" />
+    <Compile Include="DAL\Backend\Widgets\TopSellingItems.cs" />
+    <Compile Include="DTO\CheckoutDetailView.cs" />
+    <Compile Include="DTO\ClosingCash.cs" />
+    <Compile Include="DTO\CouponView.cs" />
+    <Compile Include="DTO\CustomerTransactionSummary.cs" />
+    <Compile Include="DTO\CustomerwiseSellingPrice.cs" />
+    <Compile Include="DTO\GiftCards.cs" />
+    <Compile Include="DTO\ItemView.cs" />
+    <Compile Include="DTO\MerchantFeeSetup.cs" />
+    <Compile Include="DTO\Order.cs" />
+    <Compile Include="DTO\OrderDetail.cs" />
+    <Compile Include="DTO\OrderInfo.cs" />
+    <Compile Include="DTO\OrderResultview.cs" />
+    <Compile Include="DTO\Quotation.cs" />
+    <Compile Include="DTO\QuotationDetail.cs" />
+    <Compile Include="DTO\QuotationInfo.cs" />
+    <Compile Include="DTO\QuotationResultview.cs" />
+    <Compile Include="DTO\SalesView.cs" />
+    <Compile Include="DTO\SerialNumbers.cs" />
+    <Compile Include="DTO\SerialNumberView.cs" />
+    <Compile Include="ExceptionLogger.cs" />
+    <Compile Include="Extensions\PartialViewExtensions.cs" />
+    <Compile Include="I18N.cs" />
+    <Compile Include="Models\Tickets.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QueryModels\GiftCardSearch.cs" />
+    <Compile Include="QueryModels\OrderQueryModel.cs" />
+    <Compile Include="QueryModels\OrderSearch.cs" />
+    <Compile Include="QueryModels\QuotationQueryModel.cs" />
+    <Compile Include="QueryModels\QuotationSearch.cs" />
+    <Compile Include="QueryModels\ReceiptSearch.cs" />
+    <Compile Include="QueryModels\ReturnSearch.cs" />
+    <Compile Include="QueryModels\SalesSearch.cs" />
+    <Compile Include="ViewModels\CheckoutInfo.cs" />
+    <Compile Include="ViewModels\ClosingCashViewModel.cs" />
+    <Compile Include="ViewModels\OpeningCash.cs" />
+    <Compile Include="ViewModels\CustomerSearchViewModel.cs" />
+    <Compile Include="ViewModels\GiftCardFund.cs" />
+    <Compile Include="ViewModels\OrderMergeViewModel.cs" />
+    <Compile Include="ViewModels\QuotationMergeViewModel.cs" />
+    <Compile Include="ViewModels\Sales.cs" />
+    <Compile Include="ViewModels\SalesDetailType.cs" />
+    <Compile Include="ViewModels\CustomerSearchResult.cs" />
+    <Compile Include="ViewModels\SalesReceipt.cs" />
+    <Compile Include="ViewModels\SalesReturn.cs" />
+    <Compile Include="ViewModels\ItemSerialNumber.cs" />
+    <Compile Include="ViewModels\TicketViewModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DevTrends.MvcDonutCaching.README.txt" />
+    <Content Include="packages.config" />
+    <Content Include="Reports\AccountReceivables.SqlServer.xml" />
+    <Content Include="Reports\AccountReceivables.xml" />
+    <Content Include="Reports\AllGiftCards.SqlServer.xml" />
+    <Content Include="Reports\AllGiftCards.xml" />
+    <Content Include="Reports\CustomerAccountStatement.SqlServer.xml" />
+    <Content Include="Reports\CustomerAccountStatement.xml" />
+    <Content Include="Reports\CustomerReceipts.SqlServer.xml" />
+    <Content Include="Reports\CustomerReceipts.xml" />
+    <Content Include="Reports\Customers.xml" />
+    <Content Include="Reports\DetailedPaymentReport.SqlServer.xml" />
+    <Content Include="Reports\DetailedPaymentReport.xml" />
+    <Content Include="Reports\GiftCardSummary.SqlServer.xml" />
+    <Content Include="Reports\GiftCardSummary.xml" />
+    <Content Include="Reports\GiftCardTransaction.SqlServer.xml" />
+    <Content Include="Reports\GiftCardTransaction.xml" />
+    <Content Include="Reports\GiftCardUsageStatement.SqlServer.xml" />
+    <Content Include="Reports\GiftCardUsageStatement.xml" />
+    <Content Include="Reports\Invoice.SqlServer.xml" />
+    <Content Include="Reports\Invoice.xml" />
+    <Content Include="Reports\Order.xml" />
+    <Content Include="Reports\OrderStatus.SqlServer.xml" />
+    <Content Include="Reports\OrderStatus.xml" />
+    <Content Include="Reports\Quotation.xml" />
+    <Content Include="Reports\QuotationStatus.SqlServer.xml" />
+    <Content Include="Reports\QuotationStatus.xml" />
+    <Content Include="Reports\Receipt.xml">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Reports\Return.xml" />
+    <Content Include="Reports\SalesByOffice.SqlServer.xml" />
+    <Content Include="Reports\SalesByOffice.xml" />
+    <Content Include="Reports\SalesDetails.xml" />
+    <Content Include="Reports\SalesDiscountStatus.xml" />
+    <Content Include="Reports\SalesDiscountStatus.SqlServer.xml" />
+    <Content Include="Reports\TopSellingItems.xml" />
+    <Content Include="widgets\receipts.html" />
+    <Content Include="widgets\top-customers.html" />
+    <Content Include="widgets\top-items.html" />
+    <Content Include="widgets\account-receivables.html" />
+    <Content Include="widgets\total-sales.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="scripts\loyalty\points\index.js" />
+    <Content Include="scripts\loyalty\gift-cards\add-fund\checklist.js" />
+    <Content Include="scripts\loyalty\gift-cards\add-fund\entry.js" />
+    <Content Include="scripts\loyalty\gift-cards\add-fund\index.js" />
+    <Content Include="scripts\loyalty\gift-cards\add-fund\verification.js" />
+    <Content Include="scripts\loyalty\gift-cards\index.js" />
+    <Content Include="scripts\loyalty\coupons\index.js" />
+    <Content Include="scripts\tasks\receipt\checklist.js" />
+    <Content Include="scripts\tasks\receipt\index.js" />
+    <Content Include="scripts\tasks\receipt\new.js" />
+    <Content Include="scripts\tasks\entry\new.js" />
+    <Content Include="scripts\tasks\entry\index.js" />
+    <Content Include="scripts\tasks\opening-cash\index.js" />
+    <Content Include="scripts\tasks\order\checklist.js" />
+    <Content Include="scripts\tasks\order\index.js" />
+    <Content Include="scripts\tasks\order\new.js" />
+    <Content Include="scripts\tasks\quotation\checklist.js" />
+    <Content Include="scripts\tasks\quotation\index.js" />
+    <Content Include="scripts\tasks\quotation\new.js" />
+    <Content Include="scripts\tasks\return\checklist.js" />
+    <Content Include="scripts\tasks\return\index.js" />
+    <Content Include="scripts\tasks\return\new.js" />
+    <Content Include="scripts\ticket\index.js" />
+    <Content Include="scripts\tasks\closing-cash\index.js" />
+    <Content Include="scripts\tasks\entry\checklist.js" />
+    <Content Include="scripts\setup\cashiers.js" />
+    <Content Include="scripts\setup\selling-prices.js" />
+    <Content Include="scripts\setup\price-types.js" />
+    <Content Include="scripts\setup\customers.js" />
+    <Content Include="scripts\setup\customer-search.js" />
+    <Content Include="scripts\setup\customer-types.js" />
+    <Content Include="scripts\setup\late-fee.js" />
+    <Content Include="scripts\setup\payment-terms.js" />
+    <Content Include="scripts\setup\checklist.js" />
+    <Content Include="scripts\shared\gift-card-search.js" />
+    <Content Include="scripts\shared\customer-search.js" />
+    <Content Include="scripts\shared\sales-entry.js" />
+    <Content Include="scripts\shared\reprint-ticket.js" />
+    <Content Include="scripts\shared\pos-screen.js" />
+    <Content Include="scripts\shared\pos-item-list.js" />
+    <Content Include="scripts\shared\item-list.js" />
+    <Content Include="styles\ticket\index.css" />
+    <Content Include="styles\shared\checkout.css" />
+    <Content Include="styles\tasks\closing-cash\index.css" />
+    <Content Include="Views\web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="web.config" />
+    <Content Include="Views\Layout.cshtml" />
+    <Content Include="Views\Setup\PriceTypes.cshtml" />
+    <Content Include="Views\Setup\PaymentTerms.cshtml" />
+    <Content Include="Views\Setup\SellingPrices.cshtml" />
+    <Content Include="Views\Setup\LateFee.cshtml" />
+    <Content Include="Views\Setup\Cashiers.cshtml" />
+    <Content Include="Views\Tasks\Entry\Index.cshtml" />
+    <Content Include="Views\Tasks\Return\Index.cshtml" />
+    <Content Include="Views\Tasks\Entry\New.cshtml" />
+    <Content Include="Views\Setup\Customers.cshtml" />
+    <Content Include="Views\Setup\CustomerTypes.cshtml" />
+    <Content Include="Views\Loyalty\GiftCards\Index.cshtml" />
+    <Content Include="Views\Setup\CustomerSearch.cshtml" />
+    <Content Include="Views\Tasks\Entry\Checklist.cshtml" />
+    <Content Include="Views\Tasks\Entry\Verification.cshtml" />
+    <Content Include="Views\Loyalty\Coupons\Index.cshtml" />
+    <Content Include="Views\Loyalty\GiftCards\AddFund\Entry.cshtml" />
+    <Content Include="Views\Loyalty\Points\Index.cshtml" />
+    <Content Include="Views\Ticket\Index.cshtml" />
+    <Content Include="Views\Loyalty\GiftCards\AddFund\Index.cshtml" />
+    <Content Include="Views\Loyalty\GiftCards\AddFund\Checklist.cshtml" />
+    <Content Include="Views\Loyalty\GiftCards\AddFund\Verification.cshtml" />
+    <Content Include="Views\Shared\GiftCardSerachModal.cshtml" />
+    <Content Include="Views\Shared\ReprintTicketModal.cshtml" />
+    <Content Include="Views\Shared\CustomerSearchModal.cshtml" />
+    <Content Include="Views\Shared\SalesEntryForm.cshtml" />
+    <Content Include="Views\Shared\POSItemList.cshtml" />
+    <Content Include="Views\Shared\POSScreen.cshtml" />
+    <Content Include="Views\Tasks\OpeningCash\Index.cshtml" />
+    <Content Include="Views\Tasks\ClosingCash\Index.cshtml" />
+    <Content Include="Views\Tasks\Return\New.cshtml" />
+    <Content Include="Views\Tasks\Return\Checklist.cshtml" />
+    <Content Include="Views\Tasks\Return\Verification.cshtml" />
+    <Content Include="Views\Shared\ItemList.cshtml" />
+    <Content Include="Views\Tasks\Order\Checklist.cshtml" />
+    <Content Include="Views\Tasks\Order\Index.cshtml" />
+    <Content Include="Views\Tasks\Order\New.cshtml" />
+    <Content Include="Views\Tasks\Quotation\Checklist.cshtml" />
+    <Content Include="Views\Tasks\Quotation\Index.cshtml" />
+    <Content Include="Views\Tasks\Quotation\New.cshtml" />
+    <Content Include="Views\Tasks\Receipt\Checklist.cshtml" />
+    <Content Include="Views\Tasks\Receipt\Index.cshtml" />
+    <Content Include="Views\Tasks\Receipt\New.cshtml" />
+    <Content Include="Views\Tasks\Receipt\Verification.cshtml" />
+    <Content Include="Views\Tasks\Console\Index.cshtml" />
+    <Content Include="Views\Tasks\Entry\ClassicCheckout.cshtml" />
+    <Content Include="Views\Tasks\Order\ClassicCheckout.cshtml" />
+    <Content Include="Views\Tasks\Quotation\ClassicCheckout.cshtml" />
+    <Content Include="Views\Tasks\Return\ClassicCheckout.cshtml" />
+    <Content Include="Views\Setup\CustomerSellingPrices.cshtml" />
+    <Content Include="Views\Tasks\Entry\SerialNumber.cshtml" />
+    <None Include="web.Debug.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+    <None Include="web.Release.config">
+      <DependentUpon>web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>58594</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:58594/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>https://localhost</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.2\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

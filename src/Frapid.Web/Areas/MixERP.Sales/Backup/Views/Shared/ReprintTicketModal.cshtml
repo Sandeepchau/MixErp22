@@ -1,0 +1,19 @@
+﻿@model dynamic
+
+<div class="ui reprint ticket small modal">
+    <i class="close icon"></i>
+    <div class="header">
+        @I18N.ReprintTicket
+    </div>
+    <div class="content">
+        <div class="ui big form">
+            <div class="field">
+                <label>@I18N.EnterTransactionId</label>
+                <input id="TicketTranIdInputText" class="" placeholder="Enter Transaction Id" type="text">
+            </div>
+            <button reprint-ticket-button class="ui blue button">@I18N.Reprint</button>
+            <button onclick="$(this).parent().parent().parent().modal('hide');" class="ui red button">@I18N.Close</button>
+        </div>
+    </div>
+</div>
+<script src="/Areas/MixERP.Sales/scripts/shared/reprint-ticket.js"></script>

@@ -1,0 +1,299 @@
+﻿@using Frapid.ApplicationState.Cache
+@model MixERP.Sales.ViewModels.ClosingCashViewModel
+
+@{
+    ViewBag.Title = I18N.EODCash;
+    Layout = ViewBag.Layout;
+    decimal tenderTotal = Model.SalesView.Sum(x => x.Tender);
+    decimal changeTotal = Model.SalesView.Sum(x => x.Change);
+    decimal total = Model.SalesView.Sum(x => x.TotalAmount);
+    decimal submittedAmount = total;
+    string submittedTo = string.Empty;
+    string memo = string.Empty;
+    bool submitted = false;
+}
+
+@{
+    if (Model.ClosingCashInfo != null && Model.ClosingCashInfo.ClosingCashId > 0)
+    {
+        submitted = true;
+        submittedAmount = Model.ClosingCashInfo.SubmittedCash;
+        submittedTo = Model.ClosingCashInfo.SubmittedTo;
+        memo = Model.ClosingCashInfo.Memo;
+    }
+}
+
+<link rel="stylesheet" href="/Areas/MixERP.Sales/styles/tasks/closing-cash/index.css" />
+
+<div class="ui attached very relaxed segment">
+    <div class="ui container">
+        <div class="ui huge header">
+            @I18N.EODCash
+            <div class="ui teal label">@Model.OpeningCashInfo.TransactionDate.ToLongDateString()</div>
+
+        </div>
+        <div class="ui divider"></div>
+        <div class="ui positive message">
+            @AppUsers.GetCurrent().Name
+        </div>
+        <div class="ui stackable grid eod no print cash" style="padding: 1em 0;">
+            <div class="eight wide column">
+                <div class="ui header">@I18N.Denominations</div>
+                <div class="denominations">
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno1000InputText" data-value="1000" value="@Model.ClosingCashInfo.Deno1000" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Thousand</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno1000TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno500InputText" data-value="500" value="@Model.ClosingCashInfo.Deno500" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.FiveHundred</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno500TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno250InputText" data-value="250" value="@Model.ClosingCashInfo.Deno250" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.TwohundredFifty</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno250TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno200InputText" data-value="200" value="@Model.ClosingCashInfo.Deno200" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Twohundred</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno200TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno100InputText" data-value="100" value="@Model.ClosingCashInfo.Deno100" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Hundred</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno100TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno50InputText" data-value="50" value="@Model.ClosingCashInfo.Deno50" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Fifty</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno50TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno25InputText" data-value="25" value="@Model.ClosingCashInfo.Deno25" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.TwentyFive</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno25TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno20InputText" data-value="20" value="@Model.ClosingCashInfo.Deno20" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Twenty</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno20TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno10InputText" data-value="10" value="@Model.ClosingCashInfo.Deno10" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Ten</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno10TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno5InputText" data-value="5" value="@Model.ClosingCashInfo.Deno5" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Five</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno5TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno2InputText" data-value="2" value="@Model.ClosingCashInfo.Deno2" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Two</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno2TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="integer" id="Deno1InputText" data-value="1" value="@Model.ClosingCashInfo.Deno1" data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.One</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="Deno1TotalInputText" />
+                        </div>
+                    </div>
+                    <div class="denomination">
+                        <div class="ui input field">
+                            <input type="text" class="decimal" id="CoinsInputText"
+                                   data-value="1" value="@Model.ClosingCashInfo.Coins"
+                                   data-allow-edit="@(!submitted)" />
+                        </div>
+                        <div class="multiply">x</div>
+                        <div class="text">@I18N.Coins</div>
+                        <div class="equals">=</div>
+                        <div class="ui input total field">
+                            <input type="text" disabled="disabled" id="CoinsTotalInputText" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="eight wide column">
+                <div class="ui header">@I18N.ClosingSummary</div>
+                <div class="ui divider"></div>
+                <div class="ui no print form">
+                    <div class="two fields">
+                        <div class="field">
+                            <label>@I18N.TodayBeginningCash</label>
+                            <input id="BodCashInputText" class="decimal" disabled="disabled" type="text" value="@Model.OpeningCashInfo.Amount.ToString("N2")">
+                        </div>
+                        <div class="field">
+                            <label>@I18N.YourCashSales</label>
+                            <input id="CashSalesInputText" disabled="disabled" type="text" value="@total.ToString("N2")">
+                        </div>
+                    </div>
+                    <div class="two fields">
+                        <div class="field">
+                            <label>@I18N.Total</label>
+                            <input id="TotalInputText" disabled="disabled" type="text" value="@((Model.OpeningCashInfo.Amount + total).ToString("N2"))">
+                        </div>
+                        <div class="field">
+                            <label>@I18N.SubmittedCash</label>
+
+                            <input id="SubmittedCashInputText" class="decimal" readonly="" required="" type="text"
+                                   value="@submittedAmount.ToString("N2")" disabled="disabled" data-allow-edit="@(!submitted)">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>@I18N.SubmittedTo</label>
+                        <input id="SubmittedToInputText" required="" type="text" value="@submittedTo" disabled="disabled" data-allow-edit="@(!submitted)">
+                    </div>
+                    <div class="field">
+                        <label>@I18N.Memo</label>
+                        <textarea id="MemoTextArea" rows="10" disabled="disabled" data-allow-edit="@(!submitted)">@memo</textarea>
+                    </div>
+                    <button id="SaveButton" class="ui green button" disabled="disabled" data-allow-edit="@(!submitted)">@I18N.Save</button>
+                </div>
+            </div>
+        </div>
+
+        <table class="ui celled compact striped table">
+            <caption>
+                Your Sales for @DateTime.Now.ToLongDateString()
+            </caption>
+            <tfoot>
+                <tr>
+                    <th colspan="6" class="right aligned">@I18N.Total</th>
+                    <th class="right aligned">@tenderTotal.ToString("N2")</th>
+                    <th class="right aligned">@changeTotal.ToString("N2")</th>
+                    <th class="warning right aligned">@total.ToString("N2")</th>
+                </tr>
+            </tfoot>
+            <thead>
+                <tr>
+                    <th>@I18N.Id</th>
+                    <th>@I18N.InvoiceNumber</th>
+                    <th>@I18N.PriceType</th>
+                    <th>@I18N.Counter</th>
+                    <th>@I18N.Customer</th>
+                    <th>@I18N.CouponCode</th>
+                    <th class="right aligned">@I18N.Tender</th>
+                    <th class="right aligned">@I18N.Change</th>
+                    <th class="right aligned">@I18N.Sales</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SalesView.OrderBy(x => x.InvoiceNumber))
+                {
+                    <tr>
+                        <td>@item.TransactionMasterId</td>
+                        <td>@item.InvoiceNumber</td>
+                        <td>@item.PriceTypeName</td>
+                        <td>@item.CounterName</td>
+                        <td>@item.CustomerName</td>
+                        <td>@item.CouponCode (@item.CouponName)</td>
+                        <td class="right aligned">@item.Tender</td>
+                        <td class="right aligned">@item.Change</td>
+                        <td class="right aligned">@item.TotalAmount</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <table class="ui no screen celled collapsing definition page break table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>@I18N.Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>@I18N.OpeningCash</th>
+                    <td>@Model.OpeningCashInfo.Amount.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <th>@I18N.TotalSales</th>
+                    <td>@total.ToString("N2")</td>
+                </tr>
+                <tr>
+                    <th>@I18N.SubmittedAmount</th>
+                    <td class="submitted amount"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <a class="ui positive no print download button" download="Sales-@AppUsers.GetCurrent().Name-@(Model.OpeningCashInfo.TransactionDate.ToShortDateString()).csv">@I18N.ExportToExcel</a>
+    </div>
+</div>
+
+<script src="/Areas/MixERP.Sales/scripts/tasks/closing-cash/index.js"></script>

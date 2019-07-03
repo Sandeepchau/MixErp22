@@ -1,0 +1,70 @@
+﻿@using MixERP.Sales.Extensions
+@model dynamic
+
+@{
+    ViewBag.Title = I18N.AddFundGiftCards;
+    Layout = ViewBag.SalesLayoutPath;
+}
+
+<style>
+    iframe {
+        border: 1px solid #ccc;
+        width: 500px;
+        height: 800px;
+        margin: 0 auto;
+        padding: 1em;
+    }
+</style>
+<div class="ui attached gift card fund segment" style="padding: 3em">
+    <div class="ui container">
+        <div class="ui large header">@I18N.AddFundsGiftCard</div>
+        <div class="ui divider"></div>
+        <div class="ui form" style="width: 500px;">
+            <div class="field">
+                <label>@I18N.EnterGiftCardNumber</label>
+                <div class="ui action input">
+                    <input id="GiftCardNumberInputText" required="" type="text">
+                    <button class="ui icon blue button" onclick='$(".ui.gift.card.modal").modal("show");'>
+                        <i class="search icon"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="field">
+                <label>@I18N.EnterAmount</label>
+                <input id="AmountInputText" type="text" class="decimal" required="" />
+            </div>
+            <div class="field">
+                <label>@I18N.SelectDebitAccount</label>
+                <select id="AccountIdSelect" class="ui search dropdown" required=""></select>
+            </div>
+            <div class="field">
+                <label>@I18N.ValueDate</label>
+                <input type="text" class="date" required="" id="ValueDateInputText" />
+            </div>
+            <div class="field">
+                <label>@I18N.BookDate</label>
+                <input type="text" class="date" required="" id="BookDateInputText" />
+            </div>
+            <div class="field">
+                <label>@I18N.SelectCostCenter</label>
+                <select id="CostCenterIdSelect" class="ui search dropdown" required=""></select>
+            </div>
+            <div class="field">
+                <label>@I18N.ReferenceNumber</label>
+                <input type="text" id="ReferenceNumberInputText" />
+            </div>
+            <div class="field">
+                <label>@I18N.Memo</label>
+                <input type="text" id="StatementReferenceInputText" />
+            </div>
+
+            <button id="SaveButton" class="ui positive circular button">@I18N.Save</button>
+            <a href="/dashboard/loyalty/tasks/gift-cards/add-fund/" class="ui negative circular button">@I18N.Back</a>
+        </div>
+    </div>
+</div>
+
+@Html.PartialView("Shared/GiftCardSerachModal.cshtml", TenantConvention.GetTenant());
+
+<script src="/Areas/MixERP.Sales/scripts/loyalty/gift-cards/add-fund/entry.js"></script>
+

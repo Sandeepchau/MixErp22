@@ -1,0 +1,212 @@
+﻿@using Frapid.ApplicationState.Cache
+@using MixERP.Sales.Extensions
+@model long?
+
+@{
+    ViewBag.Title = I18N.SalesEntries;
+    Layout = ViewBag.SalesLayoutPath;
+}
+
+<style>
+    .ticket.panel {
+        padding: 2em 0.2em;
+    }
+
+    #TicketIframe {
+        background-color: white;
+        width: 450px;
+        height: 500px;
+        border: none;
+        margin: 1em 0.2em;
+        padding: 0.5em;
+        box-shadow: 2px 2px 10px #ddd;
+        display: block;
+    }
+</style>
+@Html.InventoryPartialView("Shared/ClassicCheckout.cshtml", TenantConvention.GetTenant())
+<input type="hidden" id="OrderIdInputHidden" value="@(Model ?? 0)"/>
+<script>
+    $(document).ready(function () {
+        const orderId = $("#OrderIdInputHidden").val();
+        if (orderId) {
+            function request() {
+                const url = `/dashboard/sales/tasks/order/merge-model/${orderId}`;
+                return window.getAjaxRequest(url);
+            };
+
+            const ajax = request();
+
+            ajax.success(function (response) {
+                const order = response.Order;
+
+                setTimeout(function () {
+                    if (response.Order) {
+                        $("#ValueDateInputDate").datepicker("setDate", new Date(order.ValueDate));
+                        $("#BookDateInputDate").datepicker("setDate", new Date(order.ExpectedDeliveryDate));
+                        $("#StoreSelect").val(order.StoreId);
+                        $("#PriceTypeSelect").val(order.PriceTypeId);
+                        $("#CustomerSelect").val(order.CustomerId);
+                        $("#ShipperSelect").val(order.ShipperId);
+                        $("#ReferenceNumberInputText").val(order.ReferenceNumber);
+                        $("#DiscountInputText").val(order.Discount);
+                        $("#TaxableTotalInputText").val(order.TaxableTotal);
+                        $("#TaxInputText").val(order.Tax);
+                        $("#NonTaxableTotalInputText").val(order.NontaxableTotal);
+                    }
+
+                    $.each(response.Details, function () {
+                        const el = $("#CheckoutGrid tbody");
+                        const item = $(this)[0];
+
+                        //const candidate = "<tr />";
+                        //el.append(candidate);
+
+                        const add = $("#CheckoutGrid tfoot tr:eq(1)");
+                        add.find("#ItemSelect").val(item.ItemId);
+                        add.find("#QuantityInputText").val(item.Quantity);
+                        add.find("#UnitSelect").val(item.UnitId);
+                        add.find("#PriceInputText").val(item.Price);
+                        add.find("#ShippingChargeInputText").val(item.ShippingCharge);
+                        add.find("#LineDiscountInputText").val(item.Discount);
+
+                        add.find("#AddButton").trigger("click");
+
+                        el.find("tr:last").attr("data-unit-id", item.UnitId);
+                        el.find("tr:last").attr("data-is-taxable-item", item.IsTaxed);
+                        getUnits(el.find("tr:last td:eq(2)"), item.UnitId);
+                    })
+                }, 3000);
+            });
+
+            ajax.fail(function (xhr) {
+                ajax.logAjaxErrorMessage(xhr);
+            });
+        };
+    });
+
+    const form = $(".flat.form.attached")[1];
+    if (form) {
+        const select = $("<select id='PrioritySelect'/>");
+        select.append($("<option value='Normal' />").append('Normal'));
+        select.append($("<option value='Low' />").append('Low'));
+        select.append($("<option value='High' />").append('High'));
+
+        $($(form).find('.fields')[1]).append($("<div class='two wide field'/>")
+            .append($("<label />").append('Priority'))
+            .append(select));
+    }
+
+    function getUnits(el, unitId) {
+        function request() {
+            const url = "/api/forms/inventory/units/get-where/-1";
+            const filters = [];
+
+            filters.push(window.getAjaxColumnFilter("WHERE", "UnitId", "int", window.FilterConditions.IsEqualTo, unitId));
+
+            const data = JSON.stringify(filters);
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        const ajax = request();
+        ajax.success(function (response) {
+            const model = response[0];
+            el.html(model.UnitName);
+        });
+
+        ajax.fail(function (xhr) {
+            window.logAjaxErrorMessage(xhr);
+        });
+    };
+
+    $(".supplier.field").remove();
+    $("#SaveButton").off("click").on("click", function () {
+        function request(model) {
+            const url = "/dashboard/sales/tasks/order/new";
+            const data = JSON.stringify(model);
+            return window.getAjaxRequest(url, "POST", data);
+        };
+
+        function getModel() {
+            const model = window.getModel();
+            model.ExpectedDeliveryDate = model.BookDate;
+            model.OrderId = $("#OrderIdInputHidden").val() || 0;
+            if(!model.CustomerId) {
+                window.displayMessage("Please select a customer.");
+                return null;
+            };
+
+            model.Priority = $("#PrioritySelect").val();
+            return model;
+        };
+
+        const model = getModel();
+
+        if (!model) {
+            return;
+        };
+
+        const button = $(this);
+        button.addClass("loading").prop("disabled", true);
+
+        const ajax = request(model);
+
+        ajax.success(function (response) {
+            button.removeClass("loading").prop("disabled", false);
+            const id = response;
+            document.location = `/dashboard/sales/tasks/order/checklist/${id}`;
+        });
+
+        ajax.fail(function (xhr) {
+            button.removeClass("loading").prop("disabled", false);
+            window.displayMessage(JSON.stringify(xhr));
+        });
+    });
+
+    var model = {
+        Title: window.translate("SalesOrder"),
+        ProductApi: "/dashboard/sales/tasks/items",
+        PriceTypeApi: "/api/forms/sales/price-types/display-fields",
+        BookDateText: "Expected Delivery Date",
+        UpdatePrice: function () {
+            function request(itemId, customerId, priceTypeId, unitId) {
+                var url = "/dashboard/sales/tasks/selling-price/{itemId}/{customerId}/{priceTypeId}/{unitId}";
+                url = url.replace("{itemId}", itemId);
+                url = url.replace("{customerId}", customerId);
+                url = url.replace("{priceTypeId}", priceTypeId);
+                url = url.replace("{unitId}", unitId);
+
+                return window.getAjaxRequest(url);
+            };
+
+            const itemId = $("#ItemSelect").val();
+            const customerId = window.parseInt($("#CustomerSelect").val()) || 0;
+            const priceTypeId = window.parseInt($("#PriceTypeSelect").val()) || 0;
+            const unitId = $("#UnitSelect").val();
+
+
+            $(".checkout.segment").addClass("loading");
+
+            const ajax = request(itemId, customerId, priceTypeId, unitId);
+
+            ajax.success(function (response) {
+                var sellingPrice = window.parseFloat(response);
+                sellingPrice = window.round(sellingPrice, 2);
+
+                $(".checkout.segment").removeClass("loading");
+
+                const priceInput = $("#PriceInputText");
+                priceInput.val(sellingPrice).trigger("keyup").trigger("change");
+            });
+
+            ajax.fail(function (xhr) {
+                $(".checkout.segment").removeClass("loading");
+                window.logAjaxErrorMessage(window.getAjaxErrorMessage(xhr));
+            });
+
+        }
+    };
+
+    window.initializeCheckout(model);
+
+    window.overridePath = "/dashboard/sales/tasks/entry";
+</script>

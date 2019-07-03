@@ -1,0 +1,74 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Gift Card Usage Statement</Title>
+  <TopSection>
+    <table>
+      <tr>
+        <td>{i18n.GiftCard}#</td>
+        <td>{datasource[0].gift_card_number}</td>
+      </tr>
+      <tr>
+        <td>{i18n.GiftCardName}</td>
+        <td>{datasource[0].card_holder_name}</td>
+      </tr>
+      <tr>
+        <td>{i18n.CustomerName}</td>
+        <td>{datasource[0].customer_name}</td>
+      </tr>
+    </table>
+    <br/>
+  </TopSection>
+  <Body>
+    <Content>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="1">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT
+          COALESCE(gift_cards.first_name, '') +
+          CASE WHEN (COALESCE(gift_cards.middle_name, '') = '') THEN ' '
+          WHEN (COALESCE(gift_cards.middle_name, '') != '') THEN gift_cards.middle_name END
+          + COALESCE(gift_cards.last_name, '') card_holder_name,
+          gift_cards.gift_card_number,
+          customer_name
+        FROM sales.gift_cards
+        LEFT JOIN inventory.customers ON gift_cards.customer_id = customers.customer_id
+        WHERE customers.deleted = 0 OR gift_cards.customer_id IS NULL
+        AND gift_cards.deleted = 0
+        AND gift_card_number = @CardNo
+      </Query>
+      <Parameters>
+        <Parameter Name="@CardNo" FieldLabel="Card No" Type="System.String" />
+      </Parameters>
+    </DataSource>
+    <DataSource>
+      <Query>
+        SELECT
+        transaction_ts AS date,
+        statement_reference,
+        debit,
+        credit,
+        balance
+        FROM sales.get_gift_card_detail(@CardNo, @From, @To, @OfficeId)
+      </Query>
+      <Parameters>
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int" DefaultValue="{Meta.OfficeId}" />
+        <Parameter Name="@CardNo" FieldLabel="Card No" Type="System.String" />
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>1</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>2, 3</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

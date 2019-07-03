@@ -1,0 +1,6 @@
+﻿@using MixERP.Sales.Extensions
+<script>
+    window.overridePath = "/dashboard/sales/tasks/entry";
+    window.widgetScope = "Sales";
+</script>
+@Html.DashboardPartialView("Default/Console.cshtml", TenantConvention.GetTenant())
