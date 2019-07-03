@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Supplier Contacts</Title>
+  <Body>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+		SELECT 
+			supplier_code,
+			supplier_name,
+			company_name,
+			pan_number,
+			company_address_line_1,
+			COALESCE(contact_first_name + ' ', '') + COALESCE(contact_middle_name + ' ', '') + COALESCE(contact_last_name, '') AS contact_name,
+			contact_phone_numbers,
+			contact_fax
+		FROM inventory.suppliers
+		WHERE suppliers.deleted = 0;
+      </Query>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

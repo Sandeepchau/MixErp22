@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Purchase Quotation</Title>
+  <TopSection>
+    <table class="table horizontal">
+      <tr>
+        <td>{i18n.QuotationId}</td>
+        <td>
+          {DataSource[0].quotation_id}
+        </td>
+      </tr>
+      <tr>
+        <td>{i18n.ValueDate}</td>
+        <td>{DataSource[0].value_date}</td>
+      </tr>
+      <tr>
+        <td>{i18n.ExpectedDeliveryDate}</td>
+        <td>{DataSource[0].expected_delivery_date}</td>
+      </tr>
+      <tr>
+        <td>{i18n.EnteredBy}</td>
+        <td> {DataSource[0].entered_by}</td>
+      </tr>
+      <tr>
+        <td>{i18n.Office}</td>
+        <td>{DataSource[0].office_name}</td>
+      </tr>
+      <tr>
+        <td>{i18n.SupplierName}</td>
+        <td>{DataSource[0].supplier_name}</td>
+      </tr>
+      <tr>
+        <td>{i18n.Terms}</td>
+        <td> {DataSource[0].terms}</td>
+      </tr>
+      <tr>
+        <td>{i18n.Cancelled}</td>
+        <td> {DataSource[0].cancelled}</td>
+      </tr>
+    </table>
+    <br />
+  </TopSection>
+  <Body>
+    <Content>
+      <h2>{i18n.QuotationDetails}</h2>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="1">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  <br />
+	<table class="right aligned" style="width:300px;position:absolute;right:8px;">
+		<tr>
+			<td>
+				{i18n.TaxableTotal}
+			</td>
+			<td data-remove-row-on-zero="" style="width:100px">
+				{DataSource[0].taxable_total}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{i18n.Discount}
+			</td>
+			<td data-remove-row-on-zero="">
+				{DataSource[0].discount}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{i18n.Tax} ({DataSource[0].tax_rate}%)
+			</td>
+			<td data-remove-row-on-zero="">
+				{DataSource[0].tax}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{i18n.SubTotal}
+			</td>
+			<td data-remove-row-on-zero="">
+				{DataSource[0].sub_total}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{i18n.NonTaxableTotal}
+			</td>
+			<td data-remove-row-on-zero="">
+				{DataSource[0].nontaxable_total}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{i18n.GrandTotal}
+			</td>
+			<td data-remove-row-on-zero="">
+				{DataSource[0].total}
+			</td>
+		</tr>
+	</table>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT
+			purchase.quotations.quotation_id,
+			account.users.name AS entered_by,
+			purchase.quotations.value_date,
+			purchase.quotations.expected_delivery_date,
+			core.offices.office_name,
+			purchase.quotations.terms,
+			purchase.quotations.cancelled,
+			purchase.quotations.internal_memo,
+			inventory.suppliers.supplier_name,
+			purchase.quotations.taxable_total,
+			purchase.quotations.discount,
+			purchase.quotations.tax_rate,
+			purchase.quotations.tax,
+			COALESCE(purchase.quotations.taxable_total, 0) +
+			COALESCE(purchase.quotations.tax, 0) -
+			COALESCE(purchase.quotations.discount, 0) AS sub_total,
+			purchase.quotations.nontaxable_total,
+			COALESCE(purchase.quotations.taxable_total, 0) + 
+			COALESCE(purchase.quotations.tax, 0) + 
+			COALESCE(purchase.quotations.nontaxable_total, 0) - 
+			COALESCE(purchase.quotations.discount, 0) AS total
+        FROM purchase.quotations
+        INNER JOIN core.offices
+        ON purchase.quotations.office_id = core.offices.office_id
+        INNER JOIN account.users
+        ON purchase.quotations.user_id = account.users.user_id
+        LEFT JOIN inventory.suppliers
+        ON purchase.quotations.supplier_id = inventory.suppliers.supplier_id
+        WHERE purchase.quotations.quotation_id=@quotation_id;
+      </Query>
+      <Parameters>
+        <Parameter Name="@quotation_id" Type="Number" />
+      </Parameters>
+    </DataSource>
+    <DataSource>
+      <Query>
+			SELECT
+				inventory.items.item_code,
+				inventory.items.item_name,
+				purchase.quotation_details.price,
+				purchase.quotation_details.quantity,
+				inventory.units.unit_name,
+				ROUND(purchase.quotation_details.price * purchase.quotation_details.quantity, 4) AS amount,
+				purchase.quotation_details.discount,
+				purchase.quotation_details.shipping_charge,
+				ROUND((purchase.quotation_details.price * purchase.quotation_details.quantity) - purchase.quotation_details.discount + purchase.quotation_details.shipping_charge, 4) AS total
+			FROM purchase.quotation_details
+			INNER JOIN inventory.items
+			ON purchase.quotation_details.item_id = inventory.items.item_id
+			INNER JOIN inventory.units
+			ON purchase.quotation_details.unit_id = inventory.units.unit_id
+			WHERE purchase.quotation_details.quotation_id = @quotation_id
+			ORDER BY purchase.quotation_details.quotation_detail_id;
+      </Query>
+      <Parameters>
+        <Parameter Name="@quotation_id" Type="long" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>4</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>5,6,7,8</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>
