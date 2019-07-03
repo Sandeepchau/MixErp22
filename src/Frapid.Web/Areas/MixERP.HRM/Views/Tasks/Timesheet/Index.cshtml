@@ -3,152 +3,206 @@
     ViewBag.Title = I18N.Timesheet;
     Layout = ViewBag.Layout;
 }
-@*<script>
-        var scrudFactory = new Object();
-         //var scrudFactory = new Object();
-        scrudFactory.title = window.translate("Timesheet");
+@*
+<script>
+    var scrudFactory = new Object();
+    //var scrudFactory = new Object();
+    scrudFactory.title = window.translate("Timesheet");
 
-        scrudFactory.viewAPI = "/api/views/hrm/contract-scrud-view";
-        scrudFactory.viewTableName = "hrm.contract_scrud_view";
+    scrudFactory.viewAPI = "/api/views/hrm/contract-scrud-view";
+    scrudFactory.viewTableName = "hrm.contract_scrud_view";
 
-        scrudFactory.formAPI = "/api/forms/hrm/timesheet";
-        scrudFactory.formTableName = "hrm.timesheet";
+    scrudFactory.formAPI = "/api/forms/hrm/timesheet";
+    scrudFactory.formTableName = "hrm.timesheet";
 
-        scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
+    scrudFactory.excludedColumns = ["AuditUserId", "AuditTs", "Photo"];
 
-        scrudFactory.allowDelete = true;
-        scrudFactory.allowEdit = true;
-
-
-        scrudFactory.live = "EmployeeId";
+    scrudFactory.allowDelete = true;
+    scrudFactory.allowEdit = true;
 
 
-        scrudFactory.readonlyColumns = ["EndedOn"];
-        scrudFactory.hiddenColumns = ["VerificationStatusId", "VerifiedByUserId", "VerifiedOn", "VerificationReason"];
+    scrudFactory.live = "EmployeeId";
+
+
+    scrudFactory.readonlyColumns = ["EndedOn"];
+    scrudFactory.hiddenColumns = ["VerificationStatusId", "VerifiedByUserId", "VerifiedOn", "VerificationReason"];
 
 
 
 
-        $.get('/ScrudFactory/View.html', function (view) {
-            $.get('/ScrudFactory/Form.html', function (form) {
-                $("#ScrudFactoryView").html(view);
-                $("#ScrudFactoryForm").html(form);
-                $.cachedScript("/assets/js/scrudfactory-view.js");
-                $.cachedScript("/assets/js/scrudfactory-form.js");
-            });
+    $.get('/ScrudFactory/View.html', function (view) {
+        $.get('/ScrudFactory/Form.html', function (form) {
+            $("#ScrudFactoryView").html(view);
+            $("#ScrudFactoryForm").html(form);
+            $.cachedScript("/assets/js/scrudfactory-view.js");
+            $.cachedScript("/assets/js/scrudfactory-form.js");
         });
-    </script>
+    });
+</script>
 
-    <div id="ScrudFactoryForm"></div>
-    <div id="ScrudFactoryView"></div>*@
+<div id="ScrudFactoryForm"></div>
+<div id="ScrudFactoryView"></div>*@
 
 <div class="ui card" style="width:100%">
     <div class="content">
         <div class="header">@ViewBag.Title</div>
     </div>
-    <div class="content">
+    <div class="content" style="overflow-x:auto;">
         <form class="ui form">
-            <div class="three fields">
-                <div class="field">
-                    <label>First name</label>
-                    <input id="FirstName" type="text" placeholder="First Name" required >
+            <div class="six fields">
+                <div class="ui calendar field">
+                    <label>End Date</label>
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input type="date" placeholder="Satrt Date" id="startDate">
+                    </div>
                 </div>
-                <div class="field">
-                    <label>Middle name</label>
-                    <input id="MiddleName" type="text" placeholder="Middle Name" required  >
-                </div>
-                <div class="field">
-                    <label>Last name</label>
-                    <input id="LastName" type="text" placeholder="Last Name">
+                <div class="ui calendar field">
+                    <label>End Date</label>
+                    <div class="ui input left icon">
+                        <i class="calendar icon"></i>
+                        <input type="date" placeholder="End Date" id="endDate">
+                    </div>
                 </div>
             </div>
         </form>
-        <div style="overflow-x: scroll">
-            <table class="ui celled structured table">
+        <div style="overflow-x:auto">
+            <table class="ui celled structured table" style="text-align: center!important;">
                 <thead>
                     <tr>
                         <th rowspan="2">Project</th>
                         <th rowspan="2">Task</th>
                         <th rowspan="2">Avail hrs</th>
-                        <th colspan="2">Saturday</th>
-                        <th colspan="2">Sunday</th>
-                        <th colspan="2">Monday</th>
-                        <th colspan="2">Tuesday</th>
-                        <th colspan="2">Wednessday</th>
-                        <th colspan="2">Thursday</th>
-                        <th colspan="2">Friday</th>
+                        <th colspan="2" class="Header_Wd">Saturday</th>
+                        <th colspan="2" class="Header_Wd">Sunday</th>
+                        <th colspan="2" class="Header_Wd">Monday</th>
+                        <th colspan="2" class="Header_Wd">Tuesday</th>
+                        <th colspan="2" class="Header_Wd">Wednessday</th>
+                        <th colspan="2" class="Header_Wd">Thursday</th>
+                        <th colspan="2" class="Header_Wd">Friday</th>
                     </tr>
                     <tr>
-                        <th>NT</th>
-                        <th>OT</th>
-                        <th>NT</th>
-                        <th>OT</th>
-                        <th>NT</th>
-                        <th>OT</th>
-                        <th>NT</th>
-                        <th>OT</th>
-                        <th>NT</th>
-                        <th>OT</th>
-                        <th>NT</th>
-                        <th>OT</th>
-                        <th>NT</th>
-                        <th>OT</th>
+                        <th class="subHeader-Wd">NT</th>
+                        <th class="subHeader-Wd">OT</th>
+                        <th class="subHeader-Wd">NT</th>
+                        <th class="subHeader-Wd">OT</th>
+                        <th class="subHeader-Wd">NT</th>
+                        <th class="subHeader-Wd">OT</th>
+                        <th class="subHeader-Wd">NT</th>
+                        <th class="subHeader-Wd">OT</th>
+                        <th class="subHeader-Wd">NT</th>
+                        <th class="subHeader-Wd">OT</th>
+                        <th class="subHeader-Wd">NT</th>
+                        <th class="subHeader-Wd">OT</th>
+                        <th class="subHeader-Wd">NT</th>
+                        <th class="subHeader-Wd">OT</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="tsheetTD">
                     <tr>
-                        <td>Alpha Team</td>
-                        <td>Project 1</td>
-                        <td class="right aligned">2</td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td class="lock">Alpha Team</td>
+                        <td class="lock">Project 1</td>
+                        <td class="lock">2</td>
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                        <td class="center aligned">
-                            <input type="number" />
+                        <td>
+                            <input type="text" />
                         </td>
-                    </tr>                  
+                    </tr>
                 </tbody>
+            </table>
+            <table class="ui celled structured table" style="text-align: center!important;">
+                <tr>
+                    <td><b>Avail NTHrs</b> :0</td>
+                    <td><b>Avail OTHrs</b> :0</td>
+                    <td><b>Total :0</b></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                    <td class="bottom-Wd"></td>
+                </tr>
+
             </table>
         </div>
     </div>
     <div class="extra content">
-        <button id="SaveButton" class="ui green button">Submit</button>
+        <button id="btnSubmit" style="float: right;" class="ui violet basic button">Submit</button>
+        <button id="SaveButton" style="float: right;" class="ui violet basic button">Save</button>
     </div>
 </div>
 <script src="/Areas/MixERP.HRM/script/timesheet/index.js"></script>
+
+<style>
+    .tsheetTD input {
+        width: 55px;
+        border: 1px;
+        height: 20px;
+    }
+
+    .lock {
+        /*background-color: lightgray;*/
+    }
+
+    .ui.table td {
+        padding: 2px 0px;
+    }
+
+    .Header_Wd {
+        width: 110px;
+    }
+
+    .subHeader-Wd {
+        width: 55px;
+    }
+
+    .bottom-Wd {
+        width: 56px;
+    }
+</style>
