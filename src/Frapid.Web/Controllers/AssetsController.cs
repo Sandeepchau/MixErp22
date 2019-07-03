@@ -39,7 +39,7 @@ namespace Frapid.Web.Controllers
 
             return new ProductionScriptBundler(Log.Logger, asset);
         }
-
+        /*frefwerf*/
         [Route("assets/js/{*name}")]
         [FileOutputCache(ProfileName = "StaticFile.xml", Duration = 60 * 60, Location = OutputCacheLocation.Client)]
         public ActionResult Js(string name)
