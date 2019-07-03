@@ -1,0 +1,60 @@
+<div class="eight wide column">
+    <div class="ui widget segment">
+        <div class="header">
+            <span data-localize="TopCustomers"></span>
+            <div class="sub header"></div>
+        </div>
+        <div class="controls">
+            <span class="collapse button">
+                <i class="chevron up icon"></i>
+            </span>
+            <span class="close button">
+                <i class="delete icon"></i>
+            </span>
+        </div>
+        <div class="body">
+            <canvas class="top customers canvas" height="300"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        function prepareChart(model) {
+            const canvas = $(".top.customers.canvas");
+            const context = canvas.get(0).getContext('2d');
+            canvas.closest(".segment").find(".sub.header").text(meta.Office);
+
+            const labels = window.Enumerable.From(model).Select(function(x) { return x.Customer; }).ToArray();
+            const data = window.Enumerable.From(model).Select(function(x) { return x.Amount; }).ToArray();
+
+            const topCustomersChart = new window.Chart(context, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            data: data,
+                            backgroundColor: window.chartColors
+                        }
+                    ]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true
+                }
+            });
+        };
+
+        function request() {
+            const url = "/dashboard/sales/widgets/top-customers";
+            return window.getAjaxRequest(url);
+        };
+
+        const ajax = request();
+
+        ajax.success(function(response) {
+            prepareChart(response);
+        });
+    })();
+</script>

@@ -1,0 +1,38 @@
+<div data-account-receivables-widget class="four wide column">
+    <div class="headerless widget">
+        <span class="close button"><i class="delete icon"></i></span>
+        <div class="statistics style3">
+            <div class="header" data-localize="AccountReceivables"></div>
+            <div class="numbers">
+                <div class="number">
+                    <span data-all-time-receivables></span>
+                    <span class="text" data-localize="OfAllTime"></span>
+                </div>
+                <div class="number">
+                    <span data-this-month-receivables></span>
+                    <span class="text" data-localize="ThisMonth"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        function request() {
+            const url = "/dashboard/sales/widgets/account-receivables";
+            return window.getAjaxRequest(url);
+        };
+
+        const ajax = request();
+
+        ajax.success(function (response) {
+            if (!response || !response.length) {
+                return;
+            };
+
+            $("[data-all-time-receivables]").text(window.getFormattedCurrency(response[0].ReceivableOfAllTime));
+            $("[data-this-month-receivables]").text(window.getFormattedCurrency(response[0].ReceivableOfThisMonth));
+        });
+    })();
+</script>
