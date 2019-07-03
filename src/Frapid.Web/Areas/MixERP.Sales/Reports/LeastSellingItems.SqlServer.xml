@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Least Selling Products</Title>
+  <TopSection>
+    <Charts>
+      <Chart ID="Chart1" GridViewIndex="0" HideGridView="false" Type="Pie" BorderColor="transparent" Width="400" Height="300"
+                TitleColumnIndex="2" ValueColumnIndex="4">
+      </Chart>
+    </Charts>
+  </TopSection>
+  <Body>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Query>
+		WITH sales_data
+		AS
+		(
+			SELECT ROW_NUMBER() OVER(ORDER BY sales_amount DESC) AS row_number,
+			*
+			FROM
+			(
+				SELECT
+				TOP 10      
+						inventory.verified_checkout_view.item_id, 
+						SUM(quantity) AS quantity,
+						SUM((price * quantity) - COALESCE(discount, 0) + COALESCE(shipping_charge, 0)) AS sales_amount
+				FROM inventory.verified_checkout_view
+				WHERE inventory.verified_checkout_view.office_id = @OfficeId
+				AND inventory.verified_checkout_view.value_date BETWEEN @From AND @To
+				AND (COALESCE(@CostCenterId, 0) = 0 OR inventory.verified_checkout_view.cost_center_id = @CostCenterId)
+				AND inventory.verified_checkout_view.book LIKE 'Sales%'
+				GROUP BY inventory.verified_checkout_view.item_id
+				ORDER BY 2
+			) re
+		)
+		SELECT row_number, item_code, item_name, quantity, sales_amount
+		FROM sales_data
+		INNER JOIN inventory.items
+		ON inventory.items.item_id = sales_data.item_id;
+      </Query>
+      <Parameters>
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+        <Parameter Name="@CostCenterId" FieldLabel="Cost Center" Type="int" PopulateFrom="/api/forms/finance/cost-centers/display-fields" KeyField="Key" ValueField="Value" Optional="True"/>
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+      </Parameters>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

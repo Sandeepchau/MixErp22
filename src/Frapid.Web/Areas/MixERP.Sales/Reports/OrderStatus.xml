@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+<Header />
+  <Title>Order Status</Title>
+  <Body>
+    <Content>
+      <h5>Duration: {DataSource[0].from_date} to {DataSource[0].to_date}</h5>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="1">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT @From::date AS from_date, @To::date AS to_date;
+      </Query>
+      <Parameters>
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+      </Parameters>
+    </DataSource>
+    <DataSource>
+      <Query>
+        SELECT 
+          quotations.value_date,
+          customers.customer_name,
+          quotations.expected_delivery_date,
+          quotations.terms,
+          items.item_name,
+          quotation_details.quantity,
+          units.unit_code,
+          quotation_details.price,
+          quotation_details.shipping_charge,
+          CASE WHEN orders.order_id IS NOT NULL THEN 'Ordered'
+            WHEN finance.get_date(quotations.office_id) &gt; quotations.expected_delivery_date THEN 'Expired'
+            ELSE 'Pending' END AS quatation_status
+        FROM sales.quotations
+        JOIN inventory.customers ON quotations.customer_id = customers.customer_id
+        JOIN sales.quotation_details ON quotations.quotation_id = quotation_details.quotation_id
+        JOIN inventory.items ON quotation_details.item_id = items.item_id
+        JOIN inventory.units ON quotation_details.unit_id = units.unit_id
+        LEFT JOIN sales.orders ON quotations.quotation_id = orders.quotation_id
+        WHERE quotations.office_id = @OfficeId
+        AND quotations.value_date BETWEEN @From::date AND @To::date;
+      </Query>
+      <Parameters>
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>4</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>5, 7, 8</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

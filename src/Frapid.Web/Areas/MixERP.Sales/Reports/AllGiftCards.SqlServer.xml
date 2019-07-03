@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>All Gift Cards</Title>
+  <TopSection>
+  </TopSection>
+  <Body>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Query>
+			SELECT
+				sales.gift_cards.gift_card_id,
+				sales.gift_cards.gift_card_number,
+				sales.gift_cards.customer_id,
+				inventory.get_customer_name_by_customer_id(sales.gift_cards.customer_id) AS customer,
+				sales.gift_cards.first_name,
+				sales.gift_cards.middle_name,
+				sales.gift_cards.last_name,
+				sales.get_gift_card_balance(sales.gift_cards.gift_card_id, finance.get_value_date(@OfficeId)) AS balance
+			FROM sales.gift_cards
+			WHERE sales.gift_cards.deleted = 0;
+      </Query>
+      <Parameters>
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>6</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>7</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

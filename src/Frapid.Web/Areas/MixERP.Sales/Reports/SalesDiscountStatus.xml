@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Sales discount Status Report</Title>
+  <TopSection>
+  </TopSection>
+  <Body>
+    <Content>
+      <div class='center aligned'>
+        <h4>As of {Query.From} and {Query.To}</h4>
+      </div>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0"></GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <BottomSection>
+  </BottomSection>
+  <DataSources>
+    <DataSource>
+      <Query>
+        WITH all_discount AS
+        (
+	        SELECT 
+		        checkouts.value_date,
+		        customers.customer_name,
+		        SUM(checkout_detail_view.total) + SUM(checkout_detail_view.discount) AS sales_amount,
+		        SUM(checkout_detail_view.total) - checkouts.discount AS invoicing_amount
+	        FROM sales.sales
+	        LEFT JOIN inventory.checkouts
+		      ON checkouts.checkout_id = sales.checkout_id
+	        LEFT JOIN inventory.checkout_detail_view
+		      ON checkouts.checkout_id = checkout_detail_view.checkout_id
+	        LEFT JOIN inventory.customers
+		      ON customers.customer_id = sales.customer_id
+	        LEFT JOIN finance.transaction_master
+		      ON  transaction_master.transaction_master_id = checkout_detail_view.transaction_master_id
+	        WHERE NOT checkouts.deleted
+          AND transaction_master.office_id IN (SELECT get_office_ids FROM core.get_office_ids(@OfficeId::int))
+	        AND transaction_master.verification_status_id > 0
+	        AND checkouts.value_date BETWEEN @From::date AND @To::date
+	        AND COALESCE(@CustomerId, 0) = 0 OR sales.customer_id = @CustomerId
+	        GROUP BY checkouts.checkout_id, checkouts.discount, checkouts.value_date, customer_name	
+        )
+        SELECT 
+	        value_date,
+	        customer_name,
+	        sales_amount,
+	        invoicing_amount,
+	        sales_amount - invoicing_amount AS difference_amount
+        FROM all_discount
+        ORDER BY all_discount.value_date;
+      </Query>
+      <Parameters>
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int" DefaultValue="{Meta.OfficeId}" />
+        <Parameter Name="@CustomerId" FieldLabel="Customer" Type="int" PopulateFrom="/api/views/inventory/customers/display-fields" KeyField="Key" ValueField="Value" Optional="true"/>
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>1</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>2, 3, 4</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

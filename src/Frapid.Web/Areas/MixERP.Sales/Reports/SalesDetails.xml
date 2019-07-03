@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Sales Details</Title>
+  <TopSection>
+    <Charts>
+      <Chart ID="BarChart" GridViewIndex="1" HideGridView="false" Type="Bar" BorderColor="transparent" Width="400" Height="300"
+          TitleColumnIndex="0" ValueColumnIndex="2">
+      </Chart>
+    </Charts>
+  </TopSection>
+  <Body>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+        <GridViewDataSource Index="1">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT
+          sales.sales.sales_id,
+          sales.sales.invoice_number,
+          sales.price_types.price_type_code,
+          inventory.customers.customer_name,
+          inventory.customers.company_name,
+          account.users.name AS [user],
+          sales.sales.total_amount,
+          sales.sales.total_discount_amount,
+          sales.sales.tender,
+          sales.sales.change
+        FROM sales.sales
+        INNER JOIN inventory.customers
+        ON inventory.customers.customer_id = sales.sales.customer_id
+        INNER JOIN account.users
+        ON account.users.user_id = sales.sales.salesperson_id
+        INNER JOIN sales.price_types
+        ON sales.price_types.price_type_id = sales.sales.price_type_id
+        WHERE 1 = 1
+        AND account.users.office_id = @OfficeId
+        AND (COALESCE(@CustomerId, 0) = 0 OR sales.sales.customer_id = @CustomerId);
+      </Query>
+      <Parameters>
+        <Parameter Name="@CustomerId" FieldLabel="Customer Id" Type="int"  PopulateFrom="/api/forms/inventory/customers/display-fields" KeyField="Key" ValueField="Value" Optional="true"  />
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>5</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>6, 7, 8, 9</RunningTotalFieldIndices>
+    </DataSource>
+    <DataSource Title="Summary by Customer">
+      <Query>
+        SELECT
+          inventory.customers.customer_name,
+          inventory.customers.company_name,
+          SUM(sales.sales.total_amount) AS total_sales
+        FROM sales.sales
+        INNER JOIN inventory.customers
+        ON inventory.customers.customer_id = sales.sales.customer_id
+        INNER JOIN account.users
+        ON account.users.user_id = sales.sales.salesperson_id
+        WHERE 1 = 1
+        AND account.users.office_id = @OfficeId
+        AND (COALESCE(@CustomerId, 0) = 0 OR sales.sales.customer_id = @CustomerId)
+        GROUP BY
+          inventory.customers.customer_name,
+          inventory.customers.company_name;
+      </Query>
+      <Parameters>
+        <Parameter Name="@CustomerId" FieldLabel="Customer Id" Type="int"  PopulateFrom="/api/forms/inventory/customers/display-fields" KeyField="Key" ValueField="Value" Optional="true"  />
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+      </Parameters>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

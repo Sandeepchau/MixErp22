@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+  <Header />
+  <Title>Customers</Title>
+  <TopSection>
+  </TopSection>
+  <Body>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="0">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT
+          inventory.customers.customer_id,
+          inventory.customers.customer_code,
+          inventory.customers.customer_name,
+          inventory.customers.company_name,
+          inventory.customers.currency_code
+        FROM inventory.customers
+        ORDER BY customer_id;
+      </Query>
+      <Parameters>
+      </Parameters>
+    </DataSource>
+  </DataSources>
+</FrapidReport>

@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<FrapidReport>
+<Header />
+  <Title>Sales By Office</Title>
+  <Body>
+    <Content>
+      <h5>Duration: {DataSource[0].from_date} to {DataSource[0].to_date}</h5>
+    </Content>
+    <GridViews>
+      <GridView>
+        <GridViewDataSource Index="1">
+        </GridViewDataSource>
+      </GridView>
+    </GridViews>
+  </Body>
+  <DataSources>
+    <DataSource>
+      <Query>
+        SELECT @From::date AS from_date, @To::date AS to_date;
+      </Query>
+      <Parameters>
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+      </Parameters>
+    </DataSource>
+    <DataSource>
+      <Query>
+        SELECT 
+			checkouts.value_date,
+			checkouts.book_date,
+			sales.invoice_number,
+			customers.customer_name,
+			items.item_name,
+			checkout_details.quantity,
+			units.unit_code,
+			checkout_details.price,
+			checkout_details.discount,
+			ROUND((inventory.checkout_details.price * inventory.checkout_details.quantity) - inventory.checkout_details.discount, 4) AS sub_total,
+			ROUND((inventory.checkout_details.price * inventory.checkout_details.quantity) + inventory.checkout_details.discount, 4) AS total
+        FROM sales.sales
+        JOIN inventory.checkouts ON sales.checkout_id = checkouts.checkout_id
+        JOIN inventory.checkout_details ON checkouts.checkout_id = checkout_details.checkout_id
+        JOIN inventory.items ON checkout_details.item_id = items.item_id
+        JOIN inventory.units ON checkout_details.unit_id = units.unit_id
+        JOIN finance.transaction_master ON sales.transaction_master_id = transaction_master.transaction_master_id
+        LEFT JOIN inventory.customers ON sales.customer_id = customers.customer_id
+        WHERE transaction_master.verification_status_id &gt; 0
+        AND checkouts.value_date BETWEEN @From::date AND @To::date
+        AND checkouts.office_id = @OfficeId
+		AND (COALESCE(@ItemId, 0) = 0 OR items.item_id = @ItemId)
+		AND (COALESCE(@CustomerId, 0) = 0 OR sales.customer_id = @CustomerId)
+		AND (COALESCE(@BrandId, 0) = 0 OR items.brand_id = @BrandId);
+      </Query>
+      <Parameters>
+        <Parameter Name="@BrandId" FieldLabel="Brand Id" Type="int" PopulateFrom="/api/forms/inventory/brands/display-fields" KeyField="Key" ValueField="Value" Optional="True"  />
+        <Parameter Name="@ItemId" FieldLabel="Item Id" Type="int" PopulateFrom="/api/forms/inventory/items/display-fields" KeyField="Key" ValueField="Value" Optional="True"  />
+        <Parameter Name="@CustomerId" FieldLabel="Customer Id" Type="int" PopulateFrom="/api/forms/inventory/customers/display-fields" KeyField="Key" ValueField="Value" Optional="True"  />
+        <Parameter Name="@From" FieldLabel="From Date" Type="System.DateTime" />
+        <Parameter Name="@To" FieldLabel="To Date" Type="System.DateTime" />
+        <Parameter Name="@OfficeId" FieldLabel="Office Id" Type="int"  DefaultValue="{Meta.OfficeId}" />
+      </Parameters>
+      <RunningTotalTextColumnIndex>7</RunningTotalTextColumnIndex>
+      <RunningTotalFieldIndices>8, 9, 10, 11</RunningTotalFieldIndices>
+    </DataSource>
+  </DataSources>
+</FrapidReport>
