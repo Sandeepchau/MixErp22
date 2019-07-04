@@ -35,7 +35,7 @@
 </head>
 <body id="SignInBody">
 <div id="signin-form">
-    <div class="ui attached stackable padded segment" id="SignInSegment">
+    <div class="ui attached stackable padded segment" id="SignInSegment" style="border-radius: 16px;padding: 3.5em;">
         <img class="ui small image" src="/Static/images/logo.png">
         <div class="ui big error large dividing header vpad8"></div>
         <div class="ui toggle checkbox vpad8">
@@ -71,7 +71,7 @@
                        value="@Model.Challenge"/>
             </div>
             <div class="ui buttons">
-                <button id="SignInButton" title="CRTL + RETURN" class="ui grey button" type="submit">
+                <button id="SignInButton" title="CRTL + RETURN" class="ui primary button" type="submit">
                     @I18N.SignIn
                 </button>
                 <a class="ui button" href="/">@I18N.Cancel</a>
