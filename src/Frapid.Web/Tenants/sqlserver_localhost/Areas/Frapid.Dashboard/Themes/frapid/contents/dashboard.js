@@ -337,44 +337,44 @@ function initializeSelectApis() {
 
 var backgrounds = [];
 
-$.getJSON("/dashboard/backgrounds", function (response) {
-    backgrounds = response;
+//$.getJSON("/dashboard/backgrounds", function (response) {
+//    backgrounds = response;
 
-    if (backgrounds.length) {
-        $('.background.slider').css("background-color", "black");
-    };
+//    if (backgrounds.length) {
+//        $('.background.slider').css("background-color", "black");
+//    };
 
-    loadBackground();
-});
+//    loadBackground();
+//});
 
-function loadBackground() {
-    $.each(backgrounds, function (i, v) {
-        setTimeout(function () {
-            if (i === backgrounds.length - 1) {
-                setTimeout(function () {
-                    loadBackground();
-                }, 10000);
-            };
+//function loadBackground() {
+//    $.each(backgrounds, function (i, v) {
+//        setTimeout(function () {
+//            if (i === backgrounds.length - 1) {
+//                setTimeout(function () {
+//                    loadBackground();
+//                }, 10000);
+//            };
 
-            setBackground(v);
-        }, i * 10000);
+//            setBackground(v);
+//        }, i * 10000);
 
 
-    });
-};
+//    });
+//};
 
-function setBackground(image) {
-    var slider = $('.background.slider:not(.active)');
-    var activeSlider = $('.background.slider.active');
+//function setBackground(image) {
+//    var slider = $('.background.slider:not(.active)');
+//    var activeSlider = $('.background.slider.active');
 
-    slider.css('background-image', "url('" + image + "')");
+//    slider.css('background-image', "url('" + image + "')");
 
-    activeSlider.fadeOut(1500, function () {
-        activeSlider.css('z-index', -2).show().removeClass('active');
-        slider.css('z-index', -1).addClass('active');
-    });
+//    activeSlider.fadeOut(1500, function () {
+//        activeSlider.css('z-index', -2).show().removeClass('active');
+//        slider.css('z-index', -1).addClass('active');
+//    });
 
-};
+//};
 
 $('.notification.item').popup({
     inline: true,
