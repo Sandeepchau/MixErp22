@@ -1,4 +1,5 @@
 function loadIcons(apps) {
+    debugger;
 	function addIcon(app, target) {
 		const div = $("<div/>");
 		const anchor = $("<a/>");
