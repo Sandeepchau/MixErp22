@@ -108,7 +108,7 @@ html, body, .jstree {
 #dashboard-container {
     height: 100% !important;
     border: none !important;
-    margin-top: -3.5em;
+    margin-top: 3.5em;
     z-index: 1;
     padding: 0;
 }
