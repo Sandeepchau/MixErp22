@@ -309,14 +309,15 @@
 }
 
 .new.event {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    box-shadow: 20px 20px 50px #444;
-    font-size: 0.8em;
-    margin-bottom: 10em;
-    padding: 1em;
-    width: 600px;
-    z-index: 2;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	box-shadow: 5px 5px 10px #9e9ea6;
+	font-size: 0.8em;
+	margin-bottom: 10em;
+	border-radius: 15px;
+	padding: 1em;
+	width: 600px;
+	z-index: 2;
 }
 
     .new.event .ui.form {
