@@ -51,9 +51,12 @@ html, body, h1, h2, h3, h4, h5, .ui.header,
 
 
 
-.body, .body p, .body div, .story, footer, .body .button, .body .field, .body .field label, .body .field input, header .item {
+.body, .body div, .story, footer, .body .button, .body .field, .body .field label, .body .field input, header .item {
     color:#808080;
 }
+	.body p {
+		color: #333 !important;
+	}
 
 .subscription .inverted.segment p
 {
@@ -91,10 +94,9 @@ header
     padding-bottom:100px;
 }
 
-.fixed.menu .item:hover
-{
-    background-color:#339900!important;
-    color:#FFFFFF!important;
+.fixed.menu .item:hover {
+	background-color: #2185D0 !important;
+	color: #FFFFFF !important;
 }
 
 
@@ -113,10 +115,11 @@ section.body .segment .container
     background: #0E1619 url("../images/banners/banner1.jpg") no-repeat scroll 50% 25% / cover;
 }
 
-#contact{
-    background: #FFFFFF url("../images/banners/banner2.jpg") no-repeat scroll 10% 25% / cover;
-    padding-top:200px;
-    min-height:800px;
+#contact {
+	background: #FFFFFF url("../images/banners/banner2.jpg") no-repeat scroll 10% 25% / cover;
+	/*padding-top:200px;
+    min-height:800px;*/
+	max-height: 400px;
 }
 
 .caption.container
@@ -158,8 +161,8 @@ section.body .segment .container
 }
 
 
-a:hover{
-    color:#339941;
+a:hover {
+	color: #2185D0 !important;
 }
 
 .ad.icon
