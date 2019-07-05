@@ -182,11 +182,11 @@
             <a id="ApproveButton" class="ui primary button" href="javascript:void(0);">
                 <span data-localize="Approve"></span>
             </a>
-            <a id="RejectButton" class="ui orange button" href="javascript:void(0);">
+            <a id="RejectButton" class="ui red button" href="javascript:void(0);">
                 <span data-localize="Reject"></span>
             </a>
 
-            <a href="javascript:void(0);" class="ui red button" onclick="$('#VerificationPopUnder').fadeOut(500);">
+            <a href="javascript:void(0);" class="ui basic button" onclick="$('#VerificationPopUnder').fadeOut(500);">
                 <span data-localize="Close"></span>
             </a>
         </div>
@@ -194,13 +194,13 @@
 
     <div class="ui stackable divided grid">
         <div class="three wide filter column">
-            <div class="ui teal big header"><span data-localize="Filters"></span></div>
+            <div class="ui primary big header"><span data-localize="Filters"></span></div>
             <div class="ui divider"></div>
             <div data-filter-list class="ui relaxed filter list"></div>
-            <button class="ui small teal button" data-add-filter onclick="showView('filter', true)"><span data-localize="AddNew"></span></button>
+            <button class="ui small primary button" data-add-filter onclick="showView('filter', true)"><span data-localize="AddNew"></span></button>
             <div class="vpad8"></div>
             <section class="filter section" style="display: none;">
-                <div class="ui teal header" data-filter-header></div>
+                <div class="ui primary header" data-filter-header></div>
                 <div class="ui divider"></div>
                 <div data-filter-labels class="ui small labels">
                 </div>
@@ -245,7 +245,7 @@
                         <button class="ui cancel button">
                             <span data-localize="Cancel"></span>
                         </button>
-                        <a href="javascript:void(0);" class="ui button" onclick="saveOrUpdateKanban();">
+                        <a href="javascript:void(0);" class="ui primary button" onclick="saveOrUpdateKanban();">
                             <span data-localize="OK"></span>
                         </a>
                     </div>
@@ -253,8 +253,8 @@
             </div>
             <div class="ui stackable vpad8 grid">
                 <div class="twelve wide column">
-                    <div class="ui basic buttons">
-                        <a id="AddNewButton" class="ui basic button">
+                    <div class="ui basic primary buttons">
+                        <a id="AddNewButton" class="ui basic primary button">
                             <span data-localize="AddNew"></span>
                         </a>
                         <a id="VerifyButton" class="ui basic button" style="display: none;">
@@ -304,7 +304,7 @@
                         <a class="ui basic icon button" data-target="import" data-localized-title="Import">
                             <i class="upload layout icon"></i>
                         </a>
-                        <a class="ui basic icon button" onclick="clearQuery();" data-localized-title="ClearFilters">
+                        <a class="ui basic red icon button" onclick="clearQuery();" data-localized-title="ClearFilters">
                             <i class="delete icon"></i>
                         </a>
                     </div>
@@ -312,7 +312,7 @@
             </div>
             <div class="ui stackable form segment" ID="Annotation" style="display: none;">
                 <div class="field">
-                    <button class="ui green button" id="ShowButton"><span data-localize="Show"></span></button>
+                    <button class="ui primary button" id="ShowButton"><span data-localize="Show"></span></button>
                 </div>
             </div>
             <div class="ui stackable grid">
@@ -406,7 +406,7 @@
                                 </div>
                             </div>
                             <div class="ui basic buttons">
-                                <button class="ui basic button" id="SaveFilterButton">
+                                <button class="ui basic primary button" id="SaveFilterButton">
                                     <span data-localize="Save"></span>
                                 </button>
                                 <button class="ui basic button" id="ManageFiltersButton">
@@ -430,10 +430,10 @@
                                         <select class="ui search dropdown filter" id="FilterSelect"></select>
                                     </div>
                                     <div class="ui basic buttons">
-                                        <a class="ui close button" onclick="loadFilterForEdit();">
+                                        <a class="ui primary button" onclick="loadFilterForEdit();">
                                             <span data-localize="Edit"></span>
                                         </a>
-                                        <a class="ui close button" onclick="deleteSavedFilter();">
+                                        <a class="ui red button" onclick="deleteSavedFilter();">
                                             <span data-localize="Delete"></span>
                                         </a>
                                         <a class="ui close button">
