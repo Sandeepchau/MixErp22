@@ -292,7 +292,7 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 	.dashboard.menu > .item,
 	.dashboard.menu > .stackable.menu .item,
 	.dashboard.menu > .menu > .item:not(.search):hover {
-		background: #776f6f !important;
+		background: #4ea7ea !important;
 	}
 
 .powered.by {
@@ -485,17 +485,17 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 				color: #222;
 			}
 
-	.find {
-		position: fixed;
-		top: 5em;
-		right: 0.8em;
-		color: #eee;
-		text-transform: uppercase;
-		font-size: 0.78em;
-		z-index: 2000 !important;
-		letter-spacing: 1px;
-		font-weight: 500;
-	}
+.find {
+	position: fixed;
+	top: 5em;
+	right: 0.8em;
+	color: #fff;
+	text-transform: uppercase;
+	font-size: 0.78em;
+	z-index: 2000 !important;
+	letter-spacing: 1px;
+	font-weight: 500;
+}
 
 		.find .results {
 			max-height: 500px;
@@ -503,19 +503,20 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 			overflow-x: hidden;
 		}
 
-		.find .result {
-			width: 460px;
-			background: #333;
-			display: flex;
-			border-bottom: 1px solid #444;
-			cursor: pointer;
-			padding: 1.2em;
-		}
+	.find .result {
+		width: 460px;
+		background: #2185D0;
+		display: flex;
+		border-bottom: 1px solid #c1c1c178;
+		cursor: pointer;
+		padding: 1.2em;
+	}
 
-			.find .result.active,
-			.find .result:hover {
-				background: #222;
-			}
+		.find .result.active,
+		.find .result:hover {
+			background: #356292;
+			transition:1.2s;
+		}
 
 				.find .result.active .description,
 				.find .result:hover .description {
@@ -529,7 +530,7 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 			}
 
 				.find .result .feature .breadcrumb {
-					color: #aaa;
+					color: #FD9;
 					font-weight: 400;
 					letter-spacing: 0;
 					font-size: 0.9em;
@@ -541,14 +542,14 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 				font-size: 1.2em;
 			}
 
-		.find .close {
-			background: #2a2a2a !important;
-			padding: 1em;
-			border-bottom: 1px solid #444;
-			border-radius: 0.5em 0.5em 0 0;
-			letter-spacing: 0.02em;
-			font-size: 1.3em;
-		}
+	.find .close {
+		background: #a0a0a0 !important;
+		padding: 1em;
+		border-bottom: 1px solid #444;
+		border-radius: 0.5em 0.5em 0 0;
+		letter-spacing: 0.02em;
+		font-size: 1.3em;
+	}
 
 			.find .close .left {
 				display: inline-block;
@@ -655,3 +656,19 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 			margin: 0 !important;
 		}
 	}
+
+.ui.attached.segment {
+	top: 0px;
+	bottom: 0px;
+	border-radius: 10px !important;
+	margin: 0em -1px;
+	width: calc(100% + 2px );
+	max-width: calc(100% + 2px );
+	box-shadow: 1px 2px 5px !important;
+	border: 1px solid #D4D4D5 !important;
+}
+.ui.basic.buttons {
+	box-shadow: 1px 2px 5px !important;
+	border: 1px solid rgba(34, 36, 38, 0.15);
+	border-radius: 0.28571429rem;
+}
