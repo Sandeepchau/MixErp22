@@ -325,16 +325,16 @@ input.invoice.number.for.reprint {
             letter-spacing: 1px;
         }
 
-    .sales.items .item input {
-        font-size: 1.3em;
-        margin: 0 0 0.3em 0;
-        background-color: #333;
-        border: 1px solid #555;
-        width: 100%;
-        padding: 4px 16px;
-        text-align: right;
-        border-radius: 0.5em;
-    }
+.sales.items .item input {
+	font-size: 1.3em;
+	margin: 0 0 0.3em 0;
+	background-color: #fff;
+	border: 1px solid #848383;
+	width: 100%;
+	padding: 4px 16px;
+	text-align: right;
+	border-radius: 0.5em;
+}
 
     .sales.items .item .info.block {
         width: calc(100% - 220px);
@@ -439,8 +439,12 @@ input.customer.address {
 .pan.number.item {
     width: 25% !important;
 }
+.inverted.dropdown {
+	background-color: #fff !important;
+	color: #555 !important;
+	border: 1px solid #666 !important;
+}
 
-.inverted.dropdown,
 .inverted.dropdown input.search,
 .inverted.dropdown .menu,
 .inverted.dropdown .item,
@@ -468,8 +472,8 @@ input.customer.address {
 }
 
 select.inverted {
-    background-color: #333;
-    border: 1px solid #555;
+    background-color: #fff !important;
+    border: 1px solid #8e8c8c !;
     width: 100%;
     border-radius: 0.5em;
     -moz-appearance: none; /* Firefox */

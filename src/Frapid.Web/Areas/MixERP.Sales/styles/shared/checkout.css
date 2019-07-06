@@ -439,15 +439,18 @@ input.customer.address {
 .pan.number.item {
     width: 25% !important;
 }
-
-.inverted.dropdown,
+.inverted.dropdown {
+	background-color: #fff !important;
+	color: #555 !important;
+	border: 1px solid #666 !important;
+}
 .inverted.dropdown input.search,
 .inverted.dropdown .menu,
 .inverted.dropdown .item,
 .inverted.dropdown .message {
-    background-color: #555 !important;
-    color: #eee !important;
-    border: 1px solid #666 !important;
+	background-color: #555 !important;
+	color: #eee !important;
+	border: 1px solid #666 !important;
 }
 
     .inverted.dropdown .item.selected,
@@ -468,11 +471,11 @@ input.customer.address {
 }
 
 select.inverted {
-    background-color: #333;
-    border: 1px solid #555;
-    width: 100%;
-    border-radius: 0.5em;
-    -moz-appearance: none; /* Firefox */
+	background-color: #fff;
+	border: 1px solid #848383;
+	width: 100%;
+	border-radius: 0.5em;
+	-moz-appearance: none; /* Firefox */
 }
 
 #dashboard-container {

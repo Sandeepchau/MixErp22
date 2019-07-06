@@ -291,7 +291,7 @@ input.invoice.number.for.reprint {
 
 
 .purchase.items .item {
-    background-color: #333;
+    background-color: #fff;
     padding: 3px 9px;
     border-bottom: 1px dotted #444;
     cursor: pointer;
@@ -302,11 +302,11 @@ input.invoice.number.for.reprint {
 }
 
     .purchase.items .item:nth-child(even) {
-        background-color: #373737 !important;
+        background-color: #fff !important;
     }
 
     .purchase.items .item:hover {
-        background-color: #3a3a3a !important;
+        background-color: #fff !important;
     }
 
     .purchase.items .item .block {
@@ -338,8 +338,8 @@ input.invoice.number.for.reprint {
     .purchase.items .item input {
         font-size: 1.3em;
         margin: 0 0 0.3em 0;
-        background-color: #333;
-        border: 1px solid #555;
+        background-color: #fff;
+        border: 1px solid #848383;
         width: 100%;
         padding: 4px 16px;
         text-align: right;
@@ -446,7 +446,11 @@ input.customer.address {
     width: 25% !important;
 }
 
-.inverted.dropdown,
+.inverted.dropdown {
+	background-color: #fff !important;
+	color: #555 !important;
+	border: 1px solid #666 !important;
+}
 .inverted.dropdown input.search,
 .inverted.dropdown .menu,
 .inverted.dropdown .item,
