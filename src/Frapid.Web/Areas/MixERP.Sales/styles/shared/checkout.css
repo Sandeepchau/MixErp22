@@ -97,7 +97,7 @@ input.invoice.number.for.reprint {
 }
 
 .area.info {
-    background-color: #02B3D6;
+    background-color: #503;
 }
 
 .counter.info {
@@ -289,12 +289,12 @@ input.invoice.number.for.reprint {
 }
 
     .sales.items .item:nth-child(even) {
-        background-color: #373737 !important;
+        background-color: #fff !important;
     }
 
-    .sales.items .item:hover {
-        background-color: #3a3a3a !important;
-    }
+	.sales.items .item:hover {
+		background-color: #fff !important;
+	}
 
     .sales.items .item .block {
         display: inline-block;
@@ -331,7 +331,7 @@ input.invoice.number.for.reprint {
     .sales.items .item input {
         font-size: 1.3em;
         margin: 0 0 0.3em 0;
-        background-color: #333;
+        background-color: #fff;
         border: 1px solid #555;
         width: 100%;
         padding: 4px 16px;
@@ -474,8 +474,8 @@ input.customer.address {
 }
 
 select.inverted {
-	background-color: #fff;
-	border: 1px solid #848383;
+	background-color: #fff !important;
+	border: 1px solid #848383 !important;
 	width: 100%;
 	border-radius: 0.5em;
 	-moz-appearance: none; /* Firefox */
