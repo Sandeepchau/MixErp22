@@ -502,3 +502,11 @@ input.right{
 .checkbox label{
 	cursor: pointer;
 }
+
+.ui.menu .dropdown.item .menu {
+    color: #ffffff !important;
+    background: #4ea7ea;
+}
+.ui.menu .ui.dropdown .menu > .item {
+    color: #ffffff !important;
+}
