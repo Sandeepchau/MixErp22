@@ -129,9 +129,9 @@ input.invoice.number.for.reprint {
 
 
 .status.head {
-    background-color: #444;
-    padding: 1em;
-    cursor: pointer;
+	background-color: #4ea7ea;
+	padding: 1em;
+	cursor: pointer;
 }
 
 .inline.blocks > .item {
@@ -164,19 +164,20 @@ input.invoice.number.for.reprint {
 }
 
 .item.list {
-    background-color: #333;
-    cursor: pointer;
-    text-align: center;
+	background-color: #fff;
+	cursor: pointer;
+	text-align: center;
 }
 
-    .item.list .item {
-        display: inline-flex;
-        background: linear-gradient(to top, #222, #575553);
-        margin: 4px;
-        width: 124px;
-        height: 194px;
-        cursor: pointer;
-    }
+	.item.list .item {
+		display: inline-flex;
+		background: linear-gradient(to top, #222, #575553);
+		margin: 4px;
+		width: 124px;
+		height: 194px;
+		border-radius: 3px;
+		cursor: pointer;
+	}
 
         .item.list .item:hover {
             background: linear-gradient(to top, #575553, #222);
@@ -233,9 +234,10 @@ input.invoice.number.for.reprint {
 
 
 .category.list {
-    padding: 4px;
-    text-align: center;
-    background-color: #555;
+	padding: 4px;
+	text-align: center;
+	background-color: #fff;
+	border-bottom: 1px solid lightgray;
 }
 
     .category.list .filter {
@@ -243,35 +245,37 @@ input.invoice.number.for.reprint {
         display: inline-block;
     }
 
-    .category.list .category, .cat.filter {
-        display: inline-block;
-        background-color: #555;
-        color: white;
-        padding: 4px 12px;
-        margin: 2px;
-        border-radius: 12px;
-        text-transform: uppercase;
-        font-size: 0.9em;
-        letter-spacing: 1px;
-        cursor: pointer;
-    }
+	.category.list .category, .cat.filter {
+		display: inline-block;
+		background-color: #f1f1f1;
+		color: #747474;
+		font-weight: 500;
+		padding: 4px 12px;
+		margin: 2px;
+		border-radius: 12px;
+		text-transform: uppercase;
+		font-size: 0.9em;
+		letter-spacing: 1px;
+		cursor: pointer;
+	}
 
     .category.list .cat.filter {
         background-color: #444;
     }
 
-    .category.list .category.selected, .category.list .category:hover {
-        background-color: #78AD05;
-    }
+	.category.list .category.selected, .category.list .category:hover {
+		background-color: #9ddbf4;
+		color: #454343;
+	}
 
     .category.list .cat.filter:hover {
         background-color: #FA6400 !important;
     }
 
 .search.panel {
-    background-color: #666;
-    padding: 1em;
-    text-align: center;
+	background-color: #fff;
+	padding: 1em;
+	text-align: center;
 }
 
     .search.panel input {
@@ -374,16 +378,17 @@ input.invoice.number.for.reprint {
 
 
 .tender.info {
-    background-color: #333;
-    width: 100%;
-    cursor: pointer;
-    margin: 0 0 8px 0;
-    padding: 6px 0;
+	background-color: #fff;
+	width: 100%;
+	cursor: pointer;
+	margin: 0 0 8px 0;
+	border: 1px solid lightgray;
+	padding: 0px 0;
 }
 
 
     .tender.info:hover {
-        background-color: #3f3f3f;
+        background-color: #fff;
     }
 
 
@@ -460,13 +465,13 @@ input.customer.address {
 .summary.items select,
 .inverted.input,
 .inverted.select {
-    background-color: #555 !important;
-    color: #eee !important;
-    border: 1px solid #666 !important;
-    padding: .87em;
-    border-radius: 0.4em;
-    width: 100%;
-    -moz-appearance: none; /* Firefox */
+	background-color: #fff !important;
+	color: #968c8c !important;
+	border: 1px solid #666 !important;
+	padding: .87em;
+	border-radius: 0.4em;
+	width: 100%;
+	-moz-appearance: none; /* Firefox */
 }
 
 .summary.items .dropdown {
@@ -644,28 +649,32 @@ select.inverted {
     }
 
 .page.title {
-    font-size: 1.25em;
-    text-transform: uppercase;
-    font-weight: bold;
-    letter-spacing: 0.05em;
-    word-spacing: 0.1em;
-    background: #444;
-    padding: 1em;
-    margin-bottom: 1em;
+	font-size: 1.25em;
+	text-transform: uppercase;
+	font-weight: bold;
+	letter-spacing: 0.05em;
+	word-spacing: 0.1em;
+	background: #4ea7ea;
+	padding: 1em;
+	margin-bottom: 1em;
 }
 
 .summary.items input,
 .summary.items textarea,
 .summary.items select {
-    background-color: #555 !important;
-    color: #eee !important;
-    border: 1px solid #666 !important;
-    padding: .87em;
-    border-radius: 0.4em;
-    width: 100%;
-    -moz-appearance: none; /* Firefox */
+	background-color: #fff !important;
+	color: rgba(109, 108, 108, 0.95) !important;
+	border: 1px solid #ababae !important;
+	padding: .87em;
+	border-radius: 0.4em;
+	width: 100%;
+	-moz-appearance: none; /* Firefox */
 }
 
 .summary.items select {
     height:3.25em!important;
+}
+.ui.inverted.segment {
+	background: #fff !important;
+	color: #8f8e8e !important;
 }
