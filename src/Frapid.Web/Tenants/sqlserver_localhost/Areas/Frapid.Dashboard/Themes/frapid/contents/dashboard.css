@@ -542,14 +542,14 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 				font-size: 1.2em;
 			}
 
-	.find .close {
-		background: #a0a0a0 !important;
-		padding: 1em;
-		border-bottom: 1px solid #444;
-		border-radius: 0.5em 0.5em 0 0;
-		letter-spacing: 0.02em;
-		font-size: 1.3em;
-	}
+    .find .close {
+        background: #2185d0 !important;
+        padding: 1em;
+        border-bottom: 1px solid #444;
+        border-radius: 0.5em 0.5em 0 0;
+        letter-spacing: 0.02em;
+        font-size: 1.3em;
+    }
 
 			.find .close .left {
 				display: inline-block;

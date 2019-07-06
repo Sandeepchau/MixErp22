@@ -11,7 +11,7 @@
   "NetworkLibrary": "dbmslpcn",
   "UserId": "frapid_db_user",
   "Password": "change-on-deployment@123",
-  "ReportUserId": "sa",
-  "ReportUserPassword": "duhiya@123",
+  "ReportUserId": "frapid_db_user",
+  "ReportUserPassword": "change-on-deployment@123",
   "DatabaseBackupDirectory": "/Backups/"
 }
