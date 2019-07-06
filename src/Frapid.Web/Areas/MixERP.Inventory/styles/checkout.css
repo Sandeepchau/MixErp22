@@ -48,8 +48,8 @@
 }
 
 #TenderInputText, #ChangeInputText {
-    color: yellow !important;
-    font-size: 1.5em;
+	color: #92928d !important;
+	font-size: 1em;
 }
 
 #GiftCardNumberBalanceInputText {
@@ -104,7 +104,7 @@ input.invoice.number.for.reprint {
     display: inline-block;
     margin: 1px;
     -ms-border-radius: 4px;
-    border-radius: 4px;
+    border-radius: 4px !important;
     font-weight: bold;
     text-transform: uppercase;
     font-size: 0.92em;
@@ -481,12 +481,12 @@ input.customer.address {
 }
 
 select.inverted {
-    background-color: #333;
-    border: 1px solid #555;
-    width: 100%;
-    padding: 0.55em 1em;
-    border-radius: 0.5em;
-    -moz-appearance: none; /* Firefox */
+	background-color: #fff !important;
+	border: 1px solid #8e8c8c !important;
+	width: 100%;
+	padding: 0.55em 1em;
+	border-radius: 0.5em;
+	-moz-appearance: none; /* Firefox */
 }
 
 #dashboard-container {
@@ -529,7 +529,7 @@ select.inverted {
 }
 
 #pos-items {
-    background-color: #3a3a3a;
+    background-color: #fff;
     height: 100%;
     padding: 1em;
 }
@@ -555,30 +555,30 @@ select.inverted {
 }
 
 .action.panel .toolbar {
-    display: flex;
-    background-color: #2f2f2f;
-    background: linear-gradient(to top, #222, #444);
-    text-align: right;
+	display: flex;
+	background-color: #4ea7ea;
+	background: linear-gradient(to top, #222, #444);
+	text-align: right;
 }
 
-    .action.panel .toolbar > .item {
-        text-align: center;
-        display: inline-flex;
-        flex-direction: column-reverse;
-        background: #3f3f3f;
-        background: linear-gradient(to top, #222, #444); /* Standard syntax */
-        padding: 1em 0.6em;
-        border-right: 1px solid #333;
-        height: 3em;
-        width: 2.5em;
-        font-size: 1.4em;
-        cursor: pointer;
-    }
+	.action.panel .toolbar > .item {
+		text-align: center;
+		display: inline-flex;
+		flex-direction: column-reverse;
+		background: #4ea7ea;
+		color: #fff;
+		padding: 1em 0.6em;
+		border-right: 1px solid #333;
+		height: 3em;
+		width: 2.5em;
+		font-size: 1.4em;
+		cursor: pointer;
+	}
 
 
         .action.panel .toolbar > .item:hover {
-            background: #C4A03D;
-            background: linear-gradient(to bottom, #C4A03D, #C4343D); /* Standard syntax */
+            background: #5588af;
+            
         }
 
 .summary.items > .item > .description {
@@ -587,9 +587,8 @@ select.inverted {
 }
 
 .header.items {
-    background-color: #3f3f3f;
-    background: linear-gradient(to top, #292929, #444); /* Standard syntax */
-    padding: 1em 1em 1.5em;
+	background-color: #b3deff;
+	padding: 1em 1em 1.5em;
 }
 
 
@@ -599,15 +598,17 @@ select.inverted {
         text-align: right !important;
     }
 
-        .header.items .count.item .money {
-            color: #FBD840;
-        }
+		.header.items .count.item .money {
+			color: #4e4c44;
+		}
 
 .footer.items {
-    background-color: #3f3f3f;
-    background: linear-gradient(to top, #292929, #3a3a3a); /* Standard syntax */
-    padding: 1em;
-    text-align: right;
+	background-color: #fff;
+	border-left: 1px solid #777;
+	border-right: 1px solid #777;
+	border-bottom: 1px solid #777;
+	padding: 1em;
+	text-align: right;
 }
 
 .action.panel.segment {
