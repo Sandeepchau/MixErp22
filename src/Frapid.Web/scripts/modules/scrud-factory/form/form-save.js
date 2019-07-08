@@ -1,4 +1,5 @@
 ﻿saveButton.click(function () {
+    debugger;
     triggerOnSavingEvent();
 
     function getType() {

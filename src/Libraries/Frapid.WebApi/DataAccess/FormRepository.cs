@@ -977,7 +977,7 @@ namespace Frapid.WebApi.DataAccess
                     ? item.Where(x => !x.Key.ToUnderscoreLowerCase().Equals(this.PrimaryKey))
                         .Select(x => x.Value).ToArray()
                     : item.Select(x => x.Value).ToArray();
-
+                //columns = columns.Remove(columns.IndexOf(this.PrimaryKey+","), this.PrimaryKey.Length+1);
                 var sql = new Sql("INSERT INTO " + this.FullyQualifiedObjectName + "(" + columns + ")");
                 sql.Append("SELECT " + parameters, arguments);
 
