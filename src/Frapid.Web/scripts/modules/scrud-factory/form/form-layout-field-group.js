@@ -1,4 +1,5 @@
 ﻿function createFieldGroup(el, column, cssClass) {
+    debugger;
     function getLabel(columnName) {
         return window.translate(columnName);
     };

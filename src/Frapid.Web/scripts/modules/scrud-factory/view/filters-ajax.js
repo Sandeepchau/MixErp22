@@ -103,6 +103,7 @@ function loadFilterNames() {
 };
 
 function loadFilterForEdit() {
+    debuggerl
     function request(filterName) {
         var url = "/api/forms/config/filters/get-where/-1";
         var where = [];
@@ -132,6 +133,7 @@ function loadFilterForEdit() {
 
 
 function deleteSavedFilter() {
+    debugger;
     function request(filterName) {
         var url = "/api/filters/delete/by-name/" + filterName;
         return getAjaxRequest(url, "DELETE");

@@ -1,7 +1,9 @@
 ﻿saveButton.click(function () {
+    debugger;
     triggerOnSavingEvent();
 
     function getType() {
+        debugger;
         function skipPrimaryKey() {
             var skip = scrudFactory.skipPrimaryKey;
 
