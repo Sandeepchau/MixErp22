@@ -36,7 +36,7 @@
     ],
     AddNewButtonText: window.translate("AddNew"),
     AddNewUrl: "/dashboard/inventory/tasks/inventory-transfers/new",
-    ReturnButtonText: "Return",
+   // ReturnButtonText: "Return",
     SearchApi: "/dashboard/inventory/tasks/inventory-transfers/search",
     FormatExpression: function (cell, columnName, originalValue) {
         var value = originalValue;
