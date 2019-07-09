@@ -97,7 +97,7 @@ input.invoice.number.for.reprint {
 }
 
 .area.info {
-    background-color: #02B3D6;
+    background-color: #503;
 }
 
 .counter.info {
@@ -289,12 +289,12 @@ input.invoice.number.for.reprint {
 }
 
     .sales.items .item:nth-child(even) {
-        background-color: #373737 !important;
+        background-color: #fff !important;
     }
 
-    .sales.items .item:hover {
-        background-color: #3a3a3a !important;
-    }
+	.sales.items .item:hover {
+		background-color: #fff !important;
+	}
 
     .sales.items .item .block {
         display: inline-block;

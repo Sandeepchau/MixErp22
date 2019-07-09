@@ -90,6 +90,7 @@
 
 
     function bindItems() {
+        debugger;
         const url = "/api/forms/inventory/items/display-fields";
         const target = $("#ItemSelect");
         window.ajaxDataBind(url, target, null, "Key", "Value");
@@ -109,6 +110,7 @@
     };
 
     function getVariants() {
+        debugger;
         function request() {
             const url = "/api/forms/inventory/variants/all";
             return window.getAjaxRequest(url);
@@ -137,6 +139,7 @@
     });
 
     $("#ItemSelect").change(function () {
+        debugger;
         function request(itemId) {
             const url = "/api/forms/inventory/items/get-where/-1";
 
@@ -299,6 +302,7 @@
     });
 
     $("#SaveButton").click(function () {
+        debugger;
         function request(model) {
             const url = "/dashboard/inventory/setup/item-variants";
             const data = JSON.stringify(model);

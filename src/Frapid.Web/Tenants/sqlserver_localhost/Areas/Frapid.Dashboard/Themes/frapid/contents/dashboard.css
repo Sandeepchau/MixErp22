@@ -327,7 +327,7 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 @media (min-width: 768px) {
 	.area {
 		position: absolute;
-		/*top: 130px;*/
+		top: 130px;
 	}
 }
 
