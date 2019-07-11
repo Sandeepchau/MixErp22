@@ -514,7 +514,7 @@
                 const el = $(this);
                 if (!el.parent().is(".bikram.sambat.date.action.input")) {
                     el.wrap(`<div class="ui bikram sambat date action fluid input" />`);
-                    const button = $(`<button class="ui basic icon button" title="विक्रम सम्वत् मिति राख्नुहोस् ">
+                    const button = $(`<button class="ui basic icon button" title="Select date">
                             <i class="calendar icon"></i>
                             </button>`);
 

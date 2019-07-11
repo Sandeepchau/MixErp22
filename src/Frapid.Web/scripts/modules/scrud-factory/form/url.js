@@ -1,5 +1,5 @@
 ﻿function getReturnUrl() {
-    debugger;
+    
     var returnTo = getQueryStringByName("ReturnUrl");
 
     if (returnTo) {

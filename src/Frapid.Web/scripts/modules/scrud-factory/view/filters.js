@@ -395,7 +395,7 @@ function deleteFilter(el) {
 };
 
 $("#RemoveDefaultFilterButton").click(function () {
-    debugger;
+    
     function request() {
         var url = "/api/filters/remove-default/" + window.scrudFactory.viewTableName;
         return getAjaxRequest(url, "DELETE");
@@ -404,7 +404,7 @@ $("#RemoveDefaultFilterButton").click(function () {
     var ajax = request();
 
     ajax.success(function () {
-        debugger;
+        
         displayMessage(window.translate("TaskCompletedSuccessfully"), "success");
 
         $(".filter.modal").modal("close");

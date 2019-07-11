@@ -36,7 +36,7 @@
 };
 
 function loadActions() {
-    debugger;
+    
     var deleteTemplate = "";
     var editTemplate = "";
 

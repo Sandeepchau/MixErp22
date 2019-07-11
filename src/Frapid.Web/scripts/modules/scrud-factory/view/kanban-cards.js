@@ -26,13 +26,13 @@ function getQualified(dynamic, prefix, suffixes) {
 };
 
 function getExtraContent(id) {
-    //debugger;
+    //
     var extraContent = $('<div class="extra center content" />');
 
     var buttons = $('<div class="ui small basic buttons" />');
 
     if (window.scrudFactory.viewUrl) {
-        //debugger;
+        //
         var url = window.scrudFactory.viewUrl.replace("{Id}", id);
         var viewButton = $('<a class="ui basic button" />');
         viewButton.attr("href", url);
@@ -41,7 +41,7 @@ function getExtraContent(id) {
     };
 
     if (window.scrudFactory.allowEdit) {
-        //debugger;
+        //
         var editButton = $('<a class="ui basic button" href="javascript:void(0);" onclick="editRow(this, true);" />');
         editButton.text(window.translate("Edit"));
         buttons.append(editButton);
@@ -93,7 +93,7 @@ function getHeaderField(dynamic) {
 };
 
 function getMetaField(dynamic, headerField) {
-    //debugger;
+    //
     var className = getClassName();
 
     var primary = Enumerable.From(candidates.primary)
@@ -114,7 +114,7 @@ function getMetaField(dynamic, headerField) {
 };
 
 function getIdField() {
-    //debugger;
+    //
     var table = window.scrudFactory.formTableName;
 
     if (!table) {
@@ -148,7 +148,7 @@ function getImageField(entity) {
     //alert(JSON.stringify(entity));
 
     $.each(entity, function (i) {
-        //debugger;
+        //
         if (!imageField) {
             if ((i || "").toString().toLowerCase().indexOf("photo") !== -1) {
                 imageField = i;
