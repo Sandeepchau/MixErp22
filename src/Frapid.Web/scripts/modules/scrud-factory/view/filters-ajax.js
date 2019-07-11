@@ -133,7 +133,7 @@ function loadFilterForEdit() {
 
 
 function deleteSavedFilter() {
-    debugger;
+    //debugger;
     function request(filterName) {
         var url = "/api/filters/delete/by-name/" + filterName;
         return getAjaxRequest(url, "DELETE");

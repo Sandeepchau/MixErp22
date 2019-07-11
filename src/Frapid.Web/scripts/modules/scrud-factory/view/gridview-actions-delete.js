@@ -15,7 +15,7 @@
 
 
     if (typeof (window.scrudFactory.deleteHandler) === "function") {
-        debugger;
+        //debugger;
         window.scrudFactory.deleteHandler(primaryKeyValue);
         return;
     };

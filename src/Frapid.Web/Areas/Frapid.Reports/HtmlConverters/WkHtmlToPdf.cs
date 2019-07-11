@@ -3,6 +3,7 @@ using System.IO;
 using Codaxy.WkHtmlToPdf;
 using Frapid.Configuration;
 using Frapid.Framework;
+using System.Linq;
 
 namespace Frapid.Reports.HtmlConverters
 {

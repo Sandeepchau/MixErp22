@@ -39,7 +39,8 @@ function displayFieldBinder(el, url, notNull, filters, callback) {
 
 	var ajax = request();
 
-	ajax.success(function (response) {
+    ajax.success(function (response) {
+        debugger;
 		var options = "";
 
 		if (!notNull) {
@@ -48,7 +49,8 @@ function displayFieldBinder(el, url, notNull, filters, callback) {
 		
 		var totalItems = response.length;
 		
-		$.each(response, function (i) {
+        $.each(response, function (i) {
+            debugger;
 			var option = "<option value='{key}' {selected}>{value}</option>";
 			option = option.replace("{key}", this.Key);
 			option = option.replace("{value}", this.Value);
