@@ -89,8 +89,8 @@ namespace Frapid.Reports.Engine
                 DataSourceParameters = dataSource.Parameters
             };
 
-            var result = DataSourceHelper.GetDataTable(report.Tenant, dataSource.Query, parameters);
-
+                var result = DataSourceHelper.GetDataTable(report.Tenant, dataSource.Query, parameters);
+      
             if (!dataSource.ReturnsJson)
             {
                 return result;
