@@ -26,6 +26,7 @@
 			items.cost_price,
 			items.selling_price,
 			inventory.count_item_in_stock(items.item_id, items.unit_id, @StoreId::int) count,
+        inventory.count_item_in_stock(items.item_id, items.unit_id, @StoreId) count,
 			items.reorder_level,
 			items.reorder_quantity
 		FROM inventory.items

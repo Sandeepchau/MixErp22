@@ -477,7 +477,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="Areas\" />
     <Folder Include="images\social\" />
-    <Folder Include="Tenants\sqlserver_localhost\Areas\" />
+    <Folder Include="Tenants\sqlserver_localhost\Areas\Frapid.Dashboard\Themes\frapid\Views\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Libraries\Frapid.ApplicationState\Frapid.ApplicationState.csproj">
