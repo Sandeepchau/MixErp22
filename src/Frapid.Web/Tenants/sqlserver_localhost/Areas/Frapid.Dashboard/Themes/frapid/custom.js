@@ -1,7 +1,7 @@
 //Bikram Sambat to Gregorian Date Conversion utility for frapid
 //Depends on linq.js, jQuery, and jQuery UI
 (() => {
-    debugger;
+    //debugger;
     var definition = {
         style: `<style>
         .ui.bikram.sambat.date.popunder{
@@ -375,7 +375,7 @@
 
     //Converts the Bikram Sambat date to AD format.
     function getAdDate(bsDate) {
-        debugger;
+        //debugger;
         const date = bsDate.split("/");
 
         const yearId = window.parseInt(date[0]);
@@ -407,7 +407,7 @@
 
     //Converts the AD date to Bikram Sambat date format.
     function getBsDate(adDate) {
-        debugger;
+        //debugger;
         //find the closest year
         const year = window.Enumerable.From(definition.dates)
             .Where(function (x) {
@@ -443,7 +443,7 @@
 
 
     function displayBsDatePopUnder(activator) {
-        debugger;
+        //debugger;
         function displayBsDate(container) {
             const input = container.find("input.date.hasDatepicker");
             const date = input.datepicker("getDate");
@@ -476,7 +476,7 @@
     };
 
     function bsDateEventTrigger(el, close) {
-        debugger;
+       //debugger;
         const container = $(el).closest(".ui.bikram.sambat.date.input");
         const year = container.find("input.year").val();
         const month = container.find("select.month").val();
@@ -504,7 +504,7 @@
     };
 
     function subroutine() {
-        debugger;
+        //debugger;
         const candidates = $(".date.hasDatepicker:not(.hasBsDate)");
 
         if (candidates.length > 0) {
