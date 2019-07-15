@@ -103,7 +103,7 @@ function loadFilterNames() {
 };
 
 function loadFilterForEdit() {
-    debuggerl
+    //debuggerl
     function request(filterName) {
         var url = "/api/forms/config/filters/get-where/-1";
         var where = [];
