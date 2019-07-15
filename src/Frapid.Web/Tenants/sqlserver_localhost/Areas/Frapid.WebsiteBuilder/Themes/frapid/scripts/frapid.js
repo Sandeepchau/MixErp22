@@ -7,7 +7,7 @@
     };
 
     function validate(el) {
-        var isValid = window.validator.validate(el, null, true);
+        var isValid = true;//window.validator.validate(el, null, true);
 
         var hp = el.find(".ui.confirm.email.input input").val();
 

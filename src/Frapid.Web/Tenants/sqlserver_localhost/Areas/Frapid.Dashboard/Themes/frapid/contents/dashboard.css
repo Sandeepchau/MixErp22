@@ -131,51 +131,57 @@ html, body, .jstree {
     }
 
 .apps {
-    text-align: center;
+    text-align: center;	
+}
+@media (min-width: 768px) {
+	.apps {
+		text-align: center;
+		margin-top: 130px;
+	}
 }
 
-    .apps > .item {
-        display: inline-block;
-        flex-direction: column;
-        padding: 0.2em 0em 0 0em;
-        border: 1px solid transparent;
-        width: 8em;
-        height: 12em;
-        overflow: hidden;
-        position: relative;
+	.apps > .item {
+		display: inline-block;
+		flex-direction: column;
+		padding: 0.2em 0em 0 0em;
+		border: 1px solid transparent;
+		width: 8em;
+		height: 12em;
+		overflow: hidden;
+		position: relative;
 		vertical-align: top;
-    }
+	}
 
-        .apps > .item > .app > div.icon {
-            padding-top: 0.2em;
-            font-size: 2.4em;
-        }
+		.apps > .item > .app > div.icon {
+			padding-top: 0.2em;
+			font-size: 2.4em;
+		}
 
-            .apps > .item > .app > div.icon i {
-                text-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.4) !important;
-            }
+			.apps > .item > .app > div.icon i {
+				text-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.4) !important;
+			}
 
-        .apps > .item > .app > div.image.icon {
-            height: 2em;
-            width: 2em;
-            background: #fafafa;
-            margin: 0 auto;
-            border-radius: 50% !important;
-            margin-top: 0.2em !important;
-            margin-bottom: 0.5em !important;
-            padding: 0 !important;
-            border: 1px solid #ddd;
-        }
+		.apps > .item > .app > div.image.icon {
+			height: 2em;
+			width: 2em;
+			background: #fafafa;
+			margin: 0 auto;
+			border-radius: 50% !important;
+			margin-top: 0.2em !important;
+			margin-bottom: 0.5em !important;
+			padding: 0 !important;
+			border: 1px solid #ddd;
+		}
 
-        .apps > .item > .app > div.icon img {
-            height: 100%;
-            padding: 0.1em 0em;
-        }
+		.apps > .item > .app > div.icon img {
+			height: 100%;
+			padding: 0.1em 0em;
+		}
 
-        .apps > .item > .app > div.icon .circular.icon {
-            border-radius:50% !important;
-            margin-bottom: 0.2em;
-        }
+		.apps > .item > .app > div.icon .circular.icon {
+			border-radius: 50% !important;
+			margin-bottom: 0.2em;
+		}
 
 
 		.apps > .item > .app > span {
@@ -189,147 +195,146 @@ html, body, .jstree {
 			font-size: 10px;
 		}
 
-#PhoneMenu .item:hover i,
-#PhoneMenu .item:hover .image {
-    transition: all 0.3s ease;
-    transform: scale(1.2);
-}
-
-.large.icon {
-    font-size: 3em !important;
-    text-align: center !important;
-}
-
-.ui.link span.text {
-    padding: 0.7em 0 !important;
-    display: block !important;
-    text-align: center !important;
-}
-
-#Search input {
-    text-align: center;
-}
-
-    #Search input:focus {
-        min-width: 30vw;
-    }
-
-.hidden, .initially.hidden {
-    display: none;
-}
-
-
-label, .ui.toggle.checkbox label {
-    cursor: pointer;
-}
-
-input[readonly], input[disabled], textarea[readonly], textarea[disabled], select[readonly], select[disabled], .dropdown.disabled {
-    background-color: #f0f0f0 !important;
-    cursor: not-allowed;
-}
-
-[data-ng-view], [ng-view] {
-    height: 100%;
-}
-
-.vpad8 {
-    padding: 8px 0;
-}
-
-.error {
-    color: brown;
-}
-
-.background.slider {
-    filter: grayscale(70%);
-    background-color: #fff;
-    height: 100%;
-    width: 100%;
-    z-index: -2;
-	display:none;
-}
-
-.dashboard.menu {
-	background: #4ea7ea !important;
-	border-style: none !important;
-	z-index: 3;
-}	
-
-@media(min-width: 768px){
-	.dashboard.menu {
-		position: fixed;
-		top: 0;
-		left: 0;
-		height: 4em;
+	#PhoneMenu .item:hover i,
+	#PhoneMenu .item:hover .image {
+		transition: all 0.3s ease;
+		transform: scale(1.2);
 	}
-	
-	.mobile.only{
+
+	.large.icon {
+		font-size: 3em !important;
+		text-align: center !important;
+	}
+
+	.ui.link span.text {
+		padding: 0.7em 0 !important;
+		display: block !important;
+		text-align: center !important;
+	}
+
+	#Search input {
+		text-align: center;
+	}
+
+		#Search input:focus {
+			min-width: 30vw;
+		}
+
+	.hidden, .initially.hidden {
 		display: none;
 	}
-}
 
-@media(max-width: 768px){
-	.hidden.on.mobile{
-		display:none;
+
+	label, .ui.toggle.checkbox label {
+		cursor: pointer;
 	}
 
-	.ui.stackable.menu .right.menu {
-		flex-direction: column;
+	input[readonly], input[disabled], textarea[readonly], textarea[disabled], select[readonly], select[disabled], .dropdown.disabled {
+		background-color: #f0f0f0 !important;
+		cursor: not-allowed;
 	}
-	
-	#dashboard-container{
-		margin-top:0;
-	}
-}
 
-.dashboard.menu > .item,
-.dashboard.menu > .menu > .item {
-	color: #fff !important;
-	border-right: 1px solid #ffffff4d !important;
-	cursor: pointer;
-}
+	[data-ng-view], [ng-view] {
+		height: 100%;
+	}
+
+	.vpad8 {
+		padding: 8px 0;
+	}
+
+	.error {
+		color: brown;
+	}
+
+	.background.slider {
+		filter: grayscale(70%);
+		background-color: #fff;
+		height: 100%;
+		width: 100%;
+		z-index: -2;
+		display: none;
+	}
+
+	.dashboard.menu {
+		background: #4ea7ea !important;
+		border-style: none !important;
+		z-index: 3;
+	}
+
+	@media(min-width: 768px) {
+		.dashboard.menu {
+			position: fixed;
+			top: 0;
+			left: 0;
+			height: 4em;
+		}
+
+		.mobile.only {
+			display: none;
+		}
+	}
+
+	@media(max-width: 768px) {
+		.hidden.on.mobile {
+			display: none;
+		}
+
+		.ui.stackable.menu .right.menu {
+			flex-direction: column;
+		}
+
+		#dashboard-container {
+			margin-top: 0;
+		}
+	}
 
 	.dashboard.menu > .item,
-	.dashboard.menu > .stackable.menu .item,
-	.dashboard.menu > .menu > .item:not(.search):hover {
-		background: #4ea7ea !important;
+	.dashboard.menu > .menu > .item {
+		color: #fff !important;
+		border-right: 1px solid #ffffff4d !important;
+		cursor: pointer;
 	}
 
-.powered.by {
-    padding: 2em;
-    text-align: center;
-}
+		.dashboard.menu > .item,
+		.dashboard.menu > .stackable.menu .item,
+		.dashboard.menu > .menu > .item:not(.search):hover {
+			background: #4ea7ea !important;
+		}
 
-.dashboard.menu > .item,
-.dashboard.menu > .menu > .item,
-.dashboard.menu > .item span,
-.dashboard.menu > .menu > .item span {
-    text-transform: uppercase !important;
-    font-size: 0.9em;
-    letter-spacing: 0.09em;
-    word-spacing: 0.15em;
-    font-weight: 600;
-}
-
-.powered.by a {
-	color: 3632a6;
-	/*text-shadow: 2px 2px 5px #222;*/
-	text-transform: uppercase !important;
-	font-size: 0.87em;
-	letter-spacing: 0.1em;
-	font-weight: 600;
-}
-
-.powered.by img {
-    margin: 0 auto;
-}
-
-@media (min-width: 768px) {
-	.area {
-		position: absolute;
-		top: 130px;
+	.powered.by {
+		padding: 2em;
+		text-align: center;
 	}
-}
+
+	.dashboard.menu > .item,
+	.dashboard.menu > .menu > .item,
+	.dashboard.menu > .item span,
+	.dashboard.menu > .menu > .item span {
+		text-transform: uppercase !important;
+		font-size: 0.9em;
+		letter-spacing: 0.09em;
+		word-spacing: 0.15em;
+		font-weight: 600;
+	}
+
+	.powered.by a {
+		color: 3632a6;
+		/*text-shadow: 2px 2px 5px #222;*/
+		text-transform: uppercase !important;
+		font-size: 0.87em;
+		letter-spacing: 0.1em;
+		font-weight: 600;
+	}
+
+	.powered.by img {
+		margin: 0 auto;
+	}
+
+	@media (min-width: 768px) {
+		.area {
+			position: absolute;
+		}
+	}
 
 	@media (min-width: 1100px) {
 		#PhoneMenu {
@@ -485,17 +490,17 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 				color: #222;
 			}
 
-.find {
-	position: fixed;
-	top: 5em;
-	right: 0.8em;
-	color: #fff;
-	text-transform: uppercase;
-	font-size: 0.78em;
-	z-index: 2000 !important;
-	letter-spacing: 1px;
-	font-weight: 500;
-}
+	.find {
+		position: fixed;
+		top: 5em;
+		right: 0.8em;
+		color: #fff;
+		text-transform: uppercase;
+		font-size: 0.78em;
+		z-index: 2000 !important;
+		letter-spacing: 1px;
+		font-weight: 500;
+	}
 
 		.find .results {
 			max-height: 500px;
@@ -503,20 +508,20 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 			overflow-x: hidden;
 		}
 
-	.find .result {
-		width: 460px;
-		background: #2185D0;
-		display: flex;
-		border-bottom: 1px solid #c1c1c178;
-		cursor: pointer;
-		padding: 1.2em;
-	}
-
-		.find .result.active,
-		.find .result:hover {
-			background: #356292;
-			transition:1.2s;
+		.find .result {
+			width: 460px;
+			background: #2185D0;
+			display: flex;
+			border-bottom: 1px solid #c1c1c178;
+			cursor: pointer;
+			padding: 1.2em;
 		}
+
+			.find .result.active,
+			.find .result:hover {
+				background: #356292;
+				transition: 1.2s;
+			}
 
 				.find .result.active .description,
 				.find .result:hover .description {
@@ -542,14 +547,14 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 				font-size: 1.2em;
 			}
 
-    .find .close {
-        background: #2185d0 !important;
-        padding: 1em;
-        border-bottom: 1px solid #444;
-        border-radius: 0.5em 0.5em 0 0;
-        letter-spacing: 0.02em;
-        font-size: 1.3em;
-    }
+		.find .close {
+			background: #2185d0 !important;
+			padding: 1em;
+			border-bottom: 1px solid #444;
+			border-radius: 0.5em 0.5em 0 0;
+			letter-spacing: 0.02em;
+			font-size: 1.3em;
+		}
 
 			.find .close .left {
 				display: inline-block;
@@ -657,24 +662,25 @@ input[readonly], input[disabled], textarea[readonly], textarea[disabled], select
 		}
 	}
 
-.ui.attached.segment {
-	top: 0px;
-	bottom: 0px;
-	border-radius: 10px !important;
-	margin: 0em -1px;
-	width: calc(100% + 2px );
-	max-width: calc(100% + 2px );
-	box-shadow: 1px 2px 5px !important;
-	border: 1px solid #D4D4D5 !important;
-}
-.ui.positive.button {
-	background-color: #2185D0!important;
-}
+	.ui.attached.segment {
+		top: 0px;
+		bottom: 0px;
+		border-radius: 10px !important;
+		margin: 0em -1px;
+		width: calc(100% + 2px );
+		max-width: calc(100% + 2px );
+		box-shadow: 1px 2px 5px !important;
+		border: 1px solid #D4D4D5 !important;
+	}
 
-.ui.container.emailContainer {
-	width: 1127px;
-	border: 1px solid #cbc4c4;
-	border-radius: 5px;
-	margin-left: auto !important;
-	margin-right: auto !important;
-}
+	.ui.positive.button {
+		background-color: #2185D0 !important;
+	}
+
+	.ui.container.emailContainer {
+		width: 1127px;
+		border: 1px solid #cbc4c4;
+		border-radius: 5px;
+		margin-left: auto !important;
+		margin-right: auto !important;
+	}

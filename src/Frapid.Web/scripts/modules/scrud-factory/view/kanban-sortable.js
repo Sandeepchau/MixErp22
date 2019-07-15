@@ -1,4 +1,5 @@
 ﻿function makeSortable() {
+    debugger;
     $(function () {
         function deleteRequest(kanbanDetailId) {
             var url = "/api/forms/config/kanban-details/delete/" + kanbanDetailId;

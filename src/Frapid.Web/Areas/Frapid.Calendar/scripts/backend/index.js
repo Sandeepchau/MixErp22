@@ -679,10 +679,13 @@ $("#EditEventButton").off("click").on("click", function () {
     const event = window.Enumerable.From(window.events).Where(function (x) {
         return x.EventId === eventId;
     }).FirstOrDefault();
-
-    const daysOfWeek = window.Enumerable.From(event.Recurrence.ByDay).Select(function (x) {
-        return x.DayOfWeek.toString();
-    }).ToArray();
+    var daysOfWeek=[];
+    if (event.Recurrence != undefined && event.Recurrence != null) {
+         daysOfWeek = window.Enumerable.From(event.Recurrence.ByDay).Select(function (x) {
+            return x.DayOfWeek.toString();
+        }).ToArray();
+    }
+    
 
     $(".event.popup").hide();
     showEventModal();
