@@ -15,13 +15,28 @@ namespace Frapid.WebsiteBuilder.Controllers.FrontEnd
         [Route("subscription/add")]
         [AllowAnonymous]
         [HttpPost]
-        public async Task<ActionResult> AddAsync(Subscribe model)
+        //public async Task<ActionResult> AddAsync(Subscribe model)
+        //{
+        //    //ConfirmEmailAddress is a honeypot field
+        //    if (!string.IsNullOrWhiteSpace(model.ConfirmEmailAddress))
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+
+
+        //    if (await EmailSubscriptions.AddAsync(this.Tenant, model.EmailAddress).ConfigureAwait(false))
+        //    {
+        //        var email = new SubscriptionWelcomeEmail();
+        //        await email.SendAsync(this.Tenant, model).ConfigureAwait(false);
+        //    }
+
+        //    await Task.Delay(1000).ConfigureAwait(false);
+        //    return this.Ok();
+        //}
+        public async Task<ActionResult> AddAsync(SubscribeTest model)
         {
             //ConfirmEmailAddress is a honeypot field
-            if (!string.IsNullOrWhiteSpace(model.ConfirmEmailAddress))
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+           
 
 
             if (await EmailSubscriptions.AddAsync(this.Tenant, model.EmailAddress).ConfigureAwait(false))

@@ -15,7 +15,7 @@ namespace Frapid.WebsiteBuilder.Emails
     {
         private const string TemplatePath = "~/Tenants/{0}/Areas/Frapid.WebsiteBuilder/EmailTemplates/email-subscription-welcome.html";
 
-        private string GetMessage(string tenant, Subscribe model)
+        private string GetMessage(string tenant, SubscribeTest model)
         {
             string siteUrl = HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority);
             string domain = HttpContext.Current.Request.Url.Host;
@@ -37,7 +37,7 @@ namespace Frapid.WebsiteBuilder.Emails
             return message;
         }
 
-        private EmailQueue GetEmail(string tenant, Subscribe model)
+        private EmailQueue GetEmail(string tenant, SubscribeTest model)
         {
             var config = EmailProcessor.GetDefaultConfig(tenant);
             string domain = HttpContext.Current.Request.Url.Host;
@@ -54,7 +54,7 @@ namespace Frapid.WebsiteBuilder.Emails
             };
         }
 
-        public async Task SendAsync(string tenant, Subscribe model)
+        public async Task SendAsync(string tenant, SubscribeTest model)
         {
             try
             {
