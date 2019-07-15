@@ -7,7 +7,7 @@
   "MaxPoolSize": "100",
   "SuperUserId": "sa",
   "SuperUserPassword": "sa@123",
-  "TrustedSuperUserConnection": "true",
+  "TrustedSuperUserConnection": "false",
   "NetworkLibrary": "dbmslpcn",
   "UserId": "sa",
   "Password": "sa@123",
