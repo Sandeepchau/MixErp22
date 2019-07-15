@@ -416,29 +416,31 @@
                 return x.bs_year_id;
             }).FirstOrDefault();
 
-        const startDate = new Date(year.start_date_in_ad);
-        var totalDays = dateDiff(startDate, adDate);
+
+            const startDate = new Date(year.start_date_in_ad);
+            var totalDays = dateDiff(startDate, adDate);
 
 
-        const monthsInYear = getMonthDayList(year);
-        var counter = 1;
+            const monthsInYear = getMonthDayList(year);
+            var counter = 1;
 
-        $.each(monthsInYear, function () {
-            const days = this;
+            $.each(monthsInYear, function () {
+                const days = this;
 
-            if (totalDays < days) {
-                return false;
-            };
+                if (totalDays < days) {
+                    return false;
+                };
 
-            totalDays -= days;
-            counter++;
-        });
+                totalDays -= days;
+                counter++;
+            });
 
-        const yearId = year.bs_year_id;
-        const monthId = counter;
-        const dayId = totalDays + 1;
+            const yearId = year.bs_year_id;
+            const monthId = counter;
+            const dayId = totalDays + 1;
 
-        return yearId + "/" + getSliced(monthId) + "/" + getSliced(dayId);
+            return yearId + "/" + getSliced(monthId) + "/" + getSliced(dayId);
+        
     };
 
 
@@ -448,14 +450,17 @@
             const input = container.find("input.date.hasDatepicker");
             const date = input.datepicker("getDate");
             const bs = getBsDate(date);
-            const segments = bs.split("/");
-            const year = segments[0];
-            const month = segments[1];
-            const day = segments[2];
+            // const bs = new Date(date).toString("yyyy/MM/dd");
 
-            container.find("input.year").val(year);
-            container.find("select.month").val(month);
-            container.find("input.day").val(day);
+                const segments = bs.split("/");
+                const year = segments[0];
+                const month = segments[1];
+                const day = segments[2];
+
+                container.find("input.year").val(year);
+                container.find("select.month").val(month);
+                container.find("input.day").val(day);
+           
         };
 
         const container = activator.parent();

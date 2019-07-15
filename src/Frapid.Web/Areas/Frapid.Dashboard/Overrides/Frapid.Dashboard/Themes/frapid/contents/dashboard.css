@@ -131,7 +131,14 @@ html, body, .jstree {
     }
 
 .apps {
-    text-align: center;
+	text-align: center;
+	
+}
+@media (min-width: 768px) {
+	.apps {
+		text-align: center;
+		margin-top: 130px;
+	}
 }
 
     .apps > .item {

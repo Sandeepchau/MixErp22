@@ -41,7 +41,6 @@ function getExtraContent(id) {
     };
 
     if (window.scrudFactory.allowEdit) {
-        //
         var editButton = $('<a class="ui basic button" href="javascript:void(0);" onclick="editRow(this, true);" />');
         editButton.text(window.translate("Edit"));
         buttons.append(editButton);
