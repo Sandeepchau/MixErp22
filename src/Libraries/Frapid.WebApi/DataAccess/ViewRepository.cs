@@ -138,8 +138,15 @@ namespace Frapid.WebApi.DataAccess
                     throw new UnauthorizedException(Resources.AccessIsDenied);
                 }
             }
-
-            string sql = $"SELECT {this.PrimaryKey} AS \"key\", {this.NameColumn} as \"value\" FROM {this.FullyQualifiedObjectName} ORDER BY 1;";
+            string sql = "";
+            if (this.FullyQualifiedObjectName == "sales.price_types")
+            {
+                 sql = $"SELECT {this.PrimaryKey} AS \"key\", {this.NameColumn} as \"value\" FROM {this.FullyQualifiedObjectName}  WHERE deleted = 0 ORDER BY 1;";
+            }
+            else
+            {
+                 sql = $"SELECT {this.PrimaryKey} AS \"key\", {this.NameColumn} as \"value\" FROM {this.FullyQualifiedObjectName} ORDER BY 1;";
+            }
 
             try
             {
@@ -248,8 +255,16 @@ namespace Frapid.WebApi.DataAccess
 
             //"SELECT * FROM {this.FullyQualifiedObjectName} 
             //ORDER BY {this.PrimaryKey} LIMIT PageSize OFFSET @0;";
-
-            var sql = new Sql($"SELECT * FROM {this.FullyQualifiedObjectName}");
+            Sql sql = new Sql();
+            if (this.FullyQualifiedObjectName == "hrm.identification_types")
+            {
+                 sql = new Sql($"SELECT * FROM {this.FullyQualifiedObjectName} WHERE deleted = 0 ");
+            }
+            else
+            {
+                 sql = new Sql($"SELECT * FROM {this.FullyQualifiedObjectName}");
+            }
+            
             sql.OrderBy(this.PrimaryKey);
             sql.Append(FrapidDbServer.AddOffset(this.Database, "@0"), offset);
             sql.Append(FrapidDbServer.AddLimit(this.Database, "@0"), Config.GetPageSize(this.Database));
