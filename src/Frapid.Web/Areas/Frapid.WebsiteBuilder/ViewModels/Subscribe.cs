@@ -7,3 +7,7 @@ namespace Frapid.WebsiteBuilder.ViewModels
         public string TokenHidden { get; set; }
     }
 }
+public class SubscribeTest
+{
+    public string EmailAddress { get; set; }
+}
