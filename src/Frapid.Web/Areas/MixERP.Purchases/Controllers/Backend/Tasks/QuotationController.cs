@@ -54,6 +54,8 @@ namespace MixERP.Purchases.Controllers.Backend.Tasks
 
             search.From = search.From == DateTime.MinValue ? DateTime.Today : search.From;
             search.To = search.To == DateTime.MinValue ? DateTime.Today : search.To;
+            search.ExpectedFrom = search.ExpectedFrom == DateTime.MinValue ? DateTime.Today : search.ExpectedFrom;
+            search.ExpectedTo = search.ExpectedTo == DateTime.MinValue ? DateTime.Today : search.ExpectedTo;
 
             try
             {
