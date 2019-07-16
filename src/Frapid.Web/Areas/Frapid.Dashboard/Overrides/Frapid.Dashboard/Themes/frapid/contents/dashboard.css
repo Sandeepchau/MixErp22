@@ -653,3 +653,13 @@ select.inverted{
 		margin: 0!important;
 	}
 }
+.checkout.items {
+	color: black !important;
+}
+
+.all.items {
+	color: white !important;
+}
+.ui.grid > .eleven.wide.column {
+	color: white !important;
+}

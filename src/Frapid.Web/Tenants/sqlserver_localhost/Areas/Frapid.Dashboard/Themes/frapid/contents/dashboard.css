@@ -684,3 +684,12 @@ html, body, .jstree {
 		margin-left: auto !important;
 		margin-right: auto !important;
 	}
+.checkout.items {
+	color: black !important;
+}
+.all.items{
+	color:white!important;
+}
+.ui.grid > .eleven.wide.column {
+	color: white !important;
+}
