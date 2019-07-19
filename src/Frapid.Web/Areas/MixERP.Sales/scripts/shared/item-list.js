@@ -9,7 +9,7 @@
 });
 
 var itemTemplate =
-    `<div class="item" id="pos-{ItemId}" data-selling-price="{InvariantCultureSellingPrice}" data-photo="{Photo}" data-unit-id="{UnitId}" data-valid-units="{ValidUnits}" data-brand="{BrandName}" data-item-group="{ItemGroupName}" data-item-name="{ItemName}" data-item-code="{ItemCode}" data-item-id="{ItemId}" data-price="{Price}" data-is-taxable-item="{IsTaxableItem}">
+    `<div class="item" id="pos-{ItemId}" data-selling-price="{InvariantCultureSellingPrice}" data-photo="{Photo}" data-unit-id="{UnitId}" data-valid-units="{ValidUnits}" data-brand="{BrandName}" data-item-group="{ItemGroupName}" data-item-name="{ItemName}" data-item-code="{ItemCode}" data-item-id="{ItemId}" data-price="{Price}" data-is-taxable-item="{IsTaxableItem}" sales-tax-rate="{SalesTaxRate}">
 	<div class="photo block">
 		<img src="{Photo}">
 	</div>
@@ -37,6 +37,7 @@ var itemTemplate =
 		<input type="text" class="price" title="${window.translate("EditPrice")}" value="{SellingPrice}">
 		<input type="text" class="quantity" title="${window.translate("EnterQuantity")}" value="1">
 		<input type="text" class="discount" title="${window.translate("EnterDiscount")}" value="">
+		<input type="hidden" class="TaxRate"  value="{SalesTaxRate}">
 		<button class="ui red fluid button" onclick="removeItem(this);" style="display:none;">${window.translate("Delete")}</button>
 	</div>
 </div>`
@@ -142,7 +143,9 @@ function initializeClickAndAction() {
         var itemId = window.parseInt(el.attr("data-item-id"));
         var price = sellingPrice;
         var isTaxableItem = el.attr("data-is-taxable-item") === "true";
-        var taxRate = window.parseFloat($("#SalesTaxRateHidden").val()) || 0;
+        var taxRate = window.parseInt(el.attr("sales-tax-rate"));
+
+        //var taxRate = window.parseFloat($("#SalesTaxRateHidden").val()) || 0;
 
         if (!price) {
             alert("Cannot add item because the price is zero.");
@@ -184,6 +187,7 @@ function initializeClickAndAction() {
         template = template.replace(/{UnitId}/g, unitId);
         template = template.replace(/{ValidUnits}/g, validUnits);
         template = template.replace(/{IsTaxableItem}/g, isTaxableItem.toString());
+        template = template.replace(/{SalesTaxRate}/g, taxRate);
 
         var item = $(template);
         var quantityInput = item.find("input.quantity");
@@ -350,7 +354,7 @@ $("#SummaryItems div.discount .money input, " +
 function updateTotal() {
     const candidates = $("#SalesItems div.item");
     const amountEl = $("#SummaryItems div.amount .money");
-    const taxRate = window.parseFloat($("#SalesTaxRateHidden").val()) || 0;
+   // const taxRate = window.parseFloat($("#SalesTaxRateHidden").val()) || 0;
 
     window.setRegionalFormat();
 
@@ -358,12 +362,14 @@ function updateTotal() {
     var totalPrice = 0;
     var taxableTotal = 0;
     var nonTaxableTotal = 0;
+    //var taxRate = 0;
 
     $.each(candidates, function () {
         const el = $(this);
         const quantityEl = el.find("input.quantity");
         const discountEl = el.find("input.discount");
         const isTaxable = el.attr("data-is-taxable-item") === "true";
+        const taxRate = window.parseFloat2(el.find("input.taxRate").val());
 
         const quantity = window.parseFloat2(quantityEl.val()) || 0;
         const discountRate = window.parseFloat2(discountEl.val()) || 0;
@@ -373,7 +379,8 @@ function updateTotal() {
         const discountedAmount = amount * ((100 - discountRate) / 100);
 
         if (isTaxable) {
-            taxableTotal += discountedAmount;
+            var tax = discountedAmount * (taxRate / 100);
+            taxableTotal += discountedAmount + tax;
         } else {
             nonTaxableTotal += discountedAmount;
         };
@@ -503,6 +510,7 @@ function displayProducts(category, searchQuery) {
         item.attr("data-is-taxable-item", product.IsTaxableItem);
         item.attr("data-selling-price", sellingPrice);
         item.attr("data-selling-price-includes-tax", product.SellingPriceIncludesTax);
+        item.attr("sales-tax-rate", product.SalesTaxRate);
 
         if (product.HotItem) {
             item.addClass("hot");
